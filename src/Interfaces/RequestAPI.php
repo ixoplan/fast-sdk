@@ -129,6 +129,22 @@ interface RequestAPI {
 	public function getRequestParameter($parameter);
 
 	/**
+	 * Returns a dictionary containing all request headers.
+	 *
+	 * @return array
+	 */
+	public function getHeaders();
+
+	/**
+	 * Returns a single header.
+	 *
+	 * @param string $header
+	 *
+	 * @return string|null
+	 */
+	public function getHeader($header);
+
+	/**
 	 * Returns a PSR-7 ServerRequestInterface object
 	 *
 	 * @return ServerRequestInterface

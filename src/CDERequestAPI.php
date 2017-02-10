@@ -209,6 +209,33 @@ class CDERequestAPI implements RequestAPI  {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getHeaders() {
+		if (!\function_exists('getHeaderList')) {
+			throw new CDEFeatureNotSupportedException('getHeaderList');
+		}
+
+		$data = getHeaderList(null);
+		if ($data === null) {
+			throw new InformationNotAvailableInContextException('header');
+		}
+		return $data;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getHeader($header) {
+		$headers = $this->getHeaders();
+		if (isset($headers[$header])) {
+			return $headers[$header];
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getPSR7() {
 		$http_build_query = function($array) {
 			$elements = [];
@@ -230,7 +257,7 @@ class CDERequestAPI implements RequestAPI  {
 				preg_replace('/^http(|s):\/\/[a-zA-Z0-9_\-\.:]+/', '', $this->getPageLink()),
 				$http_build_query($this->getRequestParameters())
 			),
-			[],
+			$this->getHeaders(),
 			'',
 			'1.1',
 			$cookies,
