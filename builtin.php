@@ -258,13 +258,13 @@ function getRequestParameter($name) {
 }
 
 /**
- * Returns the array value for the request parameter with the given name.
+ * Returns the array value for the request parameter with the given name or all parameters if name is omitted.
  *
  * @param string $name
  *
  * @return array|null
  */
-function getRequestParameterList($name) {
+function getRequestParameterList($name = null) {
 }
 
 /**
@@ -496,6 +496,8 @@ function previewInfo() {
  * Sets the content type for the current response. Useful for sending out JSON.
  *
  * @param string $contentType
+ *
+ * @return bool
  */
 function setContentType($contentType) {
 }
@@ -509,4 +511,48 @@ function setContentType($contentType) {
  * @return bool
  */
 function setStatusCode($statusCode) {
+}
+
+/**
+ * Return the array value for the header with the given key or all headers if key is omitted.
+ *
+ * @param string $key
+ *
+ * @return array|null
+ */
+function getHeaderList($key = null) {
+}
+
+/**
+ * Return the single value for the header with the given key.
+ *
+ * @param string $key
+ *
+ * @return string|null
+ */
+function getHeader($key) {
+}
+
+/**
+ * Set a HTTP response's header. Returns true on success, false otherwise (e.g. if an empty key was given).
+ *
+ * @param string $key
+ * @param string $value
+ *
+ * @return bool
+ */
+function setHeader($key, $value) {
+}
+
+/**
+ * Render XML to PDF using XSL-FOP. Returns true on success, false otherwise.
+ *
+ * @param string $baseFolder
+ * @param string $xslPath
+ * @param string $xmlSource
+ * @param array $meta
+ *
+ * @return bool
+ */
+function renderFopXml($baseFolder, $xslPath, $xmlSource, $meta) {
 }
