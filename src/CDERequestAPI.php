@@ -248,6 +248,8 @@ class CDERequestAPI implements RequestAPI  {
 		foreach ($this->getCookies() as $cookie) {
 			$cookies[$cookie->getName()] = $cookie->getValue();
 		}
+		// TODO: pass headers and body
+		// TODO: don't pass headers only! (ServerRequest::getParsedBody needs a body when 'Content-Type' == 'application/x-www-form-urlencoded')
 		$request = new ServerRequest(
 			'GET',
 			new Uri(
@@ -257,7 +259,7 @@ class CDERequestAPI implements RequestAPI  {
 				preg_replace('/^http(|s):\/\/[a-zA-Z0-9_\-\.:]+/', '', $this->getPageLink()),
 				$http_build_query($this->getRequestParameters())
 			),
-			$this->getHeaders(),
+			[],
 			'',
 			'1.1',
 			$cookies,
