@@ -2,36 +2,18 @@
 
 namespace Ixolit\CDE;
 
-
 /**
  * Class CDETemporaryDataStorage
  *
  * @package Ixolit\CDE
  */
-class CDETemporaryDataStorage {
+class CDETemporaryDataStorage extends CDETemporaryStorage {
 
-    const DATA_STORAGE_TIMEOUT_THIRTY_DAYS = 2592000;
+    const DATA_STORAGE_TIMEOUT_THIRTY_DAYS = CDECookieCache::COOKIE_TIMEOUT_THIRTY_DAYS;
     const COOKIE_NAME_TEMPORARY_DATA = 'temporary-data';
 
     /** @var CDETemporaryDataStorage */
     private static $instance;
-
-    /** @var array */
-    private $dataStorage;
-
-    /** @var int */
-    private $dataStorageTimeout;
-
-    /**
-     * @param int $dataStorageTimeout
-     */
-    protected function __construct($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS) {
-        $this->dataStorageTimeout = $dataStorageTimeout;
-
-        $this->dataStorage = $this->restoreDataStorage();
-    }
-
-    protected function __clone() {}
 
     /**
      * @param int $dataStorageTimeout
@@ -40,7 +22,7 @@ class CDETemporaryDataStorage {
      */
     public static function getInstance($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS) {
         if (self::$instance === null) {
-            self::$instance = new self($dataStorageTimeout);
+            self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout);
         }
 
         return self::$instance;
@@ -50,7 +32,7 @@ class CDETemporaryDataStorage {
      * @param string $dataKey
      * @param mixed $dataValue
      *
-     * @return CDETemporaryDataStorage
+     * @return $this
      */
     public function write($dataKey, $dataValue) {
         return $this->setDataStorageValue($dataKey, $dataValue);
@@ -71,9 +53,7 @@ class CDETemporaryDataStorage {
      * @return $this
      */
     public function delete($dataKey) {
-        unset($this->dataStorage[$dataKey]);
-
-        return $this->storeDataStorage();
+        return $this->unsetDataStorageValue($dataKey);
     }
 
     /**
@@ -83,69 +63,8 @@ class CDETemporaryDataStorage {
      */
     public function consume($dataKey) {
         $dataValue = $this->read($dataKey);
-
         $this->delete($dataKey);
 
         return $dataValue;
     }
-
-    /**
-     * @param string $dataKey
-     * @param mixed $dataValue
-     *
-     * @return $this
-     */
-    protected function setDataStorageValue($dataKey, $dataValue) {
-        $this->dataStorage[$dataKey] = $dataValue;
-
-        return $this->storeDataStorage();
-    }
-
-    /**
-     * @param string $dataKey
-     *
-     * @return mixed|null
-     */
-    protected function getDataStorageValue($dataKey) {
-        if (!isset($this->dataStorage[$dataKey])) {
-            return null;
-        }
-
-        return $this->dataStorage[$dataKey];
-    }
-
-    /**
-     * @return $this
-     */
-    protected function storeDataStorage() {
-        $encodedDataStorage = \base64_encode(\json_encode($this->dataStorage));
-
-        CDECookieCache::getInstance()->write(
-            self::COOKIE_NAME_TEMPORARY_DATA,
-            $encodedDataStorage,
-            $this->dataStorageTimeout
-        );
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    protected function restoreDataStorage() {
-        $dataStorage = CDECookieCache::getInstance()->read(self::COOKIE_NAME_TEMPORARY_DATA);
-
-        if (empty($dataStorage)) {
-            return [];
-        }
-
-        $dataStorage = \json_decode(\base64_decode($dataStorage), true);
-
-        if (!\is_array($dataStorage)) {
-            return [];
-        }
-
-        return $dataStorage;
-    }
-
 }

@@ -14,6 +14,7 @@ use Ixolit\CDE\Interfaces\ResponseAPI;
  */
 class CDECookieCache {
 
+    const COOKIE_TIMEOUT_SESSION = 0;
     const COOKIE_TIMEOUT_THIRTY_DAYS = 2592000;
 
     /** @var CDECookieCache */
