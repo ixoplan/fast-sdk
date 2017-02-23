@@ -9,94 +9,114 @@ namespace Ixolit\CDE;
  */
 class CDETemporaryStorage {
 
-    /** @var array */
-    private $dataStorage;
+	/** @var CDETemporaryStorage[] */
+//    private static $instances = [];
 
-    /** @var string */
-    private $dataStorageName;
+	/** @var array */
+	private $dataStorage;
 
-    /** @var int */
-    private $dataStorageTimeout;
+	/** @var string */
+	private $dataStorageName;
 
-    /**
-     * @param string $dataStorageName
-     * @param int $dataStorageTimeout
-     */
-    protected function __construct($dataStorageName, $dataStorageTimeout) {
-        $this->dataStorageName = $dataStorageName;
-        $this->dataStorageTimeout = $dataStorageTimeout;
-        $this->dataStorage = $this->restoreDataStorage();
-    }
+	/** @var int */
+	private $dataStorageTimeout;
 
-    protected function __clone() {}
+	/**
+	 * @param string $dataStorageName
+	 * @param int $dataStorageTimeout
+	 */
+	protected function __construct($dataStorageName, $dataStorageTimeout) {
+		$this->dataStorageName = $dataStorageName;
+		$this->dataStorageTimeout = $dataStorageTimeout;
+		$this->dataStorage = $this->restoreDataStorage();
+	}
 
-    /**
-     * @param string $dataKey
-     *
-     * @return $this
-     */
-    protected function unsetDataStorageValue($dataKey) {
-        unset($this->dataStorage[$dataKey]);
+	protected function __clone() {}
 
-        return $this->storeDataStorage();
-    }
+	/**
+	 * @param string $dataStorageName
+	 * @param int $dataStorageTimeout
+	 *
+	 * @return $this
+	 */
+	/*
+	protected static function getInstanceInternal($dataStorageName, $dataStorageTimeout) {
+		if (self::$instances[$dataStorageName] === null) {
+			$class = \get_called_class();
+			self::$instances[$dataStorageName] = new $class($dataStorageName, $dataStorageTimeout);
+		}
 
-    /**
-     * @param string $dataKey
-     * @param mixed $dataValue
-     *
-     * @return $this
-     */
-    protected function setDataStorageValue($dataKey, $dataValue) {
-        $this->dataStorage[$dataKey] = $dataValue;
+		return self::$instances[$dataStorageName];
+	}
+	*/
 
-        return $this->storeDataStorage();
-    }
+	/**
+	 * @param string $dataKey
+	 *
+	 * @return $this
+	 */
+	protected function unsetDataStorageValue($dataKey) {
+		unset($this->dataStorage[$dataKey]);
 
-    /**
-     * @param string $dataKey
-     *
-     * @return mixed|null
-     */
-    protected function getDataStorageValue($dataKey) {
-        if (!isset($this->dataStorage[$dataKey])) {
-            return null;
-        }
+		return $this->storeDataStorage();
+	}
 
-        return $this->dataStorage[$dataKey];
-    }
+	/**
+	 * @param string $dataKey
+	 * @param mixed $dataValue
+	 *
+	 * @return $this
+	 */
+	protected function setDataStorageValue($dataKey, $dataValue) {
+		$this->dataStorage[$dataKey] = $dataValue;
 
-    /**
-     * @return $this
-     */
-    protected function storeDataStorage() {
-        $encodedDataStorage = \base64_encode(\json_encode($this->dataStorage));
+		return $this->storeDataStorage();
+	}
 
-        CDECookieCache::getInstance()->write(
-            $this->dataStorageName,
-            $encodedDataStorage,
-            $this->dataStorageTimeout
-        );
+	/**
+	 * @param string $dataKey
+	 *
+	 * @return mixed|null
+	 */
+	protected function getDataStorageValue($dataKey) {
+		if (!isset($this->dataStorage[$dataKey])) {
+			return null;
+		}
 
-        return $this;
-    }
+		return $this->dataStorage[$dataKey];
+	}
 
-    /**
-     * @return array
-     */
-    protected function restoreDataStorage() {
-        $dataStorage = CDECookieCache::getInstance()->read($this->dataStorageName);
+	/**
+	 * @return $this
+	 */
+	protected function storeDataStorage() {
+		$encodedDataStorage = \base64_encode(\json_encode($this->dataStorage));
 
-        if (empty($dataStorage)) {
-            return [];
-        }
+		CDECookieCache::getInstance()->write(
+			$this->dataStorageName,
+			$encodedDataStorage,
+			$this->dataStorageTimeout
+		);
 
-        $dataStorage = \json_decode(\base64_decode($dataStorage), true);
+		return $this;
+	}
 
-        if (!\is_array($dataStorage)) {
-            return [];
-        }
+	/**
+	 * @return array
+	 */
+	protected function restoreDataStorage() {
+		$dataStorage = CDECookieCache::getInstance()->read($this->dataStorageName);
 
-        return $dataStorage;
-    }
+		if (empty($dataStorage)) {
+			return [];
+		}
+
+		$dataStorage = \json_decode(\base64_decode($dataStorage), true);
+
+		if (!\is_array($dataStorage)) {
+			return [];
+		}
+
+		return $dataStorage;
+	}
 }

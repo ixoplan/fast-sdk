@@ -9,62 +9,62 @@ namespace Ixolit\CDE;
  */
 class CDETemporaryDataStorage extends CDETemporaryStorage {
 
-    const DATA_STORAGE_TIMEOUT_THIRTY_DAYS = CDECookieCache::COOKIE_TIMEOUT_THIRTY_DAYS;
-    const COOKIE_NAME_TEMPORARY_DATA = 'temporary-data';
+	const DATA_STORAGE_TIMEOUT_THIRTY_DAYS = CDECookieCache::COOKIE_TIMEOUT_THIRTY_DAYS;
+	const COOKIE_NAME_TEMPORARY_DATA = 'temporary-data';
 
-    /** @var CDETemporaryDataStorage */
-    private static $instance;
+	/** @var CDETemporaryDataStorage */
+	private static $instance;
 
-    /**
-     * @param int $dataStorageTimeout
-     *
-     * @return $this
-     */
-    public static function getInstance($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS) {
-        if (self::$instance === null) {
-            self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout);
-        }
+	/**
+	 * @param int $dataStorageTimeout
+	 *
+	 * @return $this
+	 */
+	public static function getInstance($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS) {
+		if (self::$instance === null) {
+			self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout);
+		}
 
-        return self::$instance;
-    }
+		return self::$instance;
+	}
 
-    /**
-     * @param string $dataKey
-     * @param mixed $dataValue
-     *
-     * @return $this
-     */
-    public function write($dataKey, $dataValue) {
-        return $this->setDataStorageValue($dataKey, $dataValue);
-    }
+	/**
+	 * @param string $dataKey
+	 * @param mixed $dataValue
+	 *
+	 * @return $this
+	 */
+	public function write($dataKey, $dataValue) {
+		return $this->setDataStorageValue($dataKey, $dataValue);
+	}
 
-    /**
-     * @param string $dataKey
-     *
-     * @return mixed|null
-     */
-    public function read($dataKey) {
-        return $this->getDataStorageValue($dataKey);
-    }
+	/**
+	 * @param string $dataKey
+	 *
+	 * @return mixed|null
+	 */
+	public function read($dataKey) {
+		return $this->getDataStorageValue($dataKey);
+	}
 
-    /**
-     * @param string $dataKey
-     *
-     * @return $this
-     */
-    public function delete($dataKey) {
-        return $this->unsetDataStorageValue($dataKey);
-    }
+	/**
+	 * @param string $dataKey
+	 *
+	 * @return $this
+	 */
+	public function delete($dataKey) {
+		return $this->unsetDataStorageValue($dataKey);
+	}
 
-    /**
-     * @param string $dataKey
-     *
-     * @return mixed|null
-     */
-    public function consume($dataKey) {
-        $dataValue = $this->read($dataKey);
-        $this->delete($dataKey);
+	/**
+	 * @param string $dataKey
+	 *
+	 * @return mixed|null
+	 */
+	public function consume($dataKey) {
+		$dataValue = $this->read($dataKey);
+		$this->delete($dataKey);
 
-        return $dataValue;
-    }
+		return $dataValue;
+	}
 }
