@@ -28,6 +28,23 @@ class CDEFlashMessageAPI extends CDETemporaryStorage {
 	}
 
 	/**
+	 * Find messages by pattern
+	 *
+	 * @param string|null $pattern Empty to get all messages, regular expression without delimiters, put between /^...$/ automatically
+	 *
+	 * @return FlashMessage[]
+	 */
+	public function getMessages($pattern = null) {
+		$result = [];
+		foreach ($this->getDataStorage() as $key => $value) {
+			if (empty($pattern) || preg_match('/^'.$pattern.'$/', $key)) {
+				$result[$key] = $this->getMessage($key);
+			}
+		}
+		return $result;
+	}
+
+	/**
 	 * Find a message by name
 	 *
 	 * @param string $name
@@ -85,22 +102,22 @@ class CDEFlashMessageAPI extends CDETemporaryStorage {
 
 			// evaluate filter item
 			if (is_string($key)) {
-				$name = $key;
+				$pattern = $key;
 				if (is_array($value))
 					$data = $value;
 				elseif (is_string($value))
 					$data = ['text' => $value];
 				else
-					return null; // TODO: ?
+					throw new \InvalidArgumentException();
 			}
 			elseif (is_string($value)) {
-				$name = $value;
+				$pattern = $value;
 			}
 			else
-				return null; // TODO: ?
+				throw new \InvalidArgumentException();
 
-			// find message, merge data
-			if ($msg = $this->getMessage($name)) {
+			// find messages, merge data
+			foreach ($this->getMessages($pattern) as $name => $msg) {
 
 				$data['type'] = $msg->getType();
 

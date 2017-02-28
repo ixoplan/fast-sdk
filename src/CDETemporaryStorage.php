@@ -51,6 +51,13 @@ class CDETemporaryStorage {
 	*/
 
 	/**
+	 * @return array
+	 */
+	protected function getDataStorage() {
+		return $this->dataStorage;
+	}
+
+	/**
 	 * @param string $dataKey
 	 *
 	 * @return $this
