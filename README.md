@@ -1,4 +1,4 @@
-# dislo-cde-sdk
+# cde-sdk
 PHP SDK for the CDE APIs
 
 ## Installation
@@ -12,5 +12,3 @@ Simply add ixolit/cde-sdk to your composer.json, e.g:
             "ixolit/cde-sdk": "*"
         }
     }
-
-
