@@ -2,6 +2,7 @@
 
 namespace Ixolit\CDE\Form;
 
+use Ixolit\CDE\Validator\EmailValidator;
 use Ixolit\CDE\Validator\SingleLineValidator;
 
 /**
@@ -12,6 +13,7 @@ class EmailField extends TextField {
 		parent::__construct($name);
 
 		$this->addValidator(new SingleLineValidator());
+		$this->addValidator(new EmailValidator());
 	}
 
 	public function getType() {
