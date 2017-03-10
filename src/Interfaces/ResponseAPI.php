@@ -65,8 +65,12 @@ interface ResponseAPI {
 	 * @param string $name
 	 * @param string $value
 	 * @param int    $maxAge in seconds. 0 means session cookie.
+	 * @param string $path
+	 * @param string $domain
+	 * @param bool   $secure
+	 * @param bool   $httponly
 	 *
 	 * @throws CookieSetFailedException
 	 */
-	public function setCookie($name, $value, $maxAge = 0);
+	public function setCookie($name, $value, $maxAge = 0, $path = null, $domain = null, $secure = false, $httponly = false);
 }

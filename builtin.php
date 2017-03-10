@@ -556,3 +556,19 @@ function setHeader($key, $value) {
  */
 function renderFopXml($baseFolder, $xslPath, $xmlSource, $meta) {
 }
+
+/**
+ * Set cookie with advanced features. Returns true on success, false otherwise.
+ *
+ * @param string $name
+ * @param string $value
+ * @param int $expire
+ * @param string $path
+ * @param string $domain
+ * @param bool $secure
+ * @param bool $httponly
+ *
+ * @return bool
+ */
+function setCookieAdvanced($name, $value, $expire = null, $path = null, $domain = null, $secure = null, $httponly = null) {
+}

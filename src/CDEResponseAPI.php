@@ -54,15 +54,23 @@ class CDEResponseAPI implements ResponseAPI {
 		}
 	}
 
+	// TODO: always use setCookieAdvanced? but setCookie implementation defaults to domain=.<vhost> ...
+	private function setCookieInternal($name, $value, $maxAge = 0, $path = null, $domain = null, $secure = false, $httponly = false) {
+		return
+			(isset($path) || isset($domain) || isset($secure) || isset($httponly)) ?
+			\setCookieAdvanced($name, $value, $maxAge, $path, $domain, $secure, $httponly) :
+			\setCookie($name, $value, $maxAge);
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setCookie($name, $value, $maxAge = 0) {
+	public function setCookie($name, $value, $maxAge = 0, $path = null, $domain = null, $secure = false, $httponly = false) {
 		if (!\function_exists('setCookie')) {
 			throw new CDEFeatureNotSupportedException('setCookie');
 		}
-		if (!\setCookie($name, $value, $maxAge)) {
-			throw new CookieSetFailedException($name, $value, $maxAge);
+		if (!$this->setCookieInternal($name, $value, $maxAge, $path, $domain, $secure, $httponly)) {
+			throw new CookieSetFailedException($name, $value, $maxAge, $path, $domain, $secure, $httponly);
 		}
 	}
 
