@@ -55,10 +55,10 @@ class CDECookieCache {
 	 *
 	 * @return $this
 	 */
-	public function write($cookieName, $value, $cookieTimeout = self::COOKIE_TIMEOUT_THIRTY_DAYS) {
+	public function write($cookieName, $value, $cookieTimeout = self::COOKIE_TIMEOUT_THIRTY_DAYS, $path = null, $domain = null, $secure = false, $httponly = false) {
 		return $this
 			->setCookieValue($cookieName, $value)
-			->storeCookieData($cookieName, $value, $cookieTimeout);
+			->storeCookieData($cookieName, $value, $cookieTimeout, $path, $domain, $secure, $httponly);
 	}
 
 	/**
@@ -158,8 +158,8 @@ class CDECookieCache {
 	 *
 	 * @return $this
 	 */
-	protected function storeCookieData($cookieName, $cookieValue, $cookieTimeout) {
-		$this->getResponseApi()->setCookie($cookieName, $cookieValue, $cookieTimeout);
+	protected function storeCookieData($cookieName, $cookieValue, $cookieTimeout, $path = null, $domain = null, $secure = false, $httponly = false) {
+		$this->getResponseApi()->setCookie($cookieName, $cookieValue, $cookieTimeout, $path, $domain, $secure, $httponly);
 
 		return $this;
 	}
