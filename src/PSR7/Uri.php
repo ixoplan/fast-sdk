@@ -44,12 +44,13 @@ class Uri implements UriInterface {
 	 */
 	private $fragment;
 
-	public function __construct($scheme, $host, $port, $path, $query) {
+	public function __construct($scheme, $host, $port, $path, $query, $fragment) {
 		$this->scheme = $scheme;
 		$this->host = $host;
 		$this->port = $port;
 		$this->path = $path;
 		$this->query = $query;
+		$this->fragment = $fragment;
 	}
 
 	/**
@@ -126,7 +127,8 @@ class Uri implements UriInterface {
 			$this->getHost(),
 			$this->getPort(),
 			$this->getPath(),
-			$this->getQuery()
+			$this->getQuery(),
+			$this->getFragment()
 		);
 	}
 
@@ -146,7 +148,8 @@ class Uri implements UriInterface {
 			$host,
 			$this->getPort(),
 			$this->getPath(),
-			$this->getQuery()
+			$this->getQuery(),
+			$this->getFragment()
 		);
 	}
 
@@ -159,7 +162,8 @@ class Uri implements UriInterface {
 			$this->getHost(),
 			$port,
 			$this->getPath(),
-			$this->getQuery()
+			$this->getQuery(),
+			$this->getFragment()
 		);
 	}
 
@@ -172,7 +176,8 @@ class Uri implements UriInterface {
 			$this->getHost(),
 			$this->getPort(),
 			$path,
-			$this->getQuery()
+			$this->getQuery(),
+			$this->getFragment()
 		);
 	}
 
@@ -185,7 +190,8 @@ class Uri implements UriInterface {
 			$this->getHost(),
 			$this->getPort(),
 			$this->getPath(),
-			$query
+			$query,
+			$this->getFragment()
 		);
 	}
 
@@ -193,7 +199,14 @@ class Uri implements UriInterface {
 	 * {@inheritdoc}
 	 */
 	public function withFragment($fragment) {
-		throw new CDEFeatureNotSupportedException('URI fragment');
+		return new Uri(
+			$this->getScheme(),
+			$this->getHost(),
+			$this->getPort(),
+			$this->getPath(),
+			$this->getQuery(),
+			$fragment
+		);
 	}
 
 	/**
