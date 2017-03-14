@@ -128,8 +128,12 @@ class CDEFlashMessageAPI extends CDETemporaryStorage {
 					}
 					catch (MetadataNotAvailableException $e) {
 						$text = $msg->getText();
-						if (isset($text))
+						if (isset($text)) {
 							$data['text'] = $text;
+						}
+						else {
+							$data['text'] = $name;
+						}
 					}
 				}
 
