@@ -52,6 +52,10 @@ class CDECookieCache {
 	 * @param string $cookieName
 	 * @param string $value
 	 * @param int    $cookieTimeout
+	 * @param string $path
+	 * @param string $domain
+	 * @param bool   $secure
+	 * @param bool   $httponly
 	 *
 	 * @return $this
 	 */
@@ -83,20 +87,26 @@ class CDECookieCache {
 	/**
 	 * @param string $cookieName
 	 * @param int    $cookieTimeout
+	 * @param string $path
+	 * @param string $domain
+	 * @param bool   $secure
+	 * @param bool   $httponly
 	 *
 	 * @return $this
 	 */
-	public function renew($cookieName, $cookieTimeout = self::COOKIE_TIMEOUT_THIRTY_DAYS) {
-		return $this->write($cookieName, $this->read($cookieName), $cookieTimeout);
+	public function renew($cookieName, $cookieTimeout = self::COOKIE_TIMEOUT_THIRTY_DAYS, $path = null, $domain = null, $secure = false, $httponly = false) {
+		return $this->write($cookieName, $this->read($cookieName), $cookieTimeout, $path, $domain, $secure, $httponly);
 	}
 
 	/**
 	 * @param string $cookieName
+	 * @param string $path
+	 * @param string $domain
 	 *
 	 * @return $this
 	 */
-	public function delete($cookieName) {
-		return $this->write($cookieName, null, -1);
+	public function delete($cookieName, $path = null, $domain = null) {
+		return $this->write($cookieName, null, -1, $path, $domain);
 	}
 
 	/**
@@ -155,6 +165,10 @@ class CDECookieCache {
 	 * @param string $cookieName
 	 * @param string $cookieValue
 	 * @param int    $cookieTimeout
+	 * @param string $path
+	 * @param string $domain
+	 * @param bool   $secure
+	 * @param bool   $httponly
 	 *
 	 * @return $this
 	 */
