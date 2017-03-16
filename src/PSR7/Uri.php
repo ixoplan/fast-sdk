@@ -44,7 +44,7 @@ class Uri implements UriInterface {
 	 */
 	private $fragment;
 
-	public function __construct($scheme, $host, $port, $path, $query, $fragment) {
+	public function __construct($scheme, $host, $port, $path, $query = null, $fragment = null) {
 		$this->scheme = $scheme;
 		$this->host = $host;
 		$this->port = $port;
