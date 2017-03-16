@@ -71,17 +71,13 @@ class CDECookieCache {
 	 * @return string|null
 	 */
 	public function read($cookieName) {
-		$cookieValue = $this->getCookieValue($cookieName);
 
-		if ($cookieValue === null) {
-			$cookieValue = $this->restoreCookieData($cookieName);
-
-			if ($cookieValue) {
-				$this->setCookieValue($cookieName, $cookieValue);
-			}
+		// fetch from request on first usage
+		if (!$this->hasCookieValue($cookieName)) {
+			$this->setCookieValue($cookieName, $this->restoreCookieData($cookieName));
 		}
 
-		return $cookieValue;
+		return $this->getCookieValue($cookieName);
 	}
 
 	/**
@@ -159,6 +155,16 @@ class CDECookieCache {
 		}
 
 		return $this->cookieCache[$cookieName];
+	}
+
+
+	/**
+	 * @param string $cookieName
+	 *
+	 * @return bool
+	 */
+	protected function hasCookieValue($cookieName) {
+		return array_key_exists($cookieName, $this->cookieCache);
 	}
 
 	/**
