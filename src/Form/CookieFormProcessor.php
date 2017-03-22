@@ -2,6 +2,7 @@
 
 namespace Ixolit\CDE\Form;
 
+use Ixolit\CDE\CDECookieCache;
 use Ixolit\CDE\Interfaces\FormProcessorInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -46,29 +47,33 @@ class CookieFormProcessor implements FormProcessorInterface {
 	 * {@inheritdoc}
 	 */
 	public function restore(Form $form, ServerRequestInterface $request) {
-		$cookies = $request->getCookieParams();
+		$data = CDECookieCache::getInstance()->consume($form->getKey() . '-form');
 
-		if (\array_key_exists($form->getKey() . '-form', $cookies)) {
+		if (!empty($data)) {
 			try {
-				$data = \json_decode(\base64_decode($cookies[$form->getKey() . '-form']), true);
+				$data = \json_decode(\base64_decode($data), true);
 
-				foreach ($form->getFields() as $field) {
-					if (\array_key_exists($field->getName(), $data)) {
-						if (isset($data[$field->getName()]['value'])) {
-							$field->setValue($data[$field->getName()]['value']);
+				if (\is_array($data)) {
+					foreach ($form->getFields() as $field) {
+						if (\array_key_exists($field->getName(), $data)) {
+							if (isset($data[$field->getName()]['value'])) {
+								$field->setValue($data[$field->getName()]['value']);
+							}
+
+							$field->setErrors($data[$field->getName()]['errors']);
 						}
-						$field->setErrors($data[$field->getName()]['errors']);
 					}
-				}
-				if (isset($data['_errors'])) {
-					$form->setErrors($data['_errors']);
+
+					if (isset($data['_errors'])) {
+						$form->setErrors($data['_errors']);
+					}
+
+					return true;
 				}
 			} catch (\Exception $e) {
-			} catch (\Throwable $e) {
 			}
-			return true;
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 }
