@@ -9,6 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
  * This class was ported from the Piccolo form library with permission.
  */
 abstract class Form {
+
+	const FORM_METHOD_GET = 'GET';
+	const FORM_METHOD_POST = 'POST';
+
 	/**
 	 * @var CSRFTokenProvider
 	 */
@@ -34,12 +38,12 @@ abstract class Form {
 	 * @param string $method
 	 * @param CSRFTokenProvider $csrfTokenProvider
 	 */
-	public function __construct($action = '', $method = 'POST', CSRFTokenProvider $csrfTokenProvider) {
+	public function __construct($action = '', $method = self::FORM_METHOD_POST, CSRFTokenProvider $csrfTokenProvider) {
 		$this->csrfTokenProvider = $csrfTokenProvider;
 		$this->action = $action;
 		$this->method = $method;
 
-		if ($this->method == 'POST') {
+		if ($this->method == self::FORM_METHOD_POST) {
 			$csrfField = new HiddenField('csrf-token');
 			$csrfField->addValidator(new CSRFTokenValidator($csrfTokenProvider->getCSRFToken()));
 			$csrfField->setValue($csrfTokenProvider->getCSRFToken());
