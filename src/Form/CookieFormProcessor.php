@@ -27,20 +27,18 @@ class CookieFormProcessor implements FormProcessorInterface {
 
 		$dataset['_errors'] = $form->getErrors();
 
-		return $response->withAddedHeader(
-			'Set-Cookie',
-			\urlencode($form->getKey() . '-form') . '=' .
-			\urlencode(\base64_encode(\json_encode($dataset))));
+		CDECookieCache::getInstance()->write($form->getKey() . '-form', \base64_encode(\json_encode($dataset)));
+
+		return $response;
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function cleanup(Form $form, ResponseInterface $response) {
-		return $response->withAddedHeader(
-			'Set-Cookie',
-			\urlencode($form->getKey() . '-form') . '=; expires=' . \date('r', 0)
-		);
+		CDECookieCache::getInstance()->delete($form->getKey() . '-form');
+
+		return $response;
 	}
 
 	/**
