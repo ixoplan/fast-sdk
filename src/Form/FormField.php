@@ -96,9 +96,13 @@ abstract class FormField {
 
 	/**
 	 * @param FormValidator[] $validators
+	 *
+	 * @return $this
 	 */
 	public function setValidators(array $validators) {
 		$this->validators = $validators;
+
+		return $this;
 	}
 
 	/**
@@ -110,9 +114,13 @@ abstract class FormField {
 
 	/**
 	 * @param string $label
+	 *
+	 * @return $this
 	 */
 	public function setLabel($label) {
 		$this->label = $label;
+
+		return $this;
 	}
 
 	/**
@@ -173,6 +181,8 @@ abstract class FormField {
 	 * Set this form field as required.
 	 *
 	 * @param boolean $required
+	 *
+	 * @return $this
 	 */
 	public function setRequired($required) {
 		$validator = new RequiredValidator();
@@ -183,24 +193,34 @@ abstract class FormField {
 		}
 
 		$this->required = $required;
+
+		return $this;
 	}
 
 	/**
 	 * Enable this field to be in focus by default.
 	 *
 	 * @param boolean $autofocus
+	 *
+	 * @return $this
 	 */
 	public function setAutofocus($autofocus) {
 		$this->autofocus = $autofocus;
+
+		return $this;
 	}
 
 	/**
 	 * Set the text that is displayed until the field is filled.
 	 *
 	 * @param string $placeholder
+	 *
+	 * @return $this
 	 */
 	public function setPlaceholder($placeholder) {
 		$this->placeholder = $placeholder;
+
+		return $this;
 	}
 
 	/**
@@ -226,16 +246,24 @@ abstract class FormField {
 
 	/**
 	 * @param string $value
+	 *
+	 * @return $this
 	 */
 	public function setValue($value) {
 		$this->value = $value;
+
+		return $this;
 	}
 
 	/**
 	 * @param array $errors
+	 *
+	 * @return $this
 	 */
 	public function setErrors($errors) {
 		$this->errors = $errors;
+
+		return $this;
 	}
 
 	/**

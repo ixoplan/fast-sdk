@@ -10,6 +10,9 @@ use Ixolit\CDE\Validator\SingleLineValidator;
  * This class was ported from the Piccolo form library with permission.
  */
 class TextField extends FormField {
+
+	const TYPE_TEXT = 'text';
+
 	private $pattern;
 	private $patternValidator;
 	private $maxLength = null;
@@ -48,6 +51,6 @@ class TextField extends FormField {
 	}
 
 	public function getType() {
-		return 'text';
+		return self::TYPE_TEXT;
 	}
 }

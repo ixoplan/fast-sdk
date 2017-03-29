@@ -5,6 +5,9 @@ namespace Ixolit\CDE\Form;
 use Ixolit\CDE\Form\Localization\CountryNameProvider;
 
 class CountrySelector extends DropDownField {
+
+	const TYPE_COUNTRY = 'country';
+
 	/**
 	 * @var CountryNameProvider
 	 */
@@ -306,6 +309,6 @@ class CountrySelector extends DropDownField {
 	}
 
 	public function getType() {
-		return 'country';
+		return self::TYPE_COUNTRY;
 	}
 }

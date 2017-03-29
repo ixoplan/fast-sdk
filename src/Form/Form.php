@@ -13,6 +13,9 @@ abstract class Form {
 	const FORM_METHOD_GET = 'GET';
 	const FORM_METHOD_POST = 'POST';
 
+	const FORM_FIELD_CSRF_TOKEN = 'csrf-token';
+	const FORM_FIELD_FORM = '_form';
+
 	/**
 	 * @var CSRFTokenProvider
 	 */
@@ -44,14 +47,14 @@ abstract class Form {
 		$this->method = $method;
 
 		if ($this->method == self::FORM_METHOD_POST) {
-			$csrfField = new HiddenField('csrf-token');
+			$csrfField = new HiddenField(self::FORM_FIELD_CSRF_TOKEN);
 			$csrfField->addValidator(new CSRFTokenValidator($csrfTokenProvider->getCSRFToken()));
 			$csrfField->setValue($csrfTokenProvider->getCSRFToken());
 			//Don't transfer the value back to the form.
 			$csrfField->setMasked(true);
 			$this->addField($csrfField);
 		}
-		$formField = new HiddenField('_form');
+		$formField = new HiddenField(self::FORM_FIELD_FORM);
 		$formField->setValue($this->getKey());
 		$formField->setMasked(true);
 		$this->addField($formField);
