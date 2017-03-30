@@ -22,8 +22,8 @@ class CDEPagesAPI implements PagesAPI {
 		$pages = \getAllPages($vhost, $lang, $layout, $scheme);
 
 		$result = [];
-		foreach ($pages as $page) {
-			$result[] = new Page($page->pageUrl, $page->pagePath);
+		foreach ($pages as $id => $page) {
+			$result[$id] = new Page($page->pageUrl, $page->pagePath);
 		}
 
 		return $result;

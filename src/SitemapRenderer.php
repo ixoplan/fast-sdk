@@ -35,7 +35,7 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 		$output .= '<?xml version="1.0" encoding="UTF-8"?>';
 		$output .= '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
 			'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9' .
-				'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' .
+			' http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' .
 			'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
 		if (!$vhost) {
@@ -69,7 +69,7 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 			$output  .= '<url>';
 			$output  .= '<loc>' . \xml($page->getPageUrl()) . '</loc>';
 			$output  .= '<changefreq>daily</changefreq>';
-			$slashes  = \substr_count($page->getPagePath(), '/');
+			$slashes  = \substr_count($page->getPageUrl(), '/');
 			$priority = \round(1 - ($slashes - 2)/10, 2);
 			$output  .= '<priority>' . \xml($priority) . '</priority>';
 			$output  .= '</url>';
