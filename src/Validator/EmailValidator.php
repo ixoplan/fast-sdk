@@ -26,17 +26,13 @@ class EmailValidator implements FormValidator {
 			return true;
 		}
 
-		if (!\preg_match('/@/', $value)) {
+		if (!\preg_match('/^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,64}$/', $value)) {
 			return false;
 		}
 
 		list($local_part, $domain) = \explode('@', $value, 2);
 
 		if (!$local_part || !$domain) {
-			return false;
-		}
-
-		if (!\preg_match('/^[a-zA-Z0-9\-_\+\.\x{007F}-\x{FFFF}]+$/u', $local_part)) {
 			return false;
 		}
 
