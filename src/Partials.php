@@ -8,6 +8,7 @@ use Ixolit\CDE\Exceptions\PartialNotFoundException;
  * Helper class for accessing partials
  */
 class Partials {
+
 	/**
 	 * Try to load a partial from the layout, or if it doesn't exist, from the vhost.
 	 *
@@ -23,10 +24,9 @@ class Partials {
 		}
 		$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.php';
 
-		\extract($data);
-
 		foreach ($tryFiles as $tryFile) {
 			if (\file_exists($tryFile)) {
+				\extract($data);
 				include($tryFile);
 				return;
 			}
