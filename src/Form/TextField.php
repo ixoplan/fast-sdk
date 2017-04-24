@@ -35,6 +35,8 @@ class TextField extends FormField {
 		} else {
 			$this->maxLengthValidator = null;
 		}
+
+		return $this;
 	}
 
 	public function setPattern($pattern) {

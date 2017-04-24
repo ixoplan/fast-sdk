@@ -284,6 +284,8 @@ class CountrySelector extends DropDownField {
 	public function setValues($values) {
 		parent::setValues($values);
 		$this->rebuildLocalization();
+
+		return $this;
 	}
 
 	/**

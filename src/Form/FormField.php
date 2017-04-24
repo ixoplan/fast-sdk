@@ -161,9 +161,13 @@ abstract class FormField {
 	 * Add a validator to this field.
 	 *
 	 * @param FormValidator $validator
+	 *
+	 * @return $this
 	 */
 	public function addValidator(FormValidator $validator) {
 		$this->validators[$validator->getKey()] = $validator;
+
+		return $this;
 	}
 
 	/**

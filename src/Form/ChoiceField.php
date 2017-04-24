@@ -16,6 +16,8 @@ abstract class ChoiceField extends FormField {
 
 	/**
 	 * @param array $values
+	 *
+	 * @return $this
 	 */
 	public function setValues($values) {
 		$this->values = $values;
@@ -24,6 +26,8 @@ abstract class ChoiceField extends FormField {
 		}
 		$this->valuesValidator = new InArrayValidator(\array_keys($values));
 		$this->addValidator($this->valuesValidator);
+
+		return $this;
 	}
 
 	/**

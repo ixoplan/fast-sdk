@@ -60,7 +60,7 @@ class OutputBuffer {
      * @return string
      */
     public function renderOutput($outputIdentifier) {
-        return isset($this->output[$outputIdentifier]) ? \implode('\\n', $this->output[$outputIdentifier]) : '';
+        return isset($this->output[$outputIdentifier]) ? \implode('', $this->output[$outputIdentifier]) : '';
     }
 
 }
