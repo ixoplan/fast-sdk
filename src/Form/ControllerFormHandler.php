@@ -11,6 +11,13 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 
+/**
+ * Class ControllerFormHandler
+ *
+ * @package Ixolit\CDE\Form
+ *
+ * @deprecated Use CDEController instead
+ */
 abstract class ControllerFormHandler {
 	//region Abstract functions
 	/**

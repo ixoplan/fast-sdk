@@ -29,6 +29,17 @@ abstract class Form {
 	 */
 	private $method;
 
+	/** @var string */
+	private $errorRedirectPath;
+
+	/** @var array */
+	private $errorRedirectParameters;
+
+	/**
+	 * @var FormField[]
+	 */
+	private $fields = [];
+
 	/**
 	 * Generic, form errors.
 	 *
@@ -37,14 +48,23 @@ abstract class Form {
 	private $errors = [];
 
 	/**
-	 * @param string $action
-	 * @param string $method
+	 * @param string            $action
+	 * @param string            $method
 	 * @param CSRFTokenProvider $csrfTokenProvider
+	 * @param string            $errorRedirectPath
+	 * @param array             $errorRedirectParameters
 	 */
-	public function __construct($action = '', $method = self::FORM_METHOD_POST, CSRFTokenProvider $csrfTokenProvider) {
+	public function __construct($action = '',
+								$method = self::FORM_METHOD_POST,
+								CSRFTokenProvider $csrfTokenProvider,
+								$errorRedirectPath = '',
+								array $errorRedirectParameters = []
+	) {
 		$this->csrfTokenProvider = $csrfTokenProvider;
 		$this->action = $action;
 		$this->method = $method;
+		$this->errorRedirectPath = $errorRedirectPath;
+		$this->errorRedirectParameters = $errorRedirectParameters;
 
 		if ($this->method == self::FORM_METHOD_POST) {
 			$csrfField = new HiddenField(self::FORM_FIELD_CSRF_TOKEN);
@@ -61,11 +81,6 @@ abstract class Form {
 	}
 
 	/**
-	 * @var FormField[]
-	 */
-	private $fields = [];
-
-	/**
 	 * Return a unique key for this form.
 	 *
 	 * @return string
@@ -73,20 +88,67 @@ abstract class Form {
 	abstract public function getKey();
 
 	/**
-	 * Validate the form and return a list of error codes.
-	 *
-	 * @return array
+	 * Return the form-specific errors. Does not return the field errors.
 	 */
-	public function validate() {
-		$errors = [];
-		foreach ($this->fields as $field) {
-			$errors[$field->getName()] = $field->validate();
-		}
-		return $errors;
+	public function getErrors() {
+		return $this->errors;
 	}
 
-	protected function addField(FormField $field) {
-		$this->fields[$field->getName()] = $field;
+	/**
+	 * @param string[] $errors
+	 */
+	public function setErrors($errors) {
+		$this->errors = $errors;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAction() {
+		return $this->action;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMethod() {
+		return $this->method;
+	}
+
+	/**
+	 * @param string $errorRedirectPath
+	 *
+	 * @return $this
+	 */
+	public function setErrorRedirectPath($errorRedirectPath) {
+		$this->errorRedirectPath = $errorRedirectPath;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getErrorRedirectPath() {
+		return $this->errorRedirectPath;
+	}
+
+	/**
+	 * @param array $errorRedirectParameters
+	 *
+	 * @return $this
+	 */
+	public function setErrorRedirectParameters(array $errorRedirectParameters) {
+		$this->errorRedirectParameters = $errorRedirectParameters;
+
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getErrorRedirectParameters() {
+		return $this->errorRedirectParameters;
 	}
 
 	/**
@@ -94,6 +156,32 @@ abstract class Form {
 	 */
 	public function getFields() {
 		return $this->fields;
+	}
+
+	/**
+	 * @param FormField $field
+	 *
+	 * @return $this
+	 */
+	protected function addField(FormField $field) {
+		$this->fields[$field->getName()] = $field;
+
+		return $this;
+	}
+
+	/**
+	 * Validate the form and return a list of error codes.
+	 *
+	 * @return array
+	 *
+	 * @deprecated
+	 */
+	public function validate() {
+		$errors = [];
+		foreach ($this->fields as $field) {
+			$errors[$field->getName()] = $field->validate();
+		}
+		return $errors;
 	}
 
 	/**
@@ -150,30 +238,26 @@ abstract class Form {
 	}
 
 	/**
-	 * Return the form-specific errors. Does not return the field errors.
+	 * @param array $requestParameters
+	 *
+	 * @return bool
 	 */
-	public function getErrors() {
-		return $this->errors;
+	public function isFormPost(array $requestParameters) {;
+		return (
+			empty($requestParameters[Form::FORM_FIELD_FORM])
+			|| $this->getKey() != $requestParameters[Form::FORM_FIELD_FORM]
+		);
 	}
 
 	/**
-	 * @param string[] $errors
+	 * @param ServerRequestInterface $request
+	 *
+	 * @return bool
 	 */
-	public function setErrors($errors) {
-		$this->errors = $errors;
+	public function hasValidationErrors(ServerRequestInterface $request) {
+		$errors = $this->setFromRequest($request);
+
+		return \count($errors);
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getAction() {
-		return $this->action;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getMethod() {
-		return $this->method;
-	}
 }

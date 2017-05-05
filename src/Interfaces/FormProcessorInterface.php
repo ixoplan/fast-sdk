@@ -14,8 +14,19 @@ interface FormProcessorInterface {
 	 * @param ResponseInterface $response
 	 *
 	 * @return ResponseInterface
+	 *
+	 * @deprecated use FormProcessorInterface::storeForm instead
 	 */
 	public function store(Form $form, ResponseInterface $response);
+
+	/**
+	 * Store the form request data.
+	 *
+	 * @param Form $form
+	 *
+	 * @return $this
+	 */
+	public function storeForm(Form $form);
 
 	/**
 	 * Restores the form from storage and returns if the restore process was successful.
@@ -34,6 +45,18 @@ interface FormProcessorInterface {
 	 * @param ResponseInterface $response
 	 *
 	 * @return ResponseInterface
+	 *
+	 * @deprecated use FormProcessorInterface::cleanupForm instead
 	 */
 	public function cleanup(Form $form, ResponseInterface $response);
+
+	/**
+	 * Cleanup the form from storage.
+	 *
+	 * @param Form $form
+	 *
+	 * @return $this
+	 */
+	public function cleanupForm(Form $form);
+
 }
