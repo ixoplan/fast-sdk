@@ -3,6 +3,8 @@
 namespace Ixolit\CDE\Controller;
 
 
+use Ixolit\CDE\CDE;
+use Ixolit\CDE\Form\CookieFormProcessor;
 use Ixolit\CDE\Form\Form;
 use Ixolit\CDE\Interfaces\FormProcessorInterface;
 use Ixolit\CDE\Interfaces\RequestAPI;
@@ -16,36 +18,54 @@ use Psr\Http\Message\UriInterface;
  */
 class CDEController {
 
+    /** @var FormProcessorInterface */
+    private $formProcessor;
+
     /** @var RequestAPI */
     private $requestApi;
 
     /** @var ResponseAPI */
     private $responseApi;
 
-    /** @var FormProcessorInterface */
-    private $formProcessor;
-
     /** @var string */
     private $language;
 
     /**
-     * @param RequestAPI             $requestApi
-     * @param ResponseAPI            $responseApi
-     * @param FormProcessorInterface $formProcessor
+     * CDEController constructor.
+     *
+     * @param FormProcessorInterface|null $formProcessor
+     * @param RequestAPI|null             $requestApi
+     * @param ResponseAPI|null            $responseApi
      */
-    public function __construct(RequestAPI $requestApi,
-                                ResponseAPI $responseApi,
-                                FormProcessorInterface $formProcessor
+    public function __construct(FormProcessorInterface $formProcessor = null,
+                                RequestAPI $requestApi = null,
+                                ResponseAPI $responseApi = null
     ) {
+        $this->formProcessor = $formProcessor;
         $this->requestApi = $requestApi;
         $this->responseApi = $responseApi;
-        $this->formProcessor = $formProcessor;
+    }
+
+    /**
+     * @return FormProcessorInterface
+     */
+    protected function getFormProcessor() {
+        if (!isset($this->formProcessor)) {
+            //default form processor
+            $this->formProcessor = new CookieFormProcessor();
+        }
+        return $this->formProcessor;
     }
 
     /**
      * @return RequestAPI
      */
     protected function getRequestApi() {
+        if (!isset($this->requestApi)) {
+            //default request api
+            $this->requestApi = CDE::getRequestAPI();
+        }
+
         return $this->requestApi;
     }
 
@@ -53,14 +73,12 @@ class CDEController {
      * @return ResponseAPI
      */
     protected function getResponseApi() {
-        return $this->responseApi;
-    }
+        if (!isset($this->responseApi)) {
+            //default response api
+            $this->responseApi = CDE::getResponseAPI();
+        }
 
-    /**
-     * @return FormProcessorInterface
-     */
-    protected function getFormProcessor() {
-        return $this->formProcessor;
+        return $this->responseApi;
     }
 
     /**
