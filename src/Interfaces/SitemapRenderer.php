@@ -12,8 +12,9 @@ interface SitemapRenderer {
 	 *
 	 * @param null|string $vhost defaults to current effective vhost
 	 * @param array       $languages defaults to all available if empty
+	 * @param array       $excludePatterns regular expressions matched against the page ID excluding any matching
 	 *
 	 * @return string
 	 */
-	function render($vhost = null, $languages = []);
+	function render($vhost = null, $languages = [], $excludePatterns = []);
 }
