@@ -25,7 +25,7 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 	/**
 	 * Renders a sitemap.xml file for the given vhost. Always uses the default layout.
 	 *
-	 * @param null|string $vhost defaults to current vhost
+	 * @param null|string $vhost defaults to current effective vhost
 	 * @param array       $languages defaults to all available if empty
 	 *
 	 * @return string
@@ -33,10 +33,6 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 	function render($vhost = null, $languages = []) {
 		$output = '';
 		$output .= '<?xml version="1.0" encoding="UTF-8"?>';
-
-		if (!$vhost) {
-			$vhost = $this->requestApi->getVhost();
-		}
 		$output .= '<urlset'.
 			' xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'.
 			' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' .
