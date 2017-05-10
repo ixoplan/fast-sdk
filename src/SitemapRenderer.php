@@ -67,8 +67,8 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 			$output  .= '<url>';
 			$output  .= '<loc>' . \xml($page->getPageUrl()) . '</loc>';
 			$output  .= '<changefreq>daily</changefreq>';
-			$slashes  = \substr_count($page->getPageUrl(), '/');
-			$priority = \round(1 - ($slashes - 2)/10, 2);
+			$level    = \substr_count($page->getPagePath(), '/');
+			$priority = \round(1 - \min($level - 1, 9)/10, 2);
 			$output  .= '<priority>' . \xml($priority) . '</priority>';
 			$output  .= '</url>';
 		}
