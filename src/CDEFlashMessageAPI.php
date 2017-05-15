@@ -98,15 +98,15 @@ class CDEFlashMessageAPI extends CDETemporaryStorage {
 
 		foreach ($filter as $key => $value) {
 
-			$data = [];
+			$init = [];
 
 			// evaluate filter item
 			if (is_string($key)) {
 				$pattern = $key;
 				if (is_array($value))
-					$data = $value;
+					$init = $value;
 				elseif (is_string($value))
-					$data = ['text' => $value];
+					$init = ['text' => $value];
 				else
 					throw new \InvalidArgumentException();
 			}
@@ -119,6 +119,7 @@ class CDEFlashMessageAPI extends CDETemporaryStorage {
 			// find messages, merge data
 			foreach ($this->getMessages($pattern) as $name => $msg) {
 
+				$data = $init;
 				$data['type'] = $msg->getType();
 
 				// precedence: arguments ($filter), translation ($meta), default ($msg)
