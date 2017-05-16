@@ -2,6 +2,7 @@
 
 namespace Ixolit\CDE\Interfaces;
 
+use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\WorkingObjects\Page;
 
 /**
@@ -46,6 +47,8 @@ interface PagesAPI {
 	 * @param string|null $layout
 	 *
 	 * @return string
+	 *
+	 * @throws MetadataNotAvailableException
 	 */
 	public function getMetadata($meta, $lang = null, $pagePath = null, $layout = null);
 
@@ -55,6 +58,8 @@ interface PagesAPI {
 	 * @param string|null $layout
 	 *
 	 * @return string[]
+	 *
+	 * @throws MetadataNotAvailableException
 	 */
 	public function getAllMetadata($lang = null, $pagePath = null, $layout = null);
 
