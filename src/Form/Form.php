@@ -94,11 +94,15 @@ abstract class Form {
 		return $this->errors;
 	}
 
-	/**
-	 * @param string[] $errors
-	 */
+    /**
+     * @param string[] $errors
+     *
+     * @return $this
+     */
 	public function setErrors($errors) {
 		$this->errors = $errors;
+
+		return $this;
 	}
 
 	/**
@@ -169,19 +173,20 @@ abstract class Form {
 		return $this;
 	}
 
-	/**
-	 * Validate the form and return a list of error codes.
-	 *
-	 * @return array
-	 *
-	 * @deprecated
-	 */
+    /**
+     * Validate the form and set a list of error codes.
+     *
+     * @return $this
+     */
 	public function validate() {
 		$errors = [];
 		foreach ($this->fields as $field) {
-			$errors[$field->getName()] = $field->validate();
+		    $field = $field->validate();
+
+			$errors[$field->getName()] = $field->getErrors();
 		}
-		return $errors;
+
+		return $this->setErrors($errors);
 	}
 
 	/**
@@ -214,6 +219,11 @@ abstract class Form {
 		throw new \Exception('Form field not found: ' . $name);
 	}
 
+    /**
+     * @param string $name
+     *
+     * @return null|string
+     */
 	public function getValueByName($name) {
 		$fields = $this->getFieldsByName($name);
 		$value = null;
@@ -225,16 +235,17 @@ abstract class Form {
 		return $value;
 	}
 
+    /**
+     * @param ServerRequestInterface $request
+     *
+     * @return $this
+     */
 	public function setFromRequest(ServerRequestInterface $request) {
-		$errors = [];
 		foreach ($this->fields as $field) {
-			$field->setErrors([]);
-			$fieldErrors = $field->setFromRequest($request);
-			if ($fieldErrors) {
-				$errors[$field->getName()] = $fieldErrors;
-			}
+            $field->setFromRequest($request);
 		}
-		return $errors;
+
+		return $this;
 	}
 
 	/**
@@ -247,17 +258,6 @@ abstract class Form {
 			empty($requestParameters[Form::FORM_FIELD_FORM])
 			|| $this->getKey() != $requestParameters[Form::FORM_FIELD_FORM]
 		);
-	}
-
-	/**
-	 * @param ServerRequestInterface $request
-	 *
-	 * @return bool
-	 */
-	public function hasValidationErrors(ServerRequestInterface $request) {
-		$errors = $this->setFromRequest($request);
-
-		return \count($errors);
 	}
 
 }

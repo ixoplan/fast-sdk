@@ -126,7 +126,7 @@ abstract class FormField {
 	/**
 	 * Validates all fields and returns a list of errors.
 	 *
-	 * @return array
+	 * @return $this
 	 */
 	public function validate() {
 		$this->errors = [];
@@ -135,7 +135,8 @@ abstract class FormField {
 				$this->errors[] = $validator->getKey();
 			}
 		}
-		return $this->errors;
+
+		return $this;
 	}
 
 	/**
@@ -143,7 +144,7 @@ abstract class FormField {
 	 *
 	 * @param ServerRequestInterface $request
 	 *
-	 * @return string[] a list of errors
+	 * @return $this
 	 */
 	public function setFromRequest(ServerRequestInterface $request) {
 		$value = null;
@@ -152,9 +153,8 @@ abstract class FormField {
 			$value = $parsedBody[$this->getName()];
 		}
 		$this->setValue($value);
-		$this->validate();
 
-		return $this->errors;
+		return $this;
 	}
 
 	/**

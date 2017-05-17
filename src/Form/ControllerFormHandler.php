@@ -120,7 +120,11 @@ abstract class ControllerFormHandler {
 
 		$request = $this->requestAPI->getPSR7();
 		if (\count($this->requestAPI->getRequestParameters())) {
-			if (\count($errors = $form->setFromRequest($request)) > 0) {
+		    $form
+                ->setFromRequest($request)
+                ->validate();
+
+			if (\count($form->getErrors()) > 0) {
 				return $this->onError($request, $form);
 			} else {
 				return $this->onSuccess($request, $form);

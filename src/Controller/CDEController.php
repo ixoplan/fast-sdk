@@ -104,8 +104,12 @@ class CDEController {
             return false;
         }
 
-        if ($form->hasValidationErrors($this->getRequestApi()->getPSR7())) {
-            $this->onFormError($form);
+        $validatedForm = $form
+            ->setFromRequest($this->getRequestApi()->getPSR7())
+            ->validate();
+
+        if (!empty($validatedForm->getErrors())) {
+            $this->onFormError($validatedForm);
             //exit
         }
 
@@ -115,12 +119,12 @@ class CDEController {
     /**
      * @param Form $form
      *
-     * @return $this
+     * @return Form
      */
     protected function onFormRender(Form $form) {
         $this->getFormProcessor()->restore($form, $this->getRequestApi()->getPSR7());
 
-        return $this;
+        return $form;
     }
 
     /**
