@@ -17,6 +17,13 @@ class CDE {
 	}
 
 	/**
+	 * @return Interfaces\MetaAPI
+	 */
+	public static function getMetaAPI() {
+		return new CDEMetaAPI();
+	}
+
+	/**
 	 * @return Interfaces\PagesAPI
 	 */
 	public static function getPagesAPI() {
