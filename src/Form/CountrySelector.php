@@ -290,10 +290,13 @@ class CountrySelector extends DropDownField {
 
 	/**
 	 * @param CountryNameProvider $countryNameProvider
+	 * @return $this
 	 */
 	public function setCountryNameProvider($countryNameProvider) {
 		$this->countryNameProvider = $countryNameProvider;
 		$this->rebuildLocalization();
+
+		return $this;
 	}
 
 	private function rebuildLocalization() {
