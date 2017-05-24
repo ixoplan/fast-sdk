@@ -40,6 +40,9 @@ abstract class Form {
 	 */
 	private $fields = [];
 
+	/** @var FormFieldSet[] */
+	private $fieldSets = [];
+
 	/**
 	 * Generic, form errors.
 	 *
@@ -155,6 +158,17 @@ abstract class Form {
 		return $this->errorRedirectParameters;
 	}
 
+    /**
+     * @param FormField[] $fields
+     *
+     * @return mixed
+     */
+	public function setFields($fields) {
+	    $this->fields = $fields;
+
+	    return $fields;
+    }
+
 	/**
 	 * @return FormField[]
 	 */
@@ -174,17 +188,55 @@ abstract class Form {
 	}
 
     /**
+     * @param FormFieldSet[] $fieldSets
+     *
+     * @return $this
+     */
+	public function setFieldSets($fieldSets) {
+	    $this->fieldSets = $fieldSets;
+
+	    return $this;
+    }
+
+    /**
+     * @return FormFieldSet[]
+     */
+	public function getFieldSets() {
+	    return $this->fieldSets;
+    }
+
+    /**
+     * @param FormFieldSet $fieldSet
+     *
+     * @return $this
+     */
+    protected function addFieldSet(FormFieldSet $fieldSet) {
+	    $this->fieldSets[$fieldSet->getKey()] = $fieldSet;
+
+	    return $this;
+    }
+
+    /**
      * Validate the form and set a list of error codes.
      *
      * @return $this
      */
 	public function validate() {
 		$errors = [];
-		foreach ($this->fields as $field) {
+
+		//validate all fields
+		foreach ($this->getFields() as $field) {
 		    $field = $field->validate();
 
 			$errors[$field->getName()] = $field->getErrors();
 		}
+
+		//validate all field sets
+		foreach ($this->getFieldSets() as $fieldSet) {
+		    $fieldSet = $fieldSet->validate();
+
+		    $errors = \array_merge($errors, $fieldSet->getPrefixedErrors());
+        }
 
 		return $this->setErrors($errors);
 	}
@@ -241,9 +293,15 @@ abstract class Form {
      * @return $this
      */
 	public function setFromRequest(ServerRequestInterface $request) {
+	    //set field values
 		foreach ($this->fields as $field) {
             $field->setFromRequest($request);
 		}
+
+		//set field sets values
+		foreach ($this->fieldSets as $fieldSet) {
+            $fieldSet->setFromRequest($request);
+        }
 
 		return $this;
 	}
