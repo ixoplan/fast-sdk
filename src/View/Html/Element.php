@@ -90,20 +90,7 @@ abstract class Element {
 	 *
 	 * @return string
 	 */
-	public function getCode() {
-		$string = '';
-		$this->writeCode($string);
-		return $string;
-	}
-
-	/**
-	 * Writes the element's code representation to the passed variable
-	 *
-	 * @param string $html
-	 *
-	 * @return $this
-	 */
-	protected abstract function writeCode(&$html);
+	public abstract function getCode();
 
 	/**
 	 * Sets an element's attributes, optionally keep existing ones

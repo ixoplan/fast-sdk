@@ -30,9 +30,7 @@ class Content {
 	 * @inheritdoc
 	 */
 	public function __toString() {
-		$string = '';
-		$this->writeContent($string);
-		return $string;
+		return $this->getCode();
 	}
 
 	/**
@@ -72,16 +70,15 @@ class Content {
 	}
 
 	/**
-	 * Writes the contents to the passed variable
+	 * Returns the element's code representation
 	 *
-	 * @param string $html
-	 *
-	 * @return $this
+	 * @return string
 	 */
-	public function writeContent(&$html) {
+	public  function getCode() {
+		$code = '';
 		foreach ($this->content as $child) {
-			$html .= $child;
+			$code .= $child;
 		}
-		return $this;
+		return $code;
 	}
 }

@@ -6,19 +6,16 @@ namespace Ixolit\CDE\View\Html;
 class ElementEmpty extends Element {
 
 	/**
-	 * Writes the element's code representation to the passed variable
+	 * Returns the element's code representation
 	 *
-	 * @param string $html
-	 *
-	 * @return $this
+	 * @return string
 	 */
-	protected  function writeCode(&$html) {
-		$html .= '<';
-		$html .= $this->getName();
+	public function getCode() {
+		$code = '<' . $this->getName();
 		foreach ($this->getAttributes() as $key => $value) {
-			$html .= ' ' . $key . '="' . html($value) . '"';
+			$code .= ' ' . $key . '="' . html($value) . '"';
 		}
-		$html .= ' />';
-		return $this;
+		$code .= ' />';
+		return $code;
 	}
 }

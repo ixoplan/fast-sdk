@@ -34,9 +34,12 @@ class ElementContent extends Element {
 	 * @return string
 	 */
 	public function getStart() {
-		$string = '';
-		$this->writeStart($string);
-		return $string;
+		$code = '<' . $this->getName();
+		foreach ($this->getAttributes() as $key => $value) {
+			$code .= ' ' . $key . '="' . html($value) . '"';
+		}
+		$code .= '>';
+		return $code;
 	}
 
 	/**
@@ -45,63 +48,15 @@ class ElementContent extends Element {
 	 * @return string
 	 */
 	public function getEnd() {
-		$string = '';
-		$this->writeEnd($string);
-		return $string;
+		return '</' . $this->getName() . '>';
 	}
 
 	/**
-	 * Writes the element's start tag to the passed variable
+	 * Returns the element's code representation
 	 *
-	 * @param string $html
-	 *
-	 * @return $this
+	 * @return string
 	 */
-	protected function writeStart(&$html) {
-		$html .= '<';
-		$html .= $this->getName();
-		foreach ($this->getAttributes() as $key => $value) {
-			$html .= ' ' . $key . '="' . html($value) . '"';
-		}
-		$html .= '>';
-		return $this;
+	public  function getCode() {
+		return $this->getStart() . $this->content->getCode() . $this->getEnd();
 	}
-
-	/**
-	 * Writes the element's end tag to the passed variable
-	 *
-	 * @param string $html
-	 *
-	 * @return $this
-	 */
-	private function writeEnd(&$html) {
-		$html .= '</';
-		$html .= $this->getName();
-		$html .= '>';
-		return $this;
-	}
-
-	/**
-	 * Writes the element's content to the passed variable
-	 *
-	 * @param $html
-	 *
-	 * @return $this
-	 */
-	private function writeContent(&$html) {
-		$this->content->writeContent($html);
-		return $this;
-	}
-
-	/**
-	 * Writes the element's code representation to the passed variable
-	 *
-	 * @param string $html
-	 *
-	 * @return $this
-	 */
-	protected function writeCode(&$html) {
-		return $this->writeStart($html)->writeContent($html)->writeEnd($html);
-	}
-
 }
