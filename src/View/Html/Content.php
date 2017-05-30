@@ -3,6 +3,13 @@
 namespace Ixolit\CDE\View\Html;
 
 
+/**
+ * Basic HTML content
+ *
+ * Manages a list of contents, concatenates them to a string
+ *
+ * @package Ixolit\CDE\View\Html
+ */
 class Content {
 
 	/**

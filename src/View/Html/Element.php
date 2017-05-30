@@ -4,13 +4,16 @@ namespace Ixolit\CDE\View\Html;
 
 
 /**
- * Basic HTML element
+ * Generic HTML element
+ *
+ * Manages name, attributes and contents, concatenates them to a string
  *
  * @package Ixolit\CDE\View\Html
  */
 class Element extends Content {
 
 	const NAME_DIV = 'div';
+	const NAME_FORM = 'form';
 	const NAME_LABEL = 'label';
 	const NAME_INPUT = 'input';
 	const NAME_SELECT = 'select';
@@ -19,6 +22,8 @@ class Element extends Content {
 	const ATTRIBUTE_NAME_ID = 'id';
 	const ATTRIBUTE_NAME_CLASS = 'class';
 
+	const ATTRIBUTE_NAME_ACTION = 'action';
+	const ATTRIBUTE_NAME_METHOD = 'method';
 	const ATTRIBUTE_NAME_NAME = 'name';
 	const ATTRIBUTE_NAME_TYPE = 'type';
 	const ATTRIBUTE_NAME_VALUE = 'value';
@@ -68,13 +73,44 @@ class Element extends Content {
 	public function __construct($name, $attributes = [], $content = null) {
 		$this->name = $name;
 		$this->attributes = $attributes;
-		$this->addContent($content);
+		parent::__construct($content);
 	}
 
 	/**
 	 * @inheritdoc
 	 */
 	public function __toString() {
+		return $this->getCode();
+	}
+
+	/**
+	 * Returns the element's start tag
+	 *
+	 * @return string
+	 */
+	public function getStart() {
+		$string = '';
+		$this->writeStart($string);
+		return $string;
+	}
+
+	/**
+	 * Returns the element's end tag
+	 *
+	 * @return string
+	 */
+	public function getEnd() {
+		$string = '';
+		$this->writeEnd($string);
+		return $string;
+	}
+
+	/**
+	 * Returns the element's code representation
+	 *
+	 * @return string
+	 */
+	public function getCode() {
 		$string = '';
 		$this->writeCode($string);
 		return $string;

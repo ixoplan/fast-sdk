@@ -15,7 +15,9 @@ use Ixolit\CDE\Form\RadioField;
 use Ixolit\CDE\Form\TextField;
 
 /**
- * Class Form
+ * Form Renderer
+ *
+ * Builds HTML element structures for forms
  *
  * @package Ixolit\CDE\View\Html
  */
@@ -24,12 +26,10 @@ class Form {
 	/** @var $instance */
 	private static $instance = null;
 
-	/**
-	 * @return string
-	 */
-	public function getClassHasErrors() {
-		// TODO: writable?
-		return 'has-errors';
+	private function __construct() {
+	}
+
+	private function __clone() {
 	}
 
 	/**
@@ -44,6 +44,20 @@ class Form {
 		return self::$instance;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getClassHasErrors() {
+		// TODO: writable?
+		return 'has-errors';
+	}
+
+	protected function getElementForm(FormObject $form) {
+		return (new Element(Element::NAME_FORM))
+			->setAttribute(Element::ATTRIBUTE_NAME_ACTION, $form->getAction())
+			->setAttribute(Element::ATTRIBUTE_NAME_METHOD, $form->getMethod());
+	}
+
 	protected function getElementInput(FormObject $form, FormField $field, $type, $prefix = '') {
 		// TODO: extract generic code
 		return (new Element(Element::NAME_INPUT))
@@ -51,7 +65,6 @@ class Form {
 			->setAttribute(Element::ATTRIBUTE_NAME_TYPE, $type)
 			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
 			->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $field->getValue());
-
 	}
 
 	protected function getElementHidden(FormObject $form, FormField $field, $prefix = '') {
@@ -131,6 +144,42 @@ class Form {
 	}
 
 	/**
+	 * Returns the given form's start tag
+	 *
+	 * @param FormObject $form
+	 *
+	 * @return string
+	 */
+	public function getFormStart(FormObject $form) {
+		return $this->getElementForm($form)->getStart();
+	}
+
+	/**
+	 * Returns the given form's end tag
+	 *
+	 * @param FormObject $form
+	 *
+	 * @return string
+	 */
+	public function getFormEnd(FormObject $form) {
+		return $this->getElementForm($form)->getEnd();
+	}
+
+	/**
+	 * Returns obligatory fields for a form
+	 *
+	 * @param FormObject $form
+	 *
+	 * @return Content
+	 */
+	public function getHeader(FormObject $form) {
+		return new Content([
+			$this->getElement($form, FormObject::FORM_FIELD_FORM),
+			$this->getElement($form, FormObject::FORM_FIELD_CSRF_TOKEN),
+		]);
+	}
+
+	/**
 	 * @param FormObject $form
 	 * @param FormField|string $field
 	 * @param string $prefix
@@ -187,12 +236,5 @@ class Form {
 		}
 
 		return $element;
-	}
-
-	public function getHeader(FormObject $form) {
-		return new Content([
-			$this->getElement($form, FormObject::FORM_FIELD_FORM),
-			$this->getElement($form, FormObject::FORM_FIELD_CSRF_TOKEN),
-		]);
 	}
 }
