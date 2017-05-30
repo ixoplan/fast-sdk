@@ -43,7 +43,7 @@ class Content {
 	}
 
 	/**
-	 * Adds the given contents to the element
+	 * Adds the given contents
 	 *
 	 * @param mixed $content
 	 *
@@ -61,7 +61,7 @@ class Content {
 	}
 
 	/**
-	 * Clears the element's content
+	 * Clears the contents
 	 *
 	 * @return $this
 	 */
@@ -72,7 +72,7 @@ class Content {
 	}
 
 	/**
-	 * Writes the element's content to the passed variable
+	 * Writes the contents to the passed variable
 	 *
 	 * @param string $html
 	 *

@@ -161,7 +161,7 @@ class Element extends Content {
 	/**
 	 * Sets an element's attributes, optionally keep existing ones
 	 *
-	 * @param $attributes
+	 * @param array $attributes
 	 * @param bool $keep
 	 *
 	 * @return $this
@@ -222,7 +222,7 @@ class Element extends Content {
 		return isset($this->attributes[$name]);
 	}
 
-		/**
+	/**
 	 * Shortcut to set the element's id attribute
 	 *
 	 * @param mixed $value
