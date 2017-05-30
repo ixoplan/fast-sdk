@@ -10,7 +10,9 @@ namespace Ixolit\CDE\View\Html;
  *
  * @package Ixolit\CDE\View\Html
  */
-class Element extends Content {
+abstract class Element {
+
+	// region HTML code
 
 	const NAME_DIV = 'div';
 	const NAME_FORM = 'form';
@@ -37,6 +39,8 @@ class Element extends Content {
 	const ATTRIBUTE_VALUE_TYPE_PASSWORD = 'password';
 	const ATTRIBUTE_VALUE_TYPE_CHECKBOX = 'checkbox';
 	const ATTRIBUTE_VALUE_TYPE_RADIO = 'radio';
+
+	// endregion
 
 	/**
 	 * @var string
@@ -68,12 +72,10 @@ class Element extends Content {
 	 *
 	 * @param string $name
 	 * @param array $attributes
-	 * @param mixed $content
 	 */
-	public function __construct($name, $attributes = [], $content = null) {
+	public function __construct($name, $attributes = []) {
 		$this->name = $name;
 		$this->attributes = $attributes;
-		parent::__construct($content);
 	}
 
 	/**
@@ -81,28 +83,6 @@ class Element extends Content {
 	 */
 	public function __toString() {
 		return $this->getCode();
-	}
-
-	/**
-	 * Returns the element's start tag
-	 *
-	 * @return string
-	 */
-	public function getStart() {
-		$string = '';
-		$this->writeStart($string);
-		return $string;
-	}
-
-	/**
-	 * Returns the element's end tag
-	 *
-	 * @return string
-	 */
-	public function getEnd() {
-		$string = '';
-		$this->writeEnd($string);
-		return $string;
 	}
 
 	/**
@@ -117,46 +97,13 @@ class Element extends Content {
 	}
 
 	/**
-	 * Writes the element's start tag to the passed variable
-	 *
-	 * @param string $html
-	 *
-	 * @return $this
-	 */
-	private function writeStart(&$html) {
-		$html .= '<';
-		$html .= $this->getName();
-		foreach ($this->getAttributes() as $key => $value) {
-			$html .= ' ' . $key . '="' . html($value) . '"';
-		}
-		$html .= '>';
-		return $this;
-	}
-
-	/**
-	 * Writes the element's end tag to the passed variable
-	 *
-	 * @param string $html
-	 *
-	 * @return $this
-	 */
-	private function writeEnd(&$html) {
-		$html .= '</';
-		$html .= $this->getName();
-		$html .= '>';
-		return $this;
-	}
-
-	/**
 	 * Writes the element's code representation to the passed variable
 	 *
 	 * @param string $html
 	 *
 	 * @return $this
 	 */
-	private function writeCode(&$html) {
-		return $this->writeStart($html)->writeContent($html)->writeEnd($html);
-	}
+	protected abstract function writeCode(&$html);
 
 	/**
 	 * Sets an element's attributes, optionally keep existing ones

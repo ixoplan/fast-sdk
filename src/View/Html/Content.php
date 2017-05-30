@@ -78,7 +78,7 @@ class Content {
 	 *
 	 * @return $this
 	 */
-	protected function writeContent(&$html) {
+	public function writeContent(&$html) {
 		foreach ($this->content as $child) {
 			$html .= $child;
 		}

@@ -41,15 +41,18 @@ class Form {
 		return 'has-errors';
 	}
 
+	/**
+	 * @return ElementContent
+	 */
 	protected function getElementForm() {
-		return (new Element(Element::NAME_FORM))
+		return (new ElementContent(Element::NAME_FORM))
 			->setAttribute(Element::ATTRIBUTE_NAME_ACTION, $this->form->getAction())
 			->setAttribute(Element::ATTRIBUTE_NAME_METHOD, $this->form->getMethod());
 	}
 
 	protected function getElementInput(FormField $field, $type, $prefix = '') {
 		// TODO: extract generic code
-		return (new Element(Element::NAME_INPUT))
+		return (new ElementEmpty(Element::NAME_INPUT))
 			->setId('form_' . $this->form->getKey() . '_' . $prefix . $field->getName())
 			->setAttribute(Element::ATTRIBUTE_NAME_TYPE, $type)
 			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
@@ -74,7 +77,7 @@ class Form {
 
 	protected function getElementCheckbox(FormField $field, $prefix = '') {
 		// TODO: extract generic code
-		return (new Element(Element::NAME_INPUT))
+		return (new ElementEmpty(Element::NAME_INPUT))
 			->setId('form_' . $this->form->getKey() . '_' . $prefix . $field->getName())
 			->setAttribute(Element::ATTRIBUTE_NAME_TYPE, Element::ATTRIBUTE_VALUE_TYPE_CHECKBOX)
 			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
@@ -84,14 +87,14 @@ class Form {
 
 	protected function getElementDropdown(FormField $field, $prefix = '') {
 		// TODO: extract generic code
-		$select = (new Element(Element::NAME_SELECT))
+		$select = (new ElementContent(Element::NAME_SELECT))
 			->setId('form_' . $this->form->getKey() . '_' . $prefix . $field->getName())
 			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName());
 
 		if ($field instanceof DropDownField) {
 			/** @var DropDownField $field */
 			foreach ($field->getValues() as $value => $label) {
-				$select->addContent((new Element(Element::NAME_OPTION))
+				$select->addContent((new ElementContent(Element::NAME_OPTION))
 					->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $value)
 					->booleanAttribute(Element::ATTRIBUTE_NAME_SELECTED, $field->getValue() == $value)
 					->addContent($label)
@@ -103,7 +106,7 @@ class Form {
 	}
 
 	protected function getElementRadioGroup(FormField $field, $prefix = '') {
-		$group = new Element(Element::NAME_DIV);
+		$group = new ElementContent(Element::NAME_DIV);
 
 		if ($field instanceof RadioField) {
 			/** @var RadioField $field */
@@ -111,14 +114,14 @@ class Form {
 			foreach ($field->getValues() as $value => $label) {
 				$id = 'form_' . $this->form->getKey() . '_' . $prefix . $field->getName() . '_' . $index++;
 				$group
-					->addContent((new Element(Element::NAME_INPUT))
+					->addContent((new ElementEmpty(Element::NAME_INPUT))
 						->setId($id)
 						->setAttribute(Element::ATTRIBUTE_NAME_TYPE, Element::ATTRIBUTE_VALUE_TYPE_RADIO)
 						->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
 						->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $value)
 						->booleanAttribute(Element::ATTRIBUTE_NAME_CHECKED, $field->getValue() == $value)
 					)
-					->addContent((new Element(Element::NAME_LABEL))
+					->addContent((new ElementContent(Element::NAME_LABEL))
 						->setAttribute(Element::ATTRIBUTE_NAME_FOR, $id)
 						->addContent($label)
 					);
