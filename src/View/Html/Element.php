@@ -20,6 +20,7 @@ abstract class Element {
 	const NAME_INPUT = 'input';
 	const NAME_SELECT = 'select';
 	const NAME_OPTION = 'option';
+	const NAME_META = 'meta';
 
 	const ATTRIBUTE_NAME_ID = 'id';
 	const ATTRIBUTE_NAME_CLASS = 'class';
@@ -32,6 +33,9 @@ abstract class Element {
 	const ATTRIBUTE_NAME_FOR = 'for';
 	const ATTRIBUTE_NAME_CHECKED = 'checked';
 	const ATTRIBUTE_NAME_SELECTED = 'selected';
+	const ATTRIBUTE_NAME_CONTENT = 'content';
+	const ATTRIBUTE_NAME_HTTPEQUIV = 'http-equiv';
+	const ATTRIBUTE_NAME_PROPERTY = 'property';
 
 	const ATTRIBUTE_VALUE_TYPE_HIDDEN = 'hidden';
 	const ATTRIBUTE_VALUE_TYPE_TEXT = 'text';
