@@ -10,7 +10,7 @@ namespace Ixolit\CDE\View\Html;
  *
  * @package Ixolit\CDE\View\Html
  */
-class Content {
+class Content implements Html {
 
 	/**
 	 * @var array
@@ -76,8 +76,8 @@ class Content {
 	 */
 	public function getCode() {
 		$code = '';
-		foreach ($this->content as $child) {
-			$code .= $child;
+		foreach ($this->content as $item) {
+			$code .= ($item instanceof Html) ? $item->getCode() : html($item);
 		}
 		return $code;
 	}
