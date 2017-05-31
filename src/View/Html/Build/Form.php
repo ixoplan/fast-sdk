@@ -1,6 +1,6 @@
 <?php
 
-namespace Ixolit\CDE\View\Html;
+namespace Ixolit\CDE\View\Html\Build;
 
 
 use Ixolit\CDE\Form\CheckboxField;
@@ -13,9 +13,13 @@ use Ixolit\CDE\Form\HiddenField;
 use Ixolit\CDE\Form\PasswordField;
 use Ixolit\CDE\Form\RadioField;
 use Ixolit\CDE\Form\TextField;
+use Ixolit\CDE\View\Html\Content;
+use Ixolit\CDE\View\Html\Element;
+use Ixolit\CDE\View\Html\ElementContent;
+use Ixolit\CDE\View\Html\ElementEmpty;
 
 /**
- * Form Renderer
+ * Form builder
  *
  * Builds HTML element structures for forms
  *

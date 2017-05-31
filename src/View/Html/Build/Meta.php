@@ -1,11 +1,20 @@
 <?php
 
-namespace Ixolit\CDE\View\Html;
+namespace Ixolit\CDE\View\Html\Build;
 
 
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Interfaces\MetaAPI;
+use Ixolit\CDE\View\Html\Element;
+use Ixolit\CDE\View\Html\ElementEmpty;
 
+/**
+ * Meta builder
+ *
+ * Builds HTML element structures for meta data
+ *
+ * @package Ixolit\CDE\View\Html\Build
+ */
 class Meta {
 
 	/** @var MetaAPI */
