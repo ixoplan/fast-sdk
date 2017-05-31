@@ -6,7 +6,7 @@ namespace Ixolit\CDE\View\Html;
 /**
  * Generic HTML element
  *
- * Manages name, attributes and contents, concatenates them to a string
+ * Manages name and attributes
  *
  * @package Ixolit\CDE\View\Html
  */

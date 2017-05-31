@@ -3,12 +3,18 @@
 namespace Ixolit\CDE\View\Html;
 
 
+/**
+ * Complex HTML element
+ *
+ * Extends generic element, adds content and implements specific code generation
+ *
+ * @package Ixolit\CDE\View\Html
+ */
 class ElementContent extends Element {
 
 	/**
 	 * @var Content
 	 */
-	// TODO: getter?
 	private $content;
 
 	/**
@@ -24,7 +30,7 @@ class ElementContent extends Element {
 	}
 
 	public function addContent($content) {
-		$this->content->addContent($content);
+		$this->content->add($content);
 		return $this;
 	}
 
@@ -51,11 +57,7 @@ class ElementContent extends Element {
 		return '</' . $this->getName() . '>';
 	}
 
-	/**
-	 * Returns the element's code representation
-	 *
-	 * @return string
-	 */
+	/** @inheritdoc */
 	public  function getCode() {
 		return $this->getStart() . $this->content->getCode() . $this->getEnd();
 	}

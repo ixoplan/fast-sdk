@@ -23,7 +23,7 @@ class Content implements Html {
 	 * @param mixed $content
 	 */
 	public function __construct($content = null) {
-		$this->addContent($content);
+		$this->add($content);
 	}
 
 	/**
@@ -34,23 +34,16 @@ class Content implements Html {
 	}
 
 	/**
-	 * @return array
-	 */
-	public function getContent() {
-		return $this->content;
-	}
-
-	/**
 	 * Adds the given contents
 	 *
 	 * @param mixed $content
 	 *
 	 * @return $this
 	 */
-	public function addContent($content) {
+	public function add($content) {
 		if (is_array($content)) {
 			foreach ($content as $item) {
-				$this->addContent($item);
+				$this->add($item);
 			}
 		} elseif (isset($content)) {
 			$this->content[] = $content;
@@ -63,7 +56,7 @@ class Content implements Html {
 	 *
 	 * @return $this
 	 */
-	public function clearContent() {
+	public function clear() {
 		$this->content = [];
 
 		return $this;

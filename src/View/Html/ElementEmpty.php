@@ -3,13 +3,16 @@
 namespace Ixolit\CDE\View\Html;
 
 
+/**
+ * Empty HTML element
+ *
+ * Extends generic element and implements specific code generation
+ *
+ * @package Ixolit\CDE\View\Html
+ */
 class ElementEmpty extends Element {
 
-	/**
-	 * Returns the element's code representation
-	 *
-	 * @return string
-	 */
+	/** @inheritdoc */
 	public function getCode() {
 		$code = '<' . $this->getName();
 		foreach ($this->getAttributes() as $key => $value) {
