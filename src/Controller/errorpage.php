@@ -64,10 +64,10 @@
 
 <div class="holder">
 	<div class="holder-header">
-		<h2><b><?=get_class($e)?></b> in <b><?=html($e->getFile() . ':' . $e->getLine())?></b></h2>
+		<h2><b><?=get_class($e)?></b> in <b><?=\html($e->getFile() . ':' . $e->getLine())?></b></h2>
 	</div>
 
-	<h4><?=html($e->getMessage())?></h4>
+	<h4><?=\html($e->getMessage())?></h4>
 
 	<ol>
 		<?php foreach($e->getTrace() as $trace): ?>

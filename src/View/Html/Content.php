@@ -70,7 +70,7 @@ class Content implements Html {
 	public function getCode() {
 		$code = '';
 		foreach ($this->content as $item) {
-			$code .= ($item instanceof Html) ? $item->getCode() : html($item);
+			$code .= ($item instanceof Html) ? $item->getCode() : \html($item);
 		}
 		return $code;
 	}

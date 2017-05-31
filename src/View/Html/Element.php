@@ -120,7 +120,7 @@ abstract class Element implements Html {
 
 		if (($type === self::TAG_EMPTY) || ($type === self::TAG_START)) {
 			foreach ($this->getAttributes() as $name => $value) {
-				$code .= ' ' . \strtolower($name) . '="' . html($value) . '"';
+				$code .= ' ' . \strtolower($name) . '="' . \html($value) . '"';
 			}
 		}
 
