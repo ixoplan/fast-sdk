@@ -14,6 +14,10 @@ abstract class Element implements Html {
 
 	// region HTML code
 
+	const TAG_EMPTY = 0;
+	const TAG_START = 1;
+	const TAG_END = 2;
+
 	const NAME_DIV = 'div';
 	const NAME_FORM = 'form';
 	const NAME_LABEL = 'label';
@@ -59,7 +63,6 @@ abstract class Element implements Html {
 	/**
 	 * @return string
 	 */
-	// TODO: check not empty?
 	public function getName() {
 		return $this->name;
 	}
@@ -95,6 +98,40 @@ abstract class Element implements Html {
 	 * @return string
 	 */
 	public abstract function getCode();
+
+	/**
+	 * Returns a tag
+	 *
+	 * @param int $type
+	 *
+	 * @return string
+	 */
+	protected function getTag($type = self::TAG_EMPTY) {
+
+		// TODO: validate tag & attribute names?
+
+		$code = '<';
+
+		if ($type === self::TAG_END) {
+			$code .= '/';
+		}
+
+		$code .= \strtolower($this->getName());
+
+		if (($type === self::TAG_EMPTY) || ($type === self::TAG_START)) {
+			foreach ($this->getAttributes() as $name => $value) {
+				$code .= ' ' . \strtolower($name) . '="' . html($value) . '"';
+			}
+		}
+
+		if ($type === self::TAG_EMPTY) {
+			$code .= ' /';
+		}
+
+		$code .= '>';
+
+		return $code;
+	}
 
 	/**
 	 * Sets an element's attributes, optionally keep existing ones

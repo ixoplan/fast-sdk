@@ -40,12 +40,7 @@ class ElementContent extends Element {
 	 * @return string
 	 */
 	public function getStart() {
-		$code = '<' . $this->getName();
-		foreach ($this->getAttributes() as $key => $value) {
-			$code .= ' ' . $key . '="' . html($value) . '"';
-		}
-		$code .= '>';
-		return $code;
+		return $this->getTag(self::TAG_START);
 	}
 
 	/**
@@ -54,7 +49,7 @@ class ElementContent extends Element {
 	 * @return string
 	 */
 	public function getEnd() {
-		return '</' . $this->getName() . '>';
+		return $this->getTag(self::TAG_END);
 	}
 
 	/** @inheritdoc */

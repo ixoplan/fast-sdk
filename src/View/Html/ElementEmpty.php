@@ -14,11 +14,6 @@ class ElementEmpty extends Element {
 
 	/** @inheritdoc */
 	public function getCode() {
-		$code = '<' . $this->getName();
-		foreach ($this->getAttributes() as $key => $value) {
-			$code .= ' ' . $key . '="' . html($value) . '"';
-		}
-		$code .= ' />';
-		return $code;
+		return $this->getTag(self::TAG_EMPTY);
 	}
 }
