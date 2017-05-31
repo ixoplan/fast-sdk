@@ -10,7 +10,7 @@ namespace Ixolit\CDE\View\Html;
  *
  * @package Ixolit\CDE\View\Html
  */
-abstract class Element {
+abstract class Element implements Html {
 
 	// region HTML code
 
