@@ -70,11 +70,11 @@ class Content {
 	}
 
 	/**
-	 * Returns the element's code representation
+	 * Returns the code representation
 	 *
 	 * @return string
 	 */
-	public  function getCode() {
+	public function getCode() {
 		$code = '';
 		foreach ($this->content as $child) {
 			$code .= $child;
