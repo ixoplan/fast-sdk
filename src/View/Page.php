@@ -189,6 +189,17 @@ class Page {
 			);
 	}
 
+	// TODO: cleanup!
+	public function getPageUrl2($path, $lang = null, $full = false) {
+		try {
+			$page = $this->getPagesAPI()->getPage($path, null, $lang, null);
+			return $full ? $page->getPageUrl() : $page->getPagePath();
+		}
+		catch (PageNotFoundException $e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Returns the URL for the given static path
 	 *
