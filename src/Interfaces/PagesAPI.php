@@ -9,6 +9,19 @@ use Ixolit\CDE\WorkingObjects\Page;
  * This API gives access to the pages functionality of the CDE (pages, languages, metadata, etc)
  */
 interface PagesAPI {
+
+	/**
+	 * Get a page specified by path, virtual host, language and layout
+	 *
+	 * @param string|null $vhost
+	 * @param string|null $lang
+	 * @param string|null $layout
+	 * @param string|null $scheme
+	 *
+	 * @return Page
+	 */
+	public function getPage($path, $vhost = null, $lang = null, $layout = null, $scheme = null);
+
 	/**
 	 * Get a list of all pages.
 	 *

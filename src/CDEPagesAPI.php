@@ -4,6 +4,7 @@ namespace Ixolit\CDE;
 
 use Ixolit\CDE\Exceptions\CDEFeatureNotSupportedException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
+use Ixolit\CDE\Exceptions\PageNotFoundException;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\WorkingObjects\BreadcrumbEntry;
 use Ixolit\CDE\WorkingObjects\Page;
@@ -12,6 +13,23 @@ use Ixolit\CDE\WorkingObjects\Page;
  * This API implements the pages API using the CDE API calls.
  */
 class CDEPagesAPI implements PagesAPI {
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getPage($path, $vhost = null, $lang = null, $layout = null, $scheme = null) {
+		if (!\function_exists('getPage')) {
+			throw new CDEFeatureNotSupportedException('getPage');
+		}
+		$page = \getPage($path, $lang, $vhost, $layout, $scheme);
+
+		if ($page === null) {
+			throw new PageNotFoundException($path, $lang, $vhost, $layout, $scheme);
+		}
+
+		return new Page($page->pageUrl, $page->pagePath, $page->generic);
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
