@@ -17,6 +17,7 @@ use Ixolit\CDE\View\Html\ElementEmpty;
  */
 class Meta {
 
+	// TODO: make optional, create on demand, default to Ixolit\CDE\CDE::getMetaAPI() ?
 	/** @var MetaAPI */
 	private $metaAPI;
 
@@ -27,12 +28,19 @@ class Meta {
 		$this->metaAPI = $metaAPI;
 	}
 
+	/**
+	 * @return MetaAPI
+	 */
+	public function getMetaAPI() {
+		return $this->metaAPI;
+	}
+
 	private function getElementMeta($attr, $name, $key = null) {
 		if (!isset($key)) {
 			$key = $name;
 		}
 		try {
-			$meta = $this->metaAPI->getMeta($key);
+			$meta = $this->getMetaAPI()->getMeta($key);
 			return (new ElementEmpty(Element::NAME_META))
 				->setAttribute($attr, $name)
 				->setAttribute(Element::ATTRIBUTE_NAME_CONTENT, $meta);
