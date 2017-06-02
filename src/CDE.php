@@ -31,6 +31,13 @@ class CDE {
 	}
 
 	/**
+	 * @return Interfaces\ResourceAPI
+	 */
+	public static function getResourceAPI() {
+		return new CDEResourceAPI();
+	}
+
+	/**
 	 * @return Interfaces\RequestAPI
 	 */
 	public static function getRequestAPI() {
