@@ -572,3 +572,15 @@ function renderFopXml($baseFolder, $xslPath, $xmlSource, $meta) {
  */
 function setCookieAdvanced($name, $value, $expire = null, $path = null, $domain = null, $secure = null, $httponly = null) {
 }
+
+/**
+ * @param string $path
+ * @param string $language
+ * @param string $vhost
+ * @param string $layout
+ * @param string $scheme
+ *
+ * @return object|null
+ */
+function getPage($path, $language = null, $vhost = null, $layout = null, $scheme = null) {
+}
