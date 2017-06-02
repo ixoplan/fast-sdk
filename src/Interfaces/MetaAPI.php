@@ -4,6 +4,9 @@ namespace Ixolit\CDE\Interfaces;
 
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 
+/**
+ * This API gives access to the metadata functionality of the CDE
+ */
 interface MetaAPI {
 	/**
 	 * Returns a given metadata value for the given page in the given language.
