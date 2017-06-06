@@ -31,6 +31,9 @@ class Page {
 	private $pagesAPI;
 
 	/** @var string */
+	private $url;
+
+	/** @var string */
 	private $scheme;
 
 	/** @var string */
@@ -44,6 +47,9 @@ class Page {
 
 	/** @var string */
 	private $path;
+
+	/** @var string[] */
+	private $languages;
 
 	private function __construct() {
 	}
@@ -100,12 +106,111 @@ class Page {
 	}
 
 	/**
+	 * Returns an URI's parts as associative array
+	 *
+	 * @param string $uri
+	 *
+	 * @return array
+	 */
+	private function parseUri($uri) {
+		$result = [];
+		if (\preg_match('~^(?:(.*?)://)?(.*?)(?:\:(\d+))?((?:/.*?)?)(?:\?(.*?))?(?:\#(.*?))?$~', $uri, $matches)) {
+			foreach	([1 => 'scheme', 2 => 'host', 3 => 'port', 4 => 'path', 5 => 'query', 6 => 'fragment'] as $index => $key) {
+				if (!empty($matches[$index])) {
+					$result[$key] = $matches[$index];
+				}
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Build a URI string from it's parts
+	 *
+	 * @param array $uri
+	 *
+	 * @return string
+	 */
+	private function buildUri($uri) {
+		$result = '';
+		if (!empty($uri['host'])) {
+			if (!empty($uri['scheme'])) {
+				$result .= $uri['scheme'] . '://';
+			}
+			$result .= $uri['host'];
+			if (!empty($uri['port'])) {
+				$result .= ':' . $uri['port'];
+			}
+		}
+		if (!empty($uri['path'])) {
+			$result .= $uri['path'];
+		}
+		if (!empty($uri['query'])) {
+			$result .= '?' . $uri['query'];
+		}
+		if (!empty($uri['fragment'])) {
+			$result .= '#' . $uri['fragment'];
+		}
+		return $result;
+	}
+
+	/**
 	 * Build a path from it's elements by removing empty ones and redundant slashes
+	 *
+	 * @param ...
 	 *
 	 * @return string
 	 */
 	private function buildPath() {
 		return implode('/', array_filter(array_map(function ($i) {return \trim($i, '/');}, func_get_args())));
+	}
+
+	/**
+	 * Build a query string from name value pairs or return the passed value as is
+	 *
+	 * @param mixed $query
+	 *
+	 * @return string
+	 */
+	private function buildQuery($query) {
+		if (\is_array($query)) {
+			$params = [];
+			foreach ($query as $key => $value) {
+				$params[] = \urlencode($key) . '=' . \urlencode($value);
+			}
+			return \implode('&', $params);
+		}
+		return $query;
+	}
+
+	/**
+	 * Returns a valid language for the given one, defaults to the request's language
+	 *
+	 * @param string|null $lang
+	 *
+	 * @return string
+	 */
+	private function getValidLanguage($lang = null) {
+		if (!empty($lang)) {
+			foreach ($this->getLanguages() as $item) {
+				if (\strtolower($item) === \strtolower($lang)) {
+					return $item;
+				}
+			}
+		}
+		return $this->getLanguage();
+	}
+
+	/**
+	 * Returns the request's url
+	 *
+	 * @return string
+	 */
+	public function getUrl() {
+		if (!isset($this->url)) {
+			$this->url = $this->getRequestApi()->getPageLink();
+		}
+		return $this->url;
 	}
 
 	/**
@@ -131,7 +236,6 @@ class Page {
 		}
 		return $this->vhost;
 	}
-
 
 	/**
 	 * Returns the request's language code
@@ -170,6 +274,18 @@ class Page {
 	}
 
 	/**
+	 * Returns the languages supported by the current host
+	 *
+	 * @return string[]
+	 */
+	public function getLanguages() {
+		if (!isset($this->languages)) {
+			$this->languages = $this->getPagesAPI()->getLanguages();
+		}
+		return $this->languages;
+	}
+
+	/**
 	 * Returns the URL for the given page path and language, optionally with scheme and host
 	 *
 	 * @param string $path
@@ -198,6 +314,55 @@ class Page {
 		catch (PageNotFoundException $e) {
 			return null;
 		}
+	}
+
+	/**
+	 * Returns the URL for the given path and optionally language, query, host and scheme, based on the request's url
+	 *
+	 * @param string|null $path
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 *
+	 * @return string
+	 */
+	// TODO: cleanup!
+	public function getPageUrl3($path = null, $lang = null, $query = null, $host = null, $scheme = null) {
+
+		if ($path === null) {
+			$path = $this->getPath();
+		}
+
+		$uri = $this->parseUri($this->getUrl());
+
+		$uri['path'] = '/' . $this->buildPath(
+			$this->getValidLanguage($lang),
+			$path
+		);
+
+		$uri['query'] = $this->buildQuery($query);
+
+		if ($host !== null) {
+			$uri['host'] = $host;
+		}
+
+		if ($scheme !== null) {
+			$uri['scheme'] = $scheme;
+		}
+
+		return $this->buildUri($uri);
+	}
+
+	// TODO: cleanup!
+	public function getPageTest($path, $lang = null, $query = null) {
+		return $this->buildUri([
+			'path' => '/' . $this->buildPath(
+				$this->getValidLanguage($lang),
+				$path
+			),
+			'query' => $this->buildQuery($query),
+		]);
 	}
 
 	/**
