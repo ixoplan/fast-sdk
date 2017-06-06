@@ -138,7 +138,7 @@ class Page {
 				$result .= $uri['scheme'] . '://';
 			}
 			$result .= $uri['host'];
-			if (!empty($uri['port'])) {
+			if (isset($uri['port']) && is_numeric($uri['port'])) {
 				$result .= ':' . $uri['port'];
 			}
 		}
@@ -324,11 +324,12 @@ class Page {
 	 * @param mixed|null $query
 	 * @param string|null $host
 	 * @param string|null $scheme
+	 * @param int|null $port
 	 *
 	 * @return string
 	 */
 	// TODO: cleanup!
-	public function getPageUrl3($path = null, $lang = null, $query = null, $host = null, $scheme = null) {
+	public function getPageUrl3($path = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
 
 		if ($path === null) {
 			$path = $this->getPath();
@@ -349,6 +350,10 @@ class Page {
 
 		if ($scheme !== null) {
 			$uri['scheme'] = $scheme;
+		}
+
+		if ($port !== null) {
+			$uri['port'] = $port;
 		}
 
 		return $this->buildUri($uri);
