@@ -65,13 +65,16 @@ class Uri implements UriInterface {
 	 */
 	public function getAuthority() {
 		$authority = '';
-		if ($this->getUserInfo()) {
-			$authority .= $this->getUserInfo() . '@';
-		}
-		$authority .= $this->getHost();
-		if (!($this->getScheme() == 'http' && $this->getPort() == 80) &&
-			!($this->getScheme() == 'https' && $this->getPort() == 443)) {
-			$authority .= ':' . $this->getPort();
+		if ($this->getHost()) {
+			if ($this->getUserInfo()) {
+				$authority .= $this->getUserInfo() . '@';
+			}
+			$authority .= $this->getHost();
+			if (\is_numeric($this->getPort()) &&
+				!($this->getScheme() == 'http' && $this->getPort() == 80) &&
+				!($this->getScheme() == 'https' && $this->getPort() == 443)) {
+				$authority .= ':' . $this->getPort();
+			}
 		}
 		return $authority;
 	}
@@ -213,10 +216,11 @@ class Uri implements UriInterface {
 	 * {@inheritdoc}
 	 */
 	public function __toString() {
-		return $this->getScheme() . '://' .
-		$this->getAuthority() .
+		// TODO: validate & normalize path according to RFC3986 section 4.1
+		return ($this->getScheme() ? $this->getScheme() . ':' : '') .
+		($this->getAuthority() ? '//' . $this->getAuthority() : '') .
 		$this->getPath() .
-		($this->getQuery()?'?' . $this->getQuery():'') .
-		($this->getFragment()?'#' . $this->getFragment():'');
+		($this->getQuery() ? '?' . $this->getQuery() : '') .
+		($this->getFragment() ? '#' . $this->getFragment() : '');
 	}
 }
