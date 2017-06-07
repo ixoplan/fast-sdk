@@ -4,11 +4,13 @@ namespace Ixolit\CDE\View;
 
 
 use Ixolit\CDE\CDE;
+use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\PageNotFoundException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResourceAPI;
+use Ixolit\CDE\PSR7\Uri;
 use Ixolit\CDE\WorkingObjects\Layout;
 
 /**
@@ -47,6 +49,9 @@ class Page {
 
 	/** @var string */
 	private $path;
+
+	/** @var array */
+	private $query;
 
 	/** @var string[] */
 	private $languages;
@@ -114,14 +119,38 @@ class Page {
 	 */
 	private function parseUri($uri) {
 		$result = [];
-		if (\preg_match('~^(?:(.*?)://)?(.*?)(?:\:(\d+))?((?:/.*?)?)(?:\?(.*?))?(?:\#(.*?))?$~', $uri, $matches)) {
-			foreach	([1 => 'scheme', 2 => 'host', 3 => 'port', 4 => 'path', 5 => 'query', 6 => 'fragment'] as $index => $key) {
+		if (\preg_match('~^(?:(.*?):)(?://(?:(.*?)(?:\:(.*?))?@)?(.*?)(?:\:(\d+))?(?=[/?#]|$))?((?:.*?)?)(?:\?(.*?))?(?:\#(.*?))?$~', $uri, $matches)) {
+			foreach	([1 => 'scheme', 2 => 'user', 3 => 'pass', 4 => 'host', 5 => 'port', 6 => 'path', 7 => 'query', 8 => 'fragment'] as $index => $key) {
 				if (!empty($matches[$index])) {
 					$result[$key] = $matches[$index];
 				}
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Returns an URI instance for the given string
+	 *
+	 * @param string $uri
+	 *
+	 * @return Uri
+	 *
+	 * @throws InvalidValueException
+	 */
+	// TODO: move to \Ixolit\CDE\PSR7\Uri ?
+	private function parseUri2($uri) {
+		if (\preg_match('~^(?:(.*?):)(?://(?:(.*?)(?:\:(.*?))?@)?(.*?)(?:\:(\d+))?(?=[/?#]|$))?((?:.*?)?)(?:\?(.*?))?(?:\#(.*?))?$~', $uri, $matches)) {
+			return new Uri(
+				!empty($matches[1]) ? $matches[1] : null,
+				!empty($matches[4]) ? $matches[4] : null,
+				!empty($matches[5]) ? $matches[5] : null,
+				!empty($matches[6]) ? $matches[6] : null,
+				!empty($matches[7]) ? $matches[7] : null,
+				!empty($matches[8]) ? $matches[8] : null
+			);
+		}
+		throw new InvalidValueException($uri);
 	}
 
 	/**
@@ -135,9 +164,9 @@ class Page {
 		$result = '';
 		if (!empty($uri['host'])) {
 			if (!empty($uri['scheme'])) {
-				$result .= $uri['scheme'] . '://';
+				$result .= $uri['scheme'] . ':';
 			}
-			$result .= $uri['host'];
+			$result .= '//' . $uri['host'];
 			if (isset($uri['port']) && is_numeric($uri['port'])) {
 				$result .= ':' . $uri['port'];
 			}
@@ -274,6 +303,16 @@ class Page {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getQuery() {
+		if (!isset($this->query)) {
+			$this->query = $this->getRequestAPI()->getRequestParameters();
+		}
+		return $this->query;
+	}
+
+	/**
 	 * Returns the languages supported by the current host
 	 *
 	 * @return string[]
@@ -331,18 +370,14 @@ class Page {
 	// TODO: cleanup!
 	public function getPageUrl3($path = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
 
-		if ($path === null) {
-			$path = $this->getPath();
-		}
-
 		$uri = $this->parseUri($this->getUrl());
 
 		$uri['path'] = '/' . $this->buildPath(
 			$this->getValidLanguage($lang),
-			$path
+			$path === null ? $path = $this->getPath() : $path
 		);
 
-		$uri['query'] = $this->buildQuery($query);
+		$uri['query'] = $this->buildQuery($query === null ? $this->getQuery() : $query);
 
 		if ($host !== null) {
 			$uri['host'] = $host;
@@ -357,6 +392,38 @@ class Page {
 		}
 
 		return $this->buildUri($uri);
+	}
+
+	// TODO: cleanup!
+	public function getPageUrl4($path = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
+
+		$uri = $this->parseUri2($this->getUrl());
+
+		$uri = $uri->withPath('/' . $this->buildPath(
+			$this->getValidLanguage($lang),
+			$path === null ? $this->getPath() : $path
+		));
+
+		$uri = $uri->withQuery($this->buildQuery($query === null ? $this->getQuery() : $query));
+
+		if ($host !== null) {
+			$uri = $uri->withHost($host);
+		}
+
+		if ($scheme !== null) {
+			$uri = $uri->withScheme($scheme);
+		}
+
+		if ($port !== null) {
+			$uri = $uri->withPort($port);
+		}
+
+		// remove scheme if host is missing since we are dealing with hierarchical URLs like HTTP(S) here ...
+		if (empty($uri->getHost())) {
+			$uri = $uri->withScheme(null);
+		}
+
+		return $uri;
 	}
 
 	// TODO: cleanup!
