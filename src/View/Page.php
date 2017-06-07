@@ -399,10 +399,7 @@ class Page {
 
 		$uri = $this->parseUri2($this->getUrl());
 
-		$uri = $uri->withPath('/' . $this->buildPath(
-			$this->getValidLanguage($lang),
-			$path === null ? $this->getPath() : $path
-		));
+		$uri = $uri->withPath($this->getPagePath($path, $lang));
 
 		$uri = $uri->withQuery($this->buildQuery($query === null ? $this->getQuery() : $query));
 
@@ -424,6 +421,13 @@ class Page {
 		}
 
 		return $uri;
+	}
+
+	public function getPagePath($path = null, $lang = null) {
+		return '/' . $this->buildPath(
+			$this->getValidLanguage($lang),
+			$path === null ? $this->getPath() : $path
+		);
 	}
 
 	// TODO: cleanup!
