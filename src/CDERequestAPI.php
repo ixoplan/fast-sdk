@@ -250,6 +250,7 @@ class CDERequestAPI implements RequestAPI  {
 		}
 		// TODO: pass headers and body
 		// TODO: don't pass headers only! (ServerRequest::getParsedBody needs a body when 'Content-Type' == 'application/x-www-form-urlencoded')
+		// TODO: parse port (or whole URI) from getPageLink ?
 		$request = new ServerRequest(
 			'GET',
 			new Uri(
