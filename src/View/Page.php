@@ -5,7 +5,6 @@ namespace Ixolit\CDE\View;
 
 use Ixolit\CDE\CDE;
 use Ixolit\CDE\Exceptions\InvalidValueException;
-use Ixolit\CDE\Exceptions\PageNotFoundException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
@@ -112,25 +111,6 @@ class Page {
 	}
 
 	/**
-	 * Returns an URI's parts as associative array
-	 *
-	 * @param string $uri
-	 *
-	 * @return array
-	 */
-	private function parseUri($uri) {
-		$result = [];
-		if (\preg_match('~^(?:(.*?):)(?://(?:(.*?)(?:\:(.*?))?@)?(.*?)(?:\:(\d+))?(?=[/?#]|$))?((?:.*?)?)(?:\?(.*?))?(?:\#(.*?))?$~', $uri, $matches)) {
-			foreach	([1 => 'scheme', 2 => 'user', 3 => 'pass', 4 => 'host', 5 => 'port', 6 => 'path', 7 => 'query', 8 => 'fragment'] as $index => $key) {
-				if (!empty($matches[$index])) {
-					$result[$key] = $matches[$index];
-				}
-			}
-		}
-		return $result;
-	}
-
-	/**
 	 * Returns an URI instance for the given string
 	 *
 	 * @param string $uri
@@ -140,7 +120,7 @@ class Page {
 	 * @throws InvalidValueException
 	 */
 	// TODO: move to \Ixolit\CDE\PSR7\Uri ?
-	private function parseUri2($uri) {
+	private function parseUri($uri) {
 		if (\preg_match('~^(?:(.*?):)(?://(?:(.*?)(?:\:(.*?))?@)?(.*?)(?:\:(\d+))?(?=[/?#]|$))?((?:.*?)?)(?:\?(.*?))?(?:\#(.*?))?$~', $uri, $matches)) {
 			return new Uri(
 				!empty($matches[1]) ? $matches[1] : null,
@@ -152,36 +132,6 @@ class Page {
 			);
 		}
 		throw new InvalidValueException($uri);
-	}
-
-	/**
-	 * Build a URI string from it's parts
-	 *
-	 * @param array $uri
-	 *
-	 * @return string
-	 */
-	private function buildUri($uri) {
-		$result = '';
-		if (!empty($uri['host'])) {
-			if (!empty($uri['scheme'])) {
-				$result .= $uri['scheme'] . ':';
-			}
-			$result .= '//' . $uri['host'];
-			if (isset($uri['port']) && is_numeric($uri['port'])) {
-				$result .= ':' . $uri['port'];
-			}
-		}
-		if (!empty($uri['path'])) {
-			$result .= $uri['path'];
-		}
-		if (!empty($uri['query'])) {
-			$result .= '?' . $uri['query'];
-		}
-		if (!empty($uri['fragment'])) {
-			$result .= '#' . $uri['fragment'];
-		}
-		return $result;
 	}
 
 	/**
@@ -326,80 +276,24 @@ class Page {
 	}
 
 	/**
-	 * Returns the URL for the given page path and language, optionally with scheme and host
+	 * Returns the path for the given page and language, based on the current request
 	 *
-	 * @param string $path
-	 * @param string|null $lang
-	 * @param bool $withHost
-	 * @param bool $withScheme
+	 * @param null $page
+	 * @param null $lang
 	 *
 	 * @return string
 	 */
-	public function getPageUrl($path, $lang = null, $withHost = false, $withScheme = false) {
-		return
-			($withScheme ? $this->getScheme() . '://' : '') .
-			$this->buildPath(
-				$withHost ? $this->getVhost() : null,
-				($lang === null) ? $this->getLanguage() : $lang,
-				$path
+	public function getPagePath($page = null, $lang = null) {
+		return '/' . $this->buildPath(
+				$this->getValidLanguage($lang),
+				$page === null ? $this->getPath() : $page
 			);
 	}
 
-	// TODO: cleanup!
-	public function getPageUrl2($path, $lang = null, $full = false) {
-		try {
-			$page = $this->getPagesAPI()->getPage($path, null, $lang, null);
-			return $full ? $page->getPageUrl() : $page->getPagePath();
-		}
-		catch (PageNotFoundException $e) {
-			return null;
-		}
-	}
-
 	/**
-	 * Returns the URL for the given path and optionally language, query, host and scheme, based on the request's url
+	 * Returns the URL for the given page, language, query, host and scheme, based on the current request
 	 *
-	 * @param string|null $path
-	 * @param string|null $lang
-	 * @param mixed|null $query
-	 * @param string|null $host
-	 * @param string|null $scheme
-	 * @param int|null $port
-	 *
-	 * @return string
-	 */
-	// TODO: cleanup!
-	public function getPageUrl3($path = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
-
-		$uri = $this->parseUri($this->getUrl());
-
-		$uri['path'] = '/' . $this->buildPath(
-			$this->getValidLanguage($lang),
-			$path === null ? $path = $this->getPath() : $path
-		);
-
-		$uri['query'] = $this->buildQuery($query === null ? $this->getQuery() : $query);
-
-		if ($host !== null) {
-			$uri['host'] = $host;
-		}
-
-		if ($scheme !== null) {
-			$uri['scheme'] = $scheme;
-		}
-
-		if ($port !== null) {
-			$uri['port'] = $port;
-		}
-
-		return $this->buildUri($uri);
-	}
-
-	// TODO: cleanup!
-	/**
-	 * Returns the URL for the given path, language, query, host and scheme, based on the current request
-	 *
-	 * @param string|null $path
+	 * @param string|null $page
 	 * @param string|null $lang
 	 * @param mixed|null $query
 	 * @param string|null $host
@@ -408,12 +302,12 @@ class Page {
 	 *
 	 * @return UriInterface
 	 */
-	public function getPageUrl4($path = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
+	public function getPageUri($page = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
 
 		/** @var UriInterface $uri */
-		$uri = $this->parseUri2($this->getUrl());
+		$uri = $this->parseUri($this->getUrl());
 
-		$uri = $uri->withPath($this->getPagePath($path, $lang));
+		$uri = $uri->withPath($this->getPagePath($page, $lang));
 
 		$uri = $uri->withQuery($this->buildQuery($query === null ? $this->getQuery() : $query));
 
@@ -435,32 +329,6 @@ class Page {
 		}
 
 		return $uri;
-	}
-
-	/**
-	 * Returns the string for the given path and language, based on the current request
-	 *
-	 * @param null $path
-	 * @param null $lang
-	 *
-	 * @return string
-	 */
-	public function getPagePath($path = null, $lang = null) {
-		return '/' . $this->buildPath(
-			$this->getValidLanguage($lang),
-			$path === null ? $this->getPath() : $path
-		);
-	}
-
-	// TODO: cleanup!
-	public function getPageTest($path, $lang = null, $query = null) {
-		return $this->buildUri([
-			'path' => '/' . $this->buildPath(
-				$this->getValidLanguage($lang),
-				$path
-			),
-			'query' => $this->buildQuery($query),
-		]);
 	}
 
 	/**
