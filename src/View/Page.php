@@ -12,6 +12,7 @@ use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResourceAPI;
 use Ixolit\CDE\PSR7\Uri;
 use Ixolit\CDE\WorkingObjects\Layout;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Singleton providing utilities related to requests, pages, links, metadata, etc.
@@ -395,8 +396,21 @@ class Page {
 	}
 
 	// TODO: cleanup!
+	/**
+	 * Returns the URL for the given path, language, query, host and scheme, based on the current request
+	 *
+	 * @param string|null $path
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 *
+	 * @return UriInterface
+	 */
 	public function getPageUrl4($path = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
 
+		/** @var UriInterface $uri */
 		$uri = $this->parseUri2($this->getUrl());
 
 		$uri = $uri->withPath($this->getPagePath($path, $lang));
@@ -423,6 +437,14 @@ class Page {
 		return $uri;
 	}
 
+	/**
+	 * Returns the string for the given path and language, based on the current request
+	 *
+	 * @param null $path
+	 * @param null $lang
+	 *
+	 * @return string
+	 */
 	public function getPagePath($path = null, $lang = null) {
 		return '/' . $this->buildPath(
 			$this->getValidLanguage($lang),
