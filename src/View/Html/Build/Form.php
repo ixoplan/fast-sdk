@@ -46,6 +46,32 @@ class Form {
 	}
 
 	/**
+	 * @return string
+	 */
+	protected function getFormKey() {
+		return $this->form->getKey();
+	}
+
+	/**
+	 * @param FormField|string $field
+	 *
+	 * @return FormField
+	 */
+	protected function getField($field) {
+		return ($field instanceof FormField) ? $field : $this->form->getFirstFieldByName($field);
+	}
+
+	/**
+	 * @param FormField|string $field
+	 * @param string $prefix
+	 *
+	 * @return string
+	 */
+	protected function getFieldId($field, $prefix = '') {
+		return 'form_' . $this->getFormKey() . '_' . $prefix . $this->getField($field)->getName();
+	}
+
+	/**
 	 * @return ElementContent
 	 */
 	protected function getElementForm() {
@@ -57,7 +83,7 @@ class Form {
 	protected function getElementInput(FormField $field, $type, $prefix = '') {
 		// TODO: extract generic code
 		return (new ElementEmpty(Element::NAME_INPUT))
-			->setId('form_' . $this->form->getKey() . '_' . $prefix . $field->getName())
+			->setId($this->getFieldId($field, $prefix))
 			->setAttribute(Element::ATTRIBUTE_NAME_TYPE, $type)
 			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
 			->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $field->getValue());
@@ -82,7 +108,7 @@ class Form {
 	protected function getElementCheckbox(FormField $field, $prefix = '') {
 		// TODO: extract generic code
 		return (new ElementEmpty(Element::NAME_INPUT))
-			->setId('form_' . $this->form->getKey() . '_' . $prefix . $field->getName())
+			->setId($this->getFieldId($field, $prefix))
 			->setAttribute(Element::ATTRIBUTE_NAME_TYPE, Element::ATTRIBUTE_VALUE_TYPE_CHECKBOX)
 			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
 			->setAttribute(Element::ATTRIBUTE_NAME_VALUE, 1)
@@ -92,12 +118,13 @@ class Form {
 	protected function getElementDropdown(FormField $field, $prefix = '') {
 		// TODO: extract generic code
 		$select = (new ElementContent(Element::NAME_SELECT))
-			->setId('form_' . $this->form->getKey() . '_' . $prefix . $field->getName())
+			->setId($this->getFieldId($field, $prefix))
 			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName());
 
 		if ($field instanceof DropDownField) {
 			/** @var DropDownField $field */
 			foreach ($field->getValues() as $value => $label) {
+				// TODO: translate label ?
 				$select->addContent((new ElementContent(Element::NAME_OPTION))
 					->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $value)
 					->booleanAttribute(Element::ATTRIBUTE_NAME_SELECTED, $field->getValue() == $value)
@@ -114,9 +141,11 @@ class Form {
 
 		if ($field instanceof RadioField) {
 			/** @var RadioField $field */
+			$fieldId = $this->getFieldId($field, $prefix);
 			$index = 0;
 			foreach ($field->getValues() as $value => $label) {
-				$id = 'form_' . $this->form->getKey() . '_' . $prefix . $field->getName() . '_' . $index++;
+				// TODO: translate label ?
+				$id = $fieldId . '_' . $index++;
 				$group
 					->addContent((new ElementEmpty(Element::NAME_INPUT))
 						->setId($id)
@@ -178,49 +207,74 @@ class Form {
 	 */
 	public function getElement($field, $prefix = '', $attributes = []) {
 
-		if (!($field instanceof FormField)) {
-			$field = $this->form->getFirstFieldByName($field);
-		}
+		$formField = $this->getField($field);
 
-		// TODO: has errors
-		switch ($field->getType()) {
+		switch ($formField->getType()) {
 
 			case HiddenField::TYPE_HIDDEN:
-				$element = $this->getElementHidden($field, $prefix);
+				$element = $this->getElementHidden($formField, $prefix);
 				break;
 
 			case TextField::TYPE_TEXT:
-				$element = $this->getElementText($field, $prefix);
+				$element = $this->getElementText($formField, $prefix);
 				break;
 
 			case EmailField::TYPE_EMAIL:
-				$element = $this->getElementEmail($field, $prefix);
+				$element = $this->getElementEmail($formField, $prefix);
 				break;
 
 			case PasswordField::TYPE_PASSWORD:
-				$element = $this->getElementPassword($field, $prefix);
+				$element = $this->getElementPassword($formField, $prefix);
 				break;
 
 			case CheckboxField::TYPE_CHECKBOX:
-				$element = $this->getElementCheckbox($field, $prefix);
+				$element = $this->getElementCheckbox($formField, $prefix);
 				break;
 
 			case CountrySelector::TYPE_COUNTRY:
 			case DropDownField::TYPE_DROP_DOWN:
-				$element = $this->getElementDropdown($field, $prefix);
+				$element = $this->getElementDropdown($formField, $prefix);
 				break;
 
 			case RadioField::TYPE_RADIO:
-				$element = $this->getElementRadioGroup($field, $prefix);
+				$element = $this->getElementRadioGroup($formField, $prefix);
 				break;
 
 			default:
-				$element = $this->getElementDefault($field, $prefix);
+				$element = $this->getElementDefault($formField, $prefix);
 		}
 
 		$element->setAttributes($attributes, true);
 
-		if (\count($field->getErrors())) {
+		if (\count($formField->getErrors())) {
+			$element->addClass($this->getClassHasErrors());
+		}
+
+		return $element;
+	}
+
+	/**
+	 * @param FormField|string $field
+	 * @param string $prefix
+	 * @param array $attributes
+	 * @param string|null $text
+	 *
+	 * @return Element
+	 */
+	public function getLabel($field, $prefix = '', $attributes = [], $text = null) {
+
+		// TODO: translation ?
+
+		$formField = $this->getField($field);
+		$text = isset($text) ? $text : $formField->getLabel();
+
+		$element = (new ElementContent(Element::NAME_LABEL))
+			->setAttribute(Element::ATTRIBUTE_NAME_FOR, $this->getFieldId($field, $prefix))
+			->addContent($text);
+
+		$element->setAttributes($attributes, true);
+
+		if (\count($formField->getErrors())) {
 			$element->addClass($this->getClassHasErrors());
 		}
 
