@@ -5,7 +5,9 @@ namespace Ixolit\CDE\View;
 
 use Ixolit\CDE\CDE;
 use Ixolit\CDE\Exceptions\InvalidValueException;
+use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
+use Ixolit\CDE\Interfaces\MetaAPI;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResourceAPI;
@@ -31,6 +33,9 @@ class Page {
 
 	/** @var PagesAPI */
 	private $pagesAPI;
+
+	/** @var MetaAPI */
+	private $metaAPI;
 
 	/** @var string */
 	private $url;
@@ -108,6 +113,18 @@ class Page {
 		}
 
 		return $this->pagesAPI;
+	}
+
+	/**
+	 * @return MetaAPI
+	 */
+	protected function getMetaAPI() {
+
+		if (!isset($this->metaAPI)) {
+			$this->metaAPI = CDE::getMetaAPI();
+		}
+
+		return $this->metaAPI;
 	}
 
 	/**
@@ -276,6 +293,25 @@ class Page {
 	}
 
 	/**
+	 * Returns the meta data value for the given name, language, page and layout
+	 *
+	 * @param string $name
+	 * @param string|null $lang
+	 * @param string|null $page
+	 * @param string|null $layout
+	 *
+	 * @return null|string
+	 */
+	public function getMeta($name, $lang = null, $page = null, $layout = null) {
+		try {
+			return $this->getMetaAPI()->getMeta($name, $lang, $page, $layout);
+		}
+		catch (MetadataNotAvailableException $e) {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns the path for the given page and language, based on the current request
 	 *
 	 * @param null $page
@@ -285,9 +321,9 @@ class Page {
 	 */
 	public function getPagePath($page = null, $lang = null) {
 		return '/' . $this->buildPath(
-				$this->getValidLanguage($lang),
-				$page === null ? $this->getPath() : $page
-			);
+			$this->getValidLanguage($lang),
+			$page === null ? $this->getPath() : $page
+		);
 	}
 
 	/**
