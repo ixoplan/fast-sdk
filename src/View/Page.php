@@ -281,18 +281,19 @@ class Page {
 	 * Returns the meta data value for the given name, language, page and layout
 	 *
 	 * @param string $name
+	 * @param string|null $default
 	 * @param string|null $lang
 	 * @param string|null $page
 	 * @param string|null $layout
 	 *
-	 * @return null|string
+	 * @return string|null
 	 */
-	public static function getMeta($name, $lang = null, $page = null, $layout = null) {
+	public static function getMeta($name, $default = null, $lang = null, $page = null, $layout = null) {
 		try {
 			return self::getMetaAPI()->getMeta($name, $lang, $page, $layout);
 		}
 		catch (MetadataNotAvailableException $e) {
-			return null;
+			return $default;
 		}
 	}
 
