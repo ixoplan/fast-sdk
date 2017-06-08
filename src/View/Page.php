@@ -67,7 +67,7 @@ class Page {
 	/**
 	 * @return RequestAPI
 	 */
-	protected static function getRequestAPI() {
+	public static function getRequestAPI() {
 
 		if (!isset(self::$requestAPI)) {
 			self::$requestAPI = CDE::getRequestAPI();
@@ -79,7 +79,7 @@ class Page {
 	/**
 	 * @return ResourceAPI
 	 */
-	protected static function getResourceAPI() {
+	public static function getResourceAPI() {
 
 		if (!isset(self::$resourceAPI)) {
 			self::$resourceAPI = CDE::getResourceAPI();
@@ -91,7 +91,7 @@ class Page {
 	/**
 	 * @return PagesAPI
 	 */
-	protected static function getPagesAPI() {
+	public static function getPagesAPI() {
 
 		if (!isset(self::$pagesAPI)) {
 			self::$pagesAPI = CDE::getPagesAPI();
@@ -103,7 +103,7 @@ class Page {
 	/**
 	 * @return MetaAPI
 	 */
-	protected static function getMetaAPI() {
+	public static function getMetaAPI() {
 
 		if (!isset(self::$metaAPI)) {
 			self::$metaAPI = CDE::getMetaAPI();
