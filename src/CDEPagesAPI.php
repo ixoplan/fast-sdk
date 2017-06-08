@@ -17,6 +17,16 @@ class CDEPagesAPI implements PagesAPI {
 	/**
 	 * {@inheritdoc}
 	 */
+	public function getContent() {
+		if (!\function_exists('getContent')) {
+			throw new CDEFeatureNotSupportedException('getContent');
+		}
+		return \getContent();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getPage($path, $vhost = null, $lang = null, $layout = null, $scheme = null) {
 		if (!\function_exists('getPage')) {
 			throw new CDEFeatureNotSupportedException('getPage');

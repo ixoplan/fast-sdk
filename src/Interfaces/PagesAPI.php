@@ -10,7 +10,12 @@ use Ixolit\CDE\WorkingObjects\Page;
  */
 interface PagesAPI {
 
-	// TODO: getContent ?
+	/**
+	 * Returns the content of the page in the sitelayout
+	 *
+	 * @return string
+	 */
+	public function getContent();
 
 	/**
 	 * Get a page specified by path, virtual host, language and layout
