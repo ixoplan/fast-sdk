@@ -378,4 +378,13 @@ class Page {
 	public static function getStaticLayoutUrl($path) {
 		return self::getStaticUrl(self::buildPath(self::getLayout()->getName(), $path));
 	}
+
+	/**
+	 * Returns the content of the current page
+	 *
+	 * @return string
+	 */
+	public static function getContent() {
+		return self::getPagesAPI()->getContent();
+	}
 }
