@@ -22,6 +22,9 @@ use Psr\Http\Message\UriInterface;
  */
 class Page {
 
+	/** @var self */
+	private static $instance;
+
 	/** @var RequestAPI */
 	private static $requestAPI;
 
@@ -62,6 +65,51 @@ class Page {
 	}
 
 	private function __clone() {
+	}
+
+	/**
+	 * @return self
+	 *
+	 * @throws \Exception
+	 */
+	public static function get() {
+
+		if (!isset(self::$instance)) {
+			throw new \Exception('not set'); // TODO: specific exception
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * @param self $instance
+	 *
+	 * @throws \Exception
+	 */
+	protected static function set($instance) {
+
+		if (isset(self::$instance)) {
+			throw new \Exception('already set'); // TODO: specific exception
+		}
+
+		self::$instance = $instance;
+	}
+
+	private $test;
+
+	protected function newTest() {
+		return \date('r');
+	}
+
+	public function getTest() {
+		if (!isset($this->test)) {
+			$this->test = $this->newTest();
+		}
+		return $this->test;
+	}
+
+	public static function test() {
+		return self::get()->getTest();
 	}
 
 	/**
