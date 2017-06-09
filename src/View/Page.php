@@ -297,6 +297,16 @@ class Page {
 		}
 	}
 
+//	/**
+//	 * @param $string
+//	 * @param string|null $lang
+//	 *
+//	 * @return string|null
+//	 */
+//	public function getTranslation($string, $lang = null) {
+//		return self::getMeta('t-' . $string, $string, $lang);
+//	}
+
 	/**
 	 * Returns the path for the given page and language, based on the current request
 	 *
@@ -388,4 +398,11 @@ class Page {
 	public static function getContent() {
 		return self::getPagesAPI()->getContent();
 	}
+
+//	public static function enforceHttps() {
+//		if (strtolower(self::getScheme()) != 'https') {
+//			CDE::getResponseAPI()->redirectTo(self::getPageUri()->withScheme('https'));
+//			exit;
+//		}
+//	}
 }
