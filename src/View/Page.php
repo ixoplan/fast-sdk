@@ -303,7 +303,7 @@ class Page {
 //	 *
 //	 * @return string|null
 //	 */
-//	public function getTranslation($string, $lang = null) {
+//	public static function getTranslation($string, $lang = null) {
 //		return self::getMeta('t-' . $string, $string, $lang);
 //	}
 
