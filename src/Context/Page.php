@@ -1,6 +1,6 @@
 <?php
 
-namespace Ixolit\CDE\View;
+namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDE;
@@ -58,7 +58,7 @@ class Page {
 	/** @var string[] */
 	private static $languages;
 
-	private function __construct() {
+	protected function __construct() {
 	}
 
 	private function __clone() {
