@@ -508,12 +508,35 @@ class Page {
 		return $this->getPagesAPI()->getContent();
 	}
 
-//	public static function enforceHttps() {
-//		if (strtolower(self::getScheme()) != 'https') {
-//			CDE::getResponseAPI()->redirectTo(self::getPageUri()->withScheme('https'));
-//			exit;
-//		}
-//	}
+	/**
+	 * Sends a redirect response and exits
+	 *
+	 * @param string $location
+	 * @param bool $permanent
+	 */
+	public function doRedirectTo($location, $permanent = false) {
+		$this->getResponseAPI()->redirectTo($location, $permanent);
+		exit;
+	}
+
+	/**
+	 * Compares the current scheme to the given, redirects if different
+	 *
+	 * @param string $scheme
+	 */
+	public function doEnforceScheme($scheme) {
+		$scheme = strtolower($scheme);
+		if (strtolower($this->getScheme()) != $scheme) {
+			$this->doRedirectTo($this->getPageUri()->withScheme($scheme));
+		}
+	}
+
+	/**
+	 * Checks for HTTPS, redirects if not
+	 */
+	public function doEnforceHttps() {
+		$this->doEnforceScheme('https');
+	}
 
 	// region static shortcuts
 
@@ -650,6 +673,28 @@ class Page {
 	/** @see getContent */
 	public static function content() {
 		return self::get()->getContent();
+	}
+
+	/**
+	 * @see doRedirectTo
+	 * @param string $location
+	 * @param bool $permanent
+	 */
+	public static function redirectTo($location, $permanent) {
+		self::get()->doRedirectTo($location, $permanent);
+	}
+
+	/**
+	 * @see getContent
+	 * @param string $scheme
+	 */
+	public static function enforceScheme($scheme) {
+		self::get()->doEnforceScheme($scheme);
+	}
+
+	/** @see getContent */
+	public static function enforceHttps() {
+		self::get()->doEnforceHttps();
 	}
 
 	// endregion
