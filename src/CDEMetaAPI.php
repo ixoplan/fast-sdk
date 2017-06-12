@@ -16,7 +16,11 @@ class CDEMetaAPI implements MetaAPI {
 		if (!\function_exists('getMeta')) {
 			throw new CDEFeatureNotSupportedException('getMeta');
 		}
-		return \getMeta($name, $language, $pagePath, $layout);
+		$data = \getMeta($name, $language, $pagePath, $layout);
+		if ($data === null) {
+			throw new MetadataNotAvailableException($name);
+		}
+		return $data;
 	}
 
 	/**
