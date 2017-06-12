@@ -3,6 +3,7 @@
 namespace Ixolit\CDE\View\Html\Build;
 
 
+use Ixolit\CDE\Context\Page;
 use Ixolit\CDE\Form\CheckboxField;
 use Ixolit\CDE\Form\CountrySelector;
 use Ixolit\CDE\Form\DropDownField;
@@ -266,7 +267,7 @@ class Form {
 		// TODO: translation ?
 
 		$formField = $this->getField($field);
-		$text = isset($text) ? $text : $formField->getLabel();
+		$text = isset($text) ? $text : Page::translation($formField->getLabel());
 
 		$element = (new ElementContent(Element::NAME_LABEL))
 			->setAttribute(Element::ATTRIBUTE_NAME_FOR, $this->getFieldId($field, $prefix))
