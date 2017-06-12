@@ -26,40 +26,40 @@ class Page {
 	private static $instance;
 
 	/** @var RequestAPI */
-	private static $requestAPI;
+	private $requestAPI;
 
 	/** @var ResourceAPI */
-	private static $resourceAPI;
+	private $resourceAPI;
 
 	/** @var PagesAPI */
-	private static $pagesAPI;
+	private $pagesAPI;
 
 	/** @var MetaAPI */
-	private static $metaAPI;
+	private $metaAPI;
 
 	/** @var string */
-	private static $url;
+	private $url;
 
 	/** @var string */
-	private static $scheme;
+	private $scheme;
 
 	/** @var string */
-	private static $vhost;
+	private $vhost;
 
 	/** @var string */
-	private static $language;
+	private $language;
 
 	/** @var Layout */
-	private static $layout;
+	private $layout;
 
 	/** @var string */
-	private static $path;
+	private $path;
 
 	/** @var array */
-	private static $query;
+	private $query;
 
 	/** @var string[] */
-	private static $languages;
+	private $languages;
 
 	protected function __construct() {
 	}
@@ -95,6 +95,10 @@ class Page {
 		self::$instance = $instance;
 	}
 
+//	public static function __callStatic($name, $arguments) {
+//		return call_user_func_array([self::get(), 'get' . $name], $arguments);
+//	}
+
 	private $test;
 
 	protected function newTest() {
@@ -112,52 +116,84 @@ class Page {
 		return self::get()->getTest();
 	}
 
+	// region factory methods
+
 	/**
 	 * @return RequestAPI
 	 */
-	public static function getRequestAPI() {
-
-		if (!isset(self::$requestAPI)) {
-			self::$requestAPI = CDE::getRequestAPI();
-		}
-
-		return self::$requestAPI;
+	protected function newRequestAPI() {
+		return CDE::getRequestAPI();
 	}
 
 	/**
 	 * @return ResourceAPI
 	 */
-	public static function getResourceAPI() {
-
-		if (!isset(self::$resourceAPI)) {
-			self::$resourceAPI = CDE::getResourceAPI();
-		}
-
-		return self::$resourceAPI;
+	protected function newResourceAPI() {
+		return CDE::getResourceAPI();
 	}
 
 	/**
 	 * @return PagesAPI
 	 */
-	public static function getPagesAPI() {
-
-		if (!isset(self::$pagesAPI)) {
-			self::$pagesAPI = CDE::getPagesAPI();
-		}
-
-		return self::$pagesAPI;
+	protected function newPagesAPI() {
+		return CDE::getPagesAPI();
 	}
 
 	/**
 	 * @return MetaAPI
 	 */
-	public static function getMetaAPI() {
+	protected function newMetaAPI() {
+		return CDE::getMetaAPI();
+	}
 
-		if (!isset(self::$metaAPI)) {
-			self::$metaAPI = CDE::getMetaAPI();
+	// endregion
+
+	/**
+	 * @return RequestAPI
+	 */
+	public function getRequestAPI() {
+
+		if (!isset($this->requestAPI)) {
+			$this->requestAPI = $this->newRequestAPI();
 		}
 
-		return self::$metaAPI;
+		return $this->requestAPI;
+	}
+
+	/**
+	 * @return ResourceAPI
+	 */
+	public function getResourceAPI() {
+
+		if (!isset($this->resourceAPI)) {
+			$this->resourceAPI = $this->newResourceAPI();
+		}
+
+		return $this->resourceAPI;
+	}
+
+	/**
+	 * @return PagesAPI
+	 */
+	public function getPagesAPI() {
+
+		if (!isset($this->pagesAPI)) {
+			$this->pagesAPI = $this->newPagesAPI();
+		}
+
+		return $this->pagesAPI;
+	}
+
+	/**
+	 * @return MetaAPI
+	 */
+	public function getMetaAPI() {
+
+		if (!isset($this->metaAPI)) {
+			$this->metaAPI = $this->newMetaAPI();
+		}
+
+		return $this->metaAPI;
 	}
 
 	/**
@@ -220,15 +256,15 @@ class Page {
 	 *
 	 * @return string
 	 */
-	private static function getValidLanguage($lang = null) {
+	private function getValidLanguage($lang = null) {
 		if (!empty($lang)) {
-			foreach (self::getLanguages() as $item) {
+			foreach ($this->getLanguages() as $item) {
 				if (\strtolower($item) === \strtolower($lang)) {
 					return $item;
 				}
 			}
 		}
-		return self::getLanguage();
+		return $this->getLanguage();
 	}
 
 	/**
@@ -236,11 +272,11 @@ class Page {
 	 *
 	 * @return string
 	 */
-	public static function getUrl() {
-		if (!isset(self::$url)) {
-			self::$url = self::getRequestApi()->getPageLink();
+	public function getUrl() {
+		if (!isset($this->url)) {
+			$this->url = $this->getRequestAPI()->getPageLink();
 		}
-		return self::$url;
+		return $this->url;
 	}
 
 	/**
@@ -248,11 +284,11 @@ class Page {
 	 *
 	 * @return string
 	 */
-	public static function getScheme() {
-		if (!isset(self::$scheme)) {
-			self::$scheme = self::getRequestApi()->getScheme();
+	public function getScheme() {
+		if (!isset($this->scheme)) {
+			$this->scheme = $this->getRequestAPI()->getScheme();
 		}
-		return self::$scheme;
+		return $this->scheme;
 	}
 
 	/**
@@ -260,11 +296,11 @@ class Page {
 	 *
 	 * @return string
 	 */
-	public static function getVhost() {
-		if (!isset(self::$vhost)) {
-			self::$vhost = self::getRequestApi()->getVhost();
+	public function getVhost() {
+		if (!isset($this->vhost)) {
+			$this->vhost = $this->getRequestAPI()->getVhost();
 		}
-		return self::$vhost;
+		return $this->vhost;
 	}
 
 	/**
@@ -272,11 +308,11 @@ class Page {
 	 *
 	 * @return string
 	 */
-	public static function getLanguage() {
-		if (!isset(self::$language)) {
-			self::$language = self::getRequestApi()->getLanguage();
+	public function getLanguage() {
+		if (!isset($this->language)) {
+			$this->language = $this->getRequestAPI()->getLanguage();
 		}
-		return self::$language;
+		return $this->language;
 	}
 
 	/**
@@ -284,11 +320,11 @@ class Page {
 	 *
 	 * @return Layout
 	 */
-	public static function getLayout() {
-		if (!isset(self::$layout)) {
-			self::$layout = self::getRequestApi()->getLayout();
+	public function getLayout() {
+		if (!isset($this->layout)) {
+			$this->layout = $this->getRequestAPI()->getLayout();
 		}
-		return self::$layout;
+		return $this->layout;
 	}
 
 	/**
@@ -296,21 +332,21 @@ class Page {
 	 *
 	 * @return string
 	 */
-	public static function getPath() {
-		if (!isset(self::$path)) {
-			self::$path = self::getRequestApi()->getPagePath();
+	public function getPath() {
+		if (!isset($this->path)) {
+			$this->path = $this->getRequestAPI()->getPagePath();
 		}
-		return self::$path;
+		return $this->path;
 	}
 
 	/**
 	 * @return array
 	 */
-	public static function getQuery() {
-		if (!isset(self::$query)) {
-			self::$query = self::getRequestAPI()->getRequestParameters();
+	public function getQuery() {
+		if (!isset($this->query)) {
+			$this->query = $this->getRequestAPI()->getRequestParameters();
 		}
-		return self::$query;
+		return $this->query;
 	}
 
 	/**
@@ -318,11 +354,11 @@ class Page {
 	 *
 	 * @return string[]
 	 */
-	public static function getLanguages() {
-		if (!isset(self::$languages)) {
-			self::$languages = self::getPagesAPI()->getLanguages();
+	public function getLanguages() {
+		if (!isset($this->languages)) {
+			$this->languages = $this->getPagesAPI()->getLanguages();
 		}
-		return self::$languages;
+		return $this->languages;
 	}
 
 	/**
@@ -334,38 +370,40 @@ class Page {
 	 * @param string|null $page
 	 * @param string|null $layout
 	 *
-	 * @return string|null
+	 * @return null|string
 	 */
-	public static function getMeta($name, $default = null, $lang = null, $page = null, $layout = null) {
+	public function getMeta($name, $default = null, $lang = null, $page = null, $layout = null) {
 		try {
-			return self::getMetaAPI()->getMeta($name, $lang, $page, $layout);
+			return $this->getMetaAPI()->getMeta($name, $lang, $page, $layout);
 		}
 		catch (MetadataNotAvailableException $e) {
 			return $default;
 		}
 	}
 
-//	/**
-//	 * @param $string
-//	 * @param string|null $lang
-//	 *
-//	 * @return string|null
-//	 */
-//	public static function getTranslation($string, $lang = null) {
-//		return self::getMeta('t-' . $string, $string, $lang);
-//	}
+	/**
+	 * Returns the translation for the given string and language
+	 *
+	 * @param string $string
+	 * @param string|null $lang
+	 *
+	 * @return null|string
+	 */
+	public function getTranslation($string, $lang = null) {
+		return $this->getMeta('t-' . $string, $string, $lang);
+	}
 
 	/**
 	 * Returns the path for the given page and language, based on the current request
 	 *
-	 * @param null $page
-	 * @param null $lang
+	 * @param string|null $page
+	 * @param string|null $lang
 	 *
 	 * @return string
 	 */
-	public static function getPagePath($page = null, $lang = null) {
+	public function getPagePath($page = null, $lang = null) {
 		return '/' . self::buildPath(
-			self::getValidLanguage($lang),
+			$this->getValidLanguage($lang),
 			$page === null ? self::getPath() : $page
 		);
 	}
@@ -382,14 +420,14 @@ class Page {
 	 *
 	 * @return UriInterface
 	 */
-	public static function getPageUri($page = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
+	public function getPageUri($page = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
 
 		/** @var UriInterface $uri */
-		$uri = self::parseUri(self::getUrl());
+		$uri = self::parseUri($this->getUrl());
 
-		$uri = $uri->withPath(self::getPagePath($page, $lang));
+		$uri = $uri->withPath($this->getPagePath($page, $lang));
 
-		$uri = $uri->withQuery(self::buildQuery($query === null ? self::getQuery() : $query));
+		$uri = $uri->withQuery(self::buildQuery($query === null ? $this->getQuery() : $query));
 
 		if ($host !== null) {
 			$uri = $uri->withHost($host);
@@ -414,13 +452,13 @@ class Page {
 	/**
 	 * Returns the URL for the given static path
 	 *
-	 * @param $path
+	 * @param string $path
 	 *
 	 * @return null|string
 	 */
-	public static function getStaticUrl($path) {
+	public function getStaticUrl($path) {
 		try {
-			return self::getResourceAPI()->getStaticUrl($path);
+			return $this->getResourceAPI()->getStaticUrl($path);
 		}
 		catch (ResourceNotFoundException $e) {
 			return null;
@@ -430,12 +468,12 @@ class Page {
 	/**
 	 * Returns the URL for the given static path prefixed by the request's layout name
 	 *
-	 * @param $path
+	 * @param string $path
 	 *
 	 * @return null|string
 	 */
-	public static function getStaticLayoutUrl($path) {
-		return self::getStaticUrl(self::buildPath(self::getLayout()->getName(), $path));
+	public function getStaticLayoutUrl($path) {
+		return $this->getStaticUrl(self::buildPath($this->getLayout()->getName(), $path));
 	}
 
 	/**
@@ -443,8 +481,8 @@ class Page {
 	 *
 	 * @return string
 	 */
-	public static function getContent() {
-		return self::getPagesAPI()->getContent();
+	public function getContent() {
+		return $this->getPagesAPI()->getContent();
 	}
 
 //	public static function enforceHttps() {
@@ -453,4 +491,144 @@ class Page {
 //			exit;
 //		}
 //	}
+
+	// region static shortcuts
+
+	/** @see getRequestAPI */
+	public static function requestAPI() {
+		return self::get()->getRequestAPI();
+	}
+
+	/** @see getResponseAPI */
+	public static function responseAPI() {
+		return self::get()->getResponseAPI();
+	}
+
+	/** @see getResourceAPI */
+	public static function resourceAPI() {
+		return self::get()->getResourceAPI();
+	}
+
+	/** @see getPagesAPI */
+	public static function pagesAPI() {
+		return self::get()->getPagesAPI();
+	}
+
+	/** @see getMetaAPI */
+	public static function metaAPI() {
+		return self::get()->getMetaAPI();
+	}
+
+	/** @see getUrl */
+	public static function url() {
+		return self::get()->getUrl();
+	}
+
+	/** @see getScheme */
+	public static function scheme() {
+		return self::get()->getScheme();
+	}
+
+	/** @see getVhost */
+	public static function vhost() {
+		return self::get()->getVhost();
+	}
+
+	/** @see getLanguage */
+	public static function language() {
+		return self::get()->getLanguage();
+	}
+
+	/** @see getLayout */
+	public static function layout() {
+		return self::get()->getLayout();
+	}
+
+	/** @see getPath */
+	public static function path() {
+		return self::get()->getPath();
+	}
+
+	/** @see getQuery */
+	public static function query() {
+		return self::get()->getQuery();
+	}
+
+	/** @see getLanguages */
+	public static function languages() {
+		return self::get()->getLanguages();
+	}
+
+	/**
+	 * @see getMeta
+	 * @param string $name
+	 * @param string|null $default
+	 * @param string|null $lang
+	 * @param string|null $page
+	 * @param string|null $layout
+	 * @return null|string
+	 */
+	public static function meta($name, $default = null, $lang = null, $page = null, $layout = null) {
+		return self::get()->getMeta($name, $default, $lang, $page, $layout);
+	}
+
+	/**
+	 * @see getTranslation
+	 * @param string $string
+	 * @param string|null $lang
+	 * @return null|string
+	 */
+	public static function translation($string, $lang = null) {
+		return self::get()->getTranslation($string, $lang);
+	}
+
+	/**
+	 * @see getPagePath
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @return string
+	 */
+	public static function pagePath($page = null, $lang = null) {
+		return self::get()->getPagePath($page, $lang);
+	}
+
+	/**
+	 * @see getPageUri
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 * @return UriInterface
+	 */
+	public static function pageUri($page = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
+		return self::get()->getPageUri($page, $lang, $query, $host, $scheme, $port);
+	}
+
+	/**
+	 * @see getStaticUrl
+	 * @param string $path
+	 * @return null|string
+	 */
+	public static function staticUrl($path) {
+		return self::get()->getStaticUrl($path);
+	}
+
+	/**
+	 * @see getStaticLayoutUrl
+	 * @param string $path
+	 * @return null|string
+	 */
+	public static function staticLayoutUrl($path) {
+		return self::get()->getStaticLayoutUrl($path);
+	}
+
+	/** @see getContent */
+	public static function content() {
+		return self::get()->getContent();
+	}
+
+	// endregion
+
 }
