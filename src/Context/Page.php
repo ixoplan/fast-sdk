@@ -11,6 +11,7 @@ use Ixolit\CDE\Interfaces\MetaAPI;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResourceAPI;
+use Ixolit\CDE\Interfaces\ResponseAPI;
 use Ixolit\CDE\PSR7\Uri;
 use Ixolit\CDE\WorkingObjects\Layout;
 use Psr\Http\Message\UriInterface;
@@ -27,6 +28,9 @@ class Page {
 
 	/** @var RequestAPI */
 	private $requestAPI;
+
+	/** @var ResponseAPI */
+	private $responseAPI;
 
 	/** @var ResourceAPI */
 	private $resourceAPI;
@@ -126,6 +130,13 @@ class Page {
 	}
 
 	/**
+	 * @return ResponseAPI
+	 */
+	protected function newResponseAPI() {
+		return CDE::getResponseAPI();
+	}
+
+	/**
 	 * @return ResourceAPI
 	 */
 	protected function newResourceAPI() {
@@ -158,6 +169,18 @@ class Page {
 		}
 
 		return $this->requestAPI;
+	}
+
+	/**
+	 * @return ResponseAPI
+	 */
+	public function getResponseAPI() {
+
+		if (!isset($this->responseAPI)) {
+			$this->responseAPI = $this->newResponseAPI();
+		}
+
+		return $this->responseAPI;
 	}
 
 	/**
