@@ -17,7 +17,7 @@ use Ixolit\CDE\WorkingObjects\Layout;
 use Psr\Http\Message\UriInterface;
 
 /**
- * Static class providing utilities related to requests, pages, links, metadata, etc.
+ * Context instance to be initialized once, providing utilities related to pages requests
  *
  * @package Ixolit\CDE\View
  */
