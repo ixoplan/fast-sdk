@@ -7,6 +7,7 @@ use Ixolit\CDE\CDE;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
+use Ixolit\CDE\Interfaces\FilesystemAPI;
 use Ixolit\CDE\Interfaces\MetaAPI;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
@@ -34,6 +35,9 @@ class Page {
 
 	/** @var ResourceAPI */
 	private $resourceAPI;
+
+	/** @var FilesystemAPI */
+	private $filesystemAPI;
 
 	/** @var PagesAPI */
 	private $pagesAPI;
@@ -144,6 +148,13 @@ class Page {
 	}
 
 	/**
+	 * @return FilesystemAPI
+	 */
+	protected function newFilesystemAPI() {
+		return CDE::getFilesystemAPI();
+	}
+
+	/**
 	 * @return PagesAPI
 	 */
 	protected function newPagesAPI() {
@@ -193,6 +204,18 @@ class Page {
 		}
 
 		return $this->resourceAPI;
+	}
+
+	/**
+	 * @return FilesystemAPI
+	 */
+	public function getFilesystemAPI() {
+
+		if (!isset($this->filesystemAPI)) {
+			$this->filesystemAPI = $this->newFilesystemAPI();
+		}
+
+		return $this->filesystemAPI;
 	}
 
 	/**
@@ -553,6 +576,11 @@ class Page {
 	/** @see getResourceAPI */
 	public static function resourceAPI() {
 		return self::get()->getResourceAPI();
+	}
+
+	/** @see getFilesystemAPI */
+	public static function filesystemAPI() {
+		return self::get()->getFilesystemAPI();
 	}
 
 	/** @see getPagesAPI */
