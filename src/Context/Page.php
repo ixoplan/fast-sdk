@@ -19,7 +19,7 @@ use Psr\Http\Message\UriInterface;
 /**
  * Context instance to be initialized once, providing utilities related to pages requests
  *
- * @package Ixolit\CDE\View
+ * @package Ixolit\CDE\Context
  */
 class Page {
 
