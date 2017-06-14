@@ -29,6 +29,11 @@ class ElementContent extends Element {
 		$this->content = new Content($content);
 	}
 
+	/**
+	 * @param $content
+	 *
+	 * @return self
+	 */
 	public function addContent($content) {
 		$this->content->add($content);
 		return $this;
