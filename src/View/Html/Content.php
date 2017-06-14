@@ -63,6 +63,23 @@ class Content implements Html {
 	}
 
 	/**
+	 * Calls the given callable for each content item
+	 *
+	 * @param callable $callable
+	 *
+	 * @return self
+	 */
+	public function doForEach(callable $callable) {
+		if (is_callable($callable)) {
+			foreach ($this->content as $item) {
+				$callable($item);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Returns the code representation
 	 *
 	 * @return string
