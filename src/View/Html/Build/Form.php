@@ -41,14 +41,6 @@ class Form {
 	/**
 	 * @return string
 	 */
-	public function getClassHasErrors() {
-		// TODO: writable?
-		return 'has-errors';
-	}
-
-	/**
-	 * @return string
-	 */
 	protected function getFormKey() {
 		return $this->form->getKey();
 	}
@@ -247,10 +239,6 @@ class Form {
 
 		$element->setAttributes($attributes, true);
 
-		if (\count($formField->getErrors())) {
-			$element->addClass($this->getClassHasErrors());
-		}
-
 		return $element;
 	}
 
@@ -274,10 +262,6 @@ class Form {
 			->addContent($text);
 
 		$element->setAttributes($attributes, true);
-
-		if (\count($formField->getErrors())) {
-			$element->addClass($this->getClassHasErrors());
-		}
 
 		return $element;
 	}
