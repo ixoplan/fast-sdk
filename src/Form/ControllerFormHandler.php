@@ -124,7 +124,7 @@ abstract class ControllerFormHandler {
                 ->setFromRequest($request)
                 ->validate();
 
-			if (\count($form->getErrors()) > 0) {
+			if (\count($form->getValidationErrors()) > 0) {
 				return $this->onError($request, $form);
 			} else {
 				return $this->onSuccess($request, $form);

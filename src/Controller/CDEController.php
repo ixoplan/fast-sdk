@@ -108,7 +108,7 @@ class CDEController {
             ->setFromRequest($this->getRequestApi()->getPSR7())
             ->validate();
 
-        if (!empty($validatedForm->getErrors())) {
+        if (!empty($validatedForm->getValidationErrors())) {
             $this->onFormError($validatedForm);
             //exit
         }
