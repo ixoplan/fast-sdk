@@ -139,7 +139,7 @@ abstract class Element implements Html {
 	 * @param array $attributes
 	 * @param bool $keep
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function setAttributes($attributes, $keep = false) {
 		foreach ($attributes as $name => $value) {
@@ -155,7 +155,7 @@ abstract class Element implements Html {
 	 * @param mixed $value
 	 * @param bool $keep
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function setAttribute($name, $value, $keep = false) {
 		if (!($keep && $this->hasAttribute($name))) {
@@ -169,7 +169,7 @@ abstract class Element implements Html {
 	 *
 	 * @param $name
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function deleteAttribute($name) {
 		unset($this->attributes[$name]);
@@ -182,7 +182,7 @@ abstract class Element implements Html {
 	 * @param string $name
 	 * @param bool $value
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function booleanAttribute($name, $value) {
 		if ($value) {
@@ -202,7 +202,7 @@ abstract class Element implements Html {
 	 *
 	 * @param mixed $value
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function setId($value) {
 		return $this->setAttribute(self::ATTRIBUTE_NAME_ID, $value);
@@ -213,7 +213,7 @@ abstract class Element implements Html {
 	 *
 	 * @param string[]|string $class
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function addClass($class) {
 		if (is_array($class)) {

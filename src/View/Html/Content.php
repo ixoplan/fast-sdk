@@ -38,7 +38,7 @@ class Content implements Html {
 	 *
 	 * @param mixed $content
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function add($content) {
 		if (is_array($content)) {
@@ -54,7 +54,7 @@ class Content implements Html {
 	/**
 	 * Clears the contents
 	 *
-	 * @return $this
+	 * @return self
 	 */
 	public function clear() {
 		$this->content = [];
