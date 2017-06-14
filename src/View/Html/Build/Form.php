@@ -262,4 +262,31 @@ class Form {
 
 		return $element;
 	}
+
+	/**
+	 * @param FormField|string $field
+	 * @param string $prefix
+	 * @param array $attributes
+	 *
+	 * @return Content
+	 */
+	public function getErrors($field, $prefix = '', $attributes = []) {
+
+		$formField = $this->getField($field);
+
+		$content = new Content();
+		foreach ($formField->getErrors() as $key => $value) {
+			$content->add((new ElementContent(
+				Element::NAME_DIV,
+				$attributes,
+				Page::translations('error', [
+					$this->getFormKey(),
+					$prefix . $formField->getName(),
+					is_numeric($key) ? $value : $key
+				])
+			)));
+		}
+
+		return $content;
+	}
 }
