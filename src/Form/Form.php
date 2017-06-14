@@ -50,6 +50,11 @@ abstract class Form {
 	 */
 	private $errors = [];
 
+    /**
+     * @var array
+     */
+	private $validationErrors = [];
+
 	/**
 	 * @param string            $action
 	 * @param string            $method
@@ -108,6 +113,24 @@ abstract class Form {
 
 		return $this;
 	}
+
+    /**
+     * @return array
+     */
+	public function getValidationErrors() {
+	    return $this->validationErrors;
+    }
+
+    /**
+     * @param array $validationErrors
+     *
+     * @return $this
+     */
+    public function setValidationErrors($validationErrors) {
+	    $this->validationErrors = $validationErrors;
+
+	    return $this;
+    }
 
 	/**
 	 * @return string
@@ -239,8 +262,7 @@ abstract class Form {
 		    $errors = \array_merge($errors, $fieldSet->getPrefixedErrors());
         }
 
-        // TODO: don't mix with form level errors but write a helper method to get all errors at once
-		return $this->setErrors($errors);
+		return $this->setValidationErrors($errors);
 	}
 
 	/**
