@@ -252,16 +252,13 @@ class Form {
 	 */
 	public function getLabel($field, $prefix = '', $attributes = [], $text = null) {
 
-		// TODO: translation ?
-
 		$formField = $this->getField($field);
 		$text = isset($text) ? $text : Page::translation($formField->getLabel());
 
 		$element = (new ElementContent(Element::NAME_LABEL))
+			->addContent($text)
 			->setAttribute(Element::ATTRIBUTE_NAME_FOR, $this->getFieldId($field, $prefix))
-			->addContent($text);
-
-		$element->setAttributes($attributes, true);
+			->setAttributes($attributes, true);
 
 		return $element;
 	}
