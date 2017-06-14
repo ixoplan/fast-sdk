@@ -428,15 +428,50 @@ class Page {
 	}
 
 	/**
-	 * Returns the translation for the given string and language
+	 * Returns the translation for the given text and language
 	 *
-	 * @param string $string
+	 * @param string $text
 	 * @param string|null $lang
+	 * @param string|null $default
 	 *
 	 * @return null|string
 	 */
-	public function getTranslation($string, $lang = null) {
-		return $this->getMeta('t-' . $string, $string, $lang);
+	public function getTranslation($text, $lang = null, $default = null) {
+		return $this->getMeta('t-' . $text, isset($default) ? $default : $text, $lang);
+	}
+
+	/**
+	 * Returns the translation for the given text, most specific keys and language
+	 *
+	 * @param string $name
+	 * @param string[] $keys
+	 * @param string|null $lang
+	 * @param string|null $default
+
+	 * @return null|string
+	 */
+	public function getTranslations($name, $keys = [], $lang = null, $default = null) {
+
+		if (\is_array($keys)) {
+			$keys = array_filter($keys);
+		}
+		else {
+			$keys = [];
+		}
+
+		do {
+			$text = \implode('-', array_merge([$name], $keys));
+			if (!isset($default)) {
+				$default = $text;
+			}
+
+			$trans = $this->getTranslation($text, $lang, false);
+			if ($trans !== false) {
+				return $trans;
+			}
+		} while (\array_shift($keys) !== null);
+
+		return $default;
 	}
 
 	/**
@@ -648,12 +683,25 @@ class Page {
 
 	/**
 	 * @see getTranslation
-	 * @param string $string
+	 * @param string $text
 	 * @param string|null $lang
+	 * @param string|null $default
 	 * @return null|string
 	 */
-	public static function translation($string, $lang = null) {
-		return self::get()->getTranslation($string, $lang);
+	public static function translation($text, $lang = null, $default = null) {
+		return self::get()->getTranslation($text, $lang, $default);
+	}
+
+	/**
+	 * @see getTranslation
+	 * @param string $name
+	 * @param string[] $keys
+	 * @param string|null $lang
+	 * @param string|null $default
+	 * @return null|string
+	 */
+	public static function translations($name, $keys = null, $lang = null, $default = null) {
+		return self::get()->getTranslations($name, $keys, $lang, $default);
 	}
 
 	/**
