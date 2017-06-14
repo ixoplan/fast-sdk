@@ -102,6 +102,7 @@ abstract class Form {
      *
      * @return $this
      */
+    // TODO: write a helper addError?
 	public function setErrors($errors) {
 		$this->errors = $errors;
 
@@ -238,6 +239,7 @@ abstract class Form {
 		    $errors = \array_merge($errors, $fieldSet->getPrefixedErrors());
         }
 
+        // TODO: don't mix with form level errors but write a helper method to get all errors at once
 		return $this->setErrors($errors);
 	}
 
