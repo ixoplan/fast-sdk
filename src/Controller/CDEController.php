@@ -4,7 +4,10 @@ namespace Ixolit\CDE\Controller;
 
 
 use Ixolit\CDE\CDE;
+use Ixolit\CDE\Exceptions\ControllerSkipViewException;
+use Ixolit\CDE\Form\CookieCSRFTokenProvider;
 use Ixolit\CDE\Form\CookieFormProcessor;
+use Ixolit\CDE\Form\CSRFTokenProvider;
 use Ixolit\CDE\Form\Form;
 use Ixolit\CDE\Interfaces\FormProcessorInterface;
 use Ixolit\CDE\Interfaces\RequestAPI;
@@ -27,6 +30,9 @@ class CDEController {
     /** @var ResponseAPI */
     private $responseApi;
 
+    /** @var CSRFTokenProvider */
+    private $csrfTokenProvider;
+
     /** @var string */
     private $language;
 
@@ -36,14 +42,17 @@ class CDEController {
      * @param FormProcessorInterface|null $formProcessor
      * @param RequestAPI|null             $requestApi
      * @param ResponseAPI|null            $responseApi
+     * @param CSRFTokenProvider|null      $csrfTokenProvider
      */
     public function __construct(FormProcessorInterface $formProcessor = null,
                                 RequestAPI $requestApi = null,
-                                ResponseAPI $responseApi = null
+                                ResponseAPI $responseApi = null,
+                                CSRFTokenProvider $csrfTokenProvider = null
     ) {
         $this->formProcessor = $formProcessor;
         $this->requestApi = $requestApi;
         $this->responseApi = $responseApi;
+        $this->csrfTokenProvider = $csrfTokenProvider;
     }
 
     /**
@@ -79,6 +88,18 @@ class CDEController {
         }
 
         return $this->responseApi;
+    }
+
+    /**
+     * @return CSRFTokenProvider
+     */
+    protected function getCSRFTokenProvider() {
+        if (!isset($this->csrfTokenProvider)) {
+            //default csrf token provider
+            $this->csrfTokenProvider = new CookieCSRFTokenProvider($this->getRequestApi(), $this->getResponseApi());
+        }
+
+        return $this->csrfTokenProvider;
     }
 
     /**
@@ -154,6 +175,17 @@ class CDEController {
     }
 
     /**
+     * @param Form   $form
+     * @param string $pagePath
+     */
+    protected function cleanFormAndRedirectTo(Form $form, $pagePath) {
+        $this->getFormProcessor()->cleanupForm($form);
+
+        $this->redirectTo($pagePath);
+        //exit
+    }
+
+    /**
      * @param string $name
      *
      * @return string|null
@@ -172,6 +204,22 @@ class CDEController {
         return $this->getRequestApi()->getPSR7()->getUri()
             ->withPath($pagePath)
             ->withQuery($this->getParametersString($parameters));
+    }
+
+    /**
+     * @param string $pagePath
+     * @param array  $parameters
+     *
+     * @return void
+     *
+     * @throws ControllerSkipViewException
+     */
+    protected function redirectTo($pagePath, array $parameters = []) {
+        $redirectUri = $this->getRedirectUri($pagePath, $parameters);
+
+        $this->getResponseApi()->redirectToPage($redirectUri, $this->getLanguage());
+
+        throw new ControllerSkipViewException();
     }
 
     /**
