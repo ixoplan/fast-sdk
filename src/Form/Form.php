@@ -241,6 +241,20 @@ abstract class Form {
     }
 
     /**
+     * @param string $fieldSetName
+     *
+     * @return FormFieldSet|null
+     */
+    public function getFieldSetByName($fieldSetName) {
+        $fieldSets = $this->getFieldSets();
+        if (isset($fieldSets[$fieldSetName]) && $fieldSets[$fieldSetName] instanceof FormFieldSet) {
+            return $fieldSets[$fieldSetName];
+        }
+
+        return null;
+    }
+
+    /**
      * Validate the form and set a list of error codes.
      *
      * @return $this
@@ -252,7 +266,9 @@ abstract class Form {
 		foreach ($this->getFields() as $field) {
 		    $field = $field->validate();
 
-			$errors[$field->getName()] = $field->getErrors();
+		    if (!empty($field->getErrors())) {
+                $errors[$field->getName()] = $field->getErrors();
+            }
 		}
 
 		//validate all field sets
@@ -336,7 +352,7 @@ abstract class Form {
 	 * @return bool
 	 */
 	public function isFormPost(array $requestParameters) {;
-		return (
+        return !(
 			empty($requestParameters[Form::FORM_FIELD_FORM])
 			|| $this->getKey() != $requestParameters[Form::FORM_FIELD_FORM]
 		);

@@ -84,6 +84,21 @@ abstract class FormFieldSet {
     }
 
     /**
+     * @param string $fieldName
+     *
+     * @return FormField|null
+     */
+    public function getFieldByName($fieldName) {
+        $fields = $this->getFields();
+
+        if (isset($fields[$fieldName]) && $fields[$fieldName] instanceof FormField) {
+            return $fields[$fieldName];
+        }
+
+        return null;
+    }
+
+    /**
      * @return $this
      */
     public function validate() {
