@@ -99,6 +99,17 @@ abstract class FormFieldSet {
     }
 
     /**
+     * @param string $name
+     *
+     * @return null|string
+     */
+    public function getValueByName($name) {
+        $field = $this->getFieldByName($name);
+
+        return $field ? $field->getValue() : null;
+    }
+
+    /**
      * @return $this
      */
     public function validate() {
