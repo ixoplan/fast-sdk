@@ -118,7 +118,9 @@ abstract class FormFieldSet {
         foreach ($this->getFields() as $field) {
             $field = $field->validate();
 
-            $errors[$field->getName()] = $field->getErrors();
+            if (!empty($field->getErrors())) {
+                $errors[$field->getName()] = $field->getErrors();
+            }
         }
 
         $this->setErrors($errors);
@@ -138,7 +140,7 @@ abstract class FormFieldSet {
             $fieldName = $this->getFormFieldNameWithPrefix($field->getName());
 
             $field->setValue(
-                \array_key_exists($fieldName, $parsedBody) ? $parsedBody[$fieldName] : null
+                isset($parsedBody[$fieldName]) ? $parsedBody[$fieldName] : null
             );
         }
 

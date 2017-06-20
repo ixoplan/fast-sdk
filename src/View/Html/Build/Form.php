@@ -45,12 +45,33 @@ class Form {
 		return $this->form->getKey();
 	}
 
-	/**
-	 * @param FormField|string $field
-	 *
-	 * @return FormField
-	 */
-	protected function getField($field) {
+    /**
+     * @param string|FormField $field
+     * @param string           $prefix
+     *
+     * @return string
+     */
+	protected function getFieldName($field, $prefix = '') {
+	    return (!empty($prefix) ? $prefix . '_' : '') . $this->getField($field, $prefix)->getName();
+    }
+
+    /**
+     * @param FormField|string $field
+     * @param string           $prefix
+     *
+     * @return FormField
+     */
+	protected function getField($field, $prefix = '') {
+	    if ($field instanceof  FormField) {
+	        return $field;
+        }
+
+	    if (!empty($prefix)) {
+	        $fieldSet = $this->form->getFieldSetByName($prefix);
+
+	        return $fieldSet->getFieldByName($field);
+        }
+
 		return ($field instanceof FormField) ? $field : $this->form->getFirstFieldByName($field);
 	}
 
@@ -61,7 +82,7 @@ class Form {
 	 * @return string
 	 */
 	protected function getFieldId($field, $prefix = '') {
-		return 'form_' . $this->getFormKey() . '_' . $prefix . $this->getField($field)->getName();
+		return 'form_' . $this->getFormKey() . '_' . $this->getFieldName($field, $prefix);
 	}
 
 	/**
@@ -78,7 +99,7 @@ class Form {
 		return (new ElementEmpty(Element::NAME_INPUT))
 			->setId($this->getFieldId($field, $prefix))
 			->setAttribute(Element::ATTRIBUTE_NAME_TYPE, $type)
-			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
+			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $this->getFieldName($field, $prefix))
 			->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $field->getValue());
 	}
 
@@ -103,7 +124,7 @@ class Form {
 		return (new ElementEmpty(Element::NAME_INPUT))
 			->setId($this->getFieldId($field, $prefix))
 			->setAttribute(Element::ATTRIBUTE_NAME_TYPE, Element::ATTRIBUTE_VALUE_TYPE_CHECKBOX)
-			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
+			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $this->getFieldName($field, $prefix))
 			->setAttribute(Element::ATTRIBUTE_NAME_VALUE, 1)
 			->booleanAttribute(Element::ATTRIBUTE_NAME_CHECKED, $field->getValue());
 	}
@@ -112,7 +133,7 @@ class Form {
 		// TODO: extract generic code
 		$select = (new ElementContent(Element::NAME_SELECT))
 			->setId($this->getFieldId($field, $prefix))
-			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName());
+			->setAttribute(Element::ATTRIBUTE_NAME_NAME, $this->getFieldName($field, $prefix));
 
 		if ($field instanceof DropDownField) {
 			/** @var DropDownField $field */
@@ -143,7 +164,7 @@ class Form {
 					->addContent((new ElementEmpty(Element::NAME_INPUT))
 						->setId($id)
 						->setAttribute(Element::ATTRIBUTE_NAME_TYPE, Element::ATTRIBUTE_VALUE_TYPE_RADIO)
-						->setAttribute(Element::ATTRIBUTE_NAME_NAME, $prefix . $field->getName())
+						->setAttribute(Element::ATTRIBUTE_NAME_NAME, $this->getFieldName($field, $prefix))
 						->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $value)
 						->booleanAttribute(Element::ATTRIBUTE_NAME_CHECKED, $field->getValue() == $value)
 					)
@@ -200,7 +221,7 @@ class Form {
 	 */
 	public function getElement($field, $prefix = '', $attributes = []) {
 
-		$formField = $this->getField($field);
+		$formField = $this->getField($field, $prefix);
 
 		switch ($formField->getType()) {
 
@@ -252,7 +273,7 @@ class Form {
 	 */
 	public function getLabel($field, $prefix = '', $attributes = [], $text = null) {
 
-		$formField = $this->getField($field);
+		$formField = $this->getField($field, $prefix);
 		$text = isset($text) ? $text : Page::translation($formField->getLabel());
 
 		$element = (new ElementContent(Element::NAME_LABEL))
@@ -272,7 +293,7 @@ class Form {
 	 */
 	public function getErrors($field, $prefix = '', $attributes = []) {
 
-		$formField = $this->getField($field);
+		$formField = $this->getField($field, $prefix);
 
 		$content = new Content();
 		foreach ($formField->getErrors() as $key => $value) {
@@ -281,7 +302,7 @@ class Form {
 				$attributes,
 				Page::translations('error', [
 					$this->getFormKey(),
-					$prefix . $formField->getName(),
+                    $this->getFieldName($field, $prefix),
 					is_numeric($key) ? $value : $key
 				])
 			)));

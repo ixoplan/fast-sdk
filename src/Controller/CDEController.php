@@ -181,7 +181,7 @@ class CDEController {
     protected function cleanFormAndRedirectTo(Form $form, $pagePath) {
         $this->getFormProcessor()->cleanupForm($form);
 
-        $this->redirectTo($pagePath);
+        $this->redirectToPath($pagePath);
         //exit
     }
 
@@ -211,13 +211,22 @@ class CDEController {
      * @param array  $parameters
      *
      * @return void
+     */
+    protected function redirectToPath($pagePath, array $parameters = []) {
+        $redirectUri = $this->getRedirectUri($pagePath, $parameters);
+
+        $this->redirectTo($redirectUri);
+    }
+
+    /**
+     * @param UriInterface|string $redirectUri
+     *
+     * @return void
      *
      * @throws ControllerSkipViewException
      */
-    protected function redirectTo($pagePath, array $parameters = []) {
-        $redirectUri = $this->getRedirectUri($pagePath, $parameters);
-
-        $this->getResponseApi()->redirectToPage($redirectUri, $this->getLanguage());
+    protected function redirectTo($redirectUri) {
+        $this->getResponseApi()->redirectTo($redirectUri);
 
         throw new ControllerSkipViewException();
     }

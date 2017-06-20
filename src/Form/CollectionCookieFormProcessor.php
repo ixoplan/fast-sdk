@@ -99,7 +99,7 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
         $storedData[$formName] = $data;
 
         CDETemporaryDataStorage::getInstance(self::TIMEOUT_SESSION_COOKIE)
-            ->write($this->getFormCollectionName(), $data);
+            ->write($this->getFormCollectionName(), $storedData);
 
         return $this;
     }
