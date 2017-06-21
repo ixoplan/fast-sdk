@@ -83,6 +83,16 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
     }
 
     /**
+     * @return $this
+     */
+    public function cleanFormCollection() {
+        CDETemporaryDataStorage::getInstance(self::TIMEOUT_SESSION_COOKIE)
+            ->delete($this->getFormCollectionName());
+
+        return $this;
+    }
+
+    /**
      * @param string $formName
      * @param array  $data
      *
