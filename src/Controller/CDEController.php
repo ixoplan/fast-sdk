@@ -3,7 +3,7 @@
 namespace Ixolit\CDE\Controller;
 
 
-use Ixolit\CDE\CDE;
+use Ixolit\CDE\Context\Page;
 use Ixolit\CDE\Exceptions\ControllerSkipViewException;
 use Ixolit\CDE\Form\CookieCSRFTokenProvider;
 use Ixolit\CDE\Form\CookieFormProcessor;
@@ -72,7 +72,7 @@ class CDEController {
     protected function getRequestApi() {
         if (!isset($this->requestApi)) {
             //default request api
-            $this->requestApi = CDE::getRequestAPI();
+            $this->requestApi = Page::requestAPI();
         }
 
         return $this->requestApi;
@@ -84,7 +84,7 @@ class CDEController {
     protected function getResponseApi() {
         if (!isset($this->responseApi)) {
             //default response api
-            $this->responseApi = CDE::getResponseAPI();
+            $this->responseApi = Page::responseAPI();
         }
 
         return $this->responseApi;
