@@ -35,12 +35,23 @@ class Meta {
 		return $this->metaAPI;
 	}
 
-	private function getElementMeta($attr, $name, $key = null) {
+	private function getElementMeta($attr, $name, $key = null, $content = null) {
 		if (!isset($key)) {
 			$key = $name;
 		}
 		try {
 			$meta = $this->getMetaAPI()->getMeta($key);
+
+			// if content is given, use it if the meta value evaluates as true, otherwise return null
+			if (isset($content)) {
+				if ($meta && ($meta !== 'false') && ($meta !== 'FALSE')) {
+					$meta = $content;
+				}
+				else {
+					return null;
+				}
+			}
+
 			return (new ElementEmpty(Element::NAME_META))
 				->setAttribute($attr, $name)
 				->setAttribute(Element::ATTRIBUTE_NAME_CONTENT, $meta);
@@ -56,8 +67,8 @@ class Meta {
 	 *
 	 * @return Element|null
 	 */
-	public function getName($name, $key = null) {
-		return $this->getElementMeta(Element::ATTRIBUTE_NAME_NAME, $name, $key);
+	public function getName($name, $key = null, $content = null) {
+		return $this->getElementMeta(Element::ATTRIBUTE_NAME_NAME, $name, $key, $content);
 	}
 
 	/**
