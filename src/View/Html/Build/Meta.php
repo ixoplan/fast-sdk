@@ -64,6 +64,7 @@ class Meta {
 	/**
 	 * @param string $name
 	 * @param string|null $key
+	 * @param string|null $content
 	 *
 	 * @return Element|null
 	 */
@@ -74,20 +75,22 @@ class Meta {
 	/**
 	 * @param string $name
 	 * @param string|null $key
+	 * @param string|null $content
 	 *
 	 * @return Element|null
 	 */
-	public function getProperty($name, $key = null) {
-		return $this->getElementMeta(Element::ATTRIBUTE_NAME_PROPERTY, $name, $key);
+	public function getProperty($name, $key = null, $content = null) {
+		return $this->getElementMeta(Element::ATTRIBUTE_NAME_PROPERTY, $name, $key, $content);
 	}
 
 	/**
 	 * @param string $name
 	 * @param string|null $key
+	 * @param string|null $content
 	 *
 	 * @return Element|null
 	 */
-	public function getHttpEquiv($name, $key = null) {
-		return $this->getElementMeta(Element::ATTRIBUTE_NAME_HTTPEQUIV, $name, $key);
+	public function getHttpEquiv($name, $key = null, $content = null) {
+		return $this->getElementMeta(Element::ATTRIBUTE_NAME_HTTPEQUIV, $name, $key, $content);
 	}
 }
