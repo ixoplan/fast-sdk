@@ -756,7 +756,7 @@ class Page {
 	 * @param string $location
 	 * @param bool $permanent
 	 */
-	public static function redirectTo($location, $permanent) {
+	public static function redirectTo($location, $permanent = false) {
 		self::get()->doRedirectTo($location, $permanent);
 	}
 
