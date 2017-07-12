@@ -197,13 +197,14 @@ class CDEController {
     /**
      * @param string $pagePath
      * @param array  $parameters
+     * @param bool   $urlEncode
      *
      * @return UriInterface
      */
-    protected function getRedirectUri($pagePath, array $parameters = []) {
+    protected function getRedirectUri($pagePath, array $parameters = [], $urlEncode = true) {
         return $this->getRequestApi()->getPSR7()->getUri()
             ->withPath($pagePath)
-            ->withQuery($this->getParametersString($parameters));
+            ->withQuery($this->getParametersString($parameters, $urlEncode));
     }
 
     /**
@@ -233,18 +234,21 @@ class CDEController {
 
     /**
      * @param array $parameters
+     * @param bool  $urlEncode
      *
      * @return string
      */
-    protected function getParametersString($parameters = []) {
+    protected function getParametersString($parameters = [], $urlEncode = true) {
         $parameterStringArray = [];
         foreach ($parameters as $name => $value) {
             if (\is_array($value)) {
                 foreach ($value as $valuePart) {
-                    $parameterStringArray[] = \urlencode($name) . '[]=' . \urlencode($valuePart);
+                    $parameterStringArray[] = ($urlEncode ? \urlencode($name) : $name)
+                        . '[]=' . ($urlEncode ? \urlencode($valuePart) : $valuePart);
                 }
             } else {
-                $parameterStringArray[] = \urlencode($name) . '=' . \urlencode($value);
+                $parameterStringArray[] = ($urlEncode ? \urlencode($name) : $name)
+                    . '=' . ($urlEncode ? \urlencode($value) : $value);
             }
         }
 
