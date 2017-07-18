@@ -98,6 +98,12 @@ abstract class FormFieldSet {
         return null;
     }
 
+    public function removeField($fieldName) {
+        unset($this->fields[$fieldName]);
+
+        return $this;
+    }
+
     /**
      * @param string $name
      *
