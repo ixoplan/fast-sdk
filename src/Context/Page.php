@@ -8,6 +8,7 @@ use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
 use Ixolit\CDE\Interfaces\FilesystemAPI;
+use Ixolit\CDE\Interfaces\GeoLookupAPI;
 use Ixolit\CDE\Interfaces\MetaAPI;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
@@ -44,6 +45,9 @@ class Page {
 
 	/** @var MetaAPI */
 	private $metaAPI;
+
+	/** @var GeoLookupAPI */
+	private $geoLookupApi;
 
 	/** @var string */
 	private $url;
@@ -168,6 +172,13 @@ class Page {
 		return CDE::getMetaAPI();
 	}
 
+    /**
+     * @return GeoLookupAPI
+     */
+	protected function newGeoLookupApi() {
+	    return CDE::getGeoAPI();
+    }
+
 	// endregion
 
 	/**
@@ -241,6 +252,17 @@ class Page {
 
 		return $this->metaAPI;
 	}
+
+    /**
+     * @return GeoLookupAPI
+     */
+	public function getGeoLookupApi() {
+        if (!isset($this->geoLookupApi)) {
+            $this->geoLookupApi = $this->newGeoLookupApi();
+        }
+
+        return $this->geoLookupApi;
+    }
 
 	/**
 	 * Returns an URI instance for the given string
@@ -627,6 +649,13 @@ class Page {
 	public static function metaAPI() {
 		return self::get()->getMetaAPI();
 	}
+
+    /**
+     * @return GeoLookupAPI
+     */
+	public static function geoLookupApi() {
+	    return self::get()->getGeoLookupApi();
+    }
 
 	/** @see getUrl */
 	public static function url() {
