@@ -6,6 +6,9 @@
 	"require": {
 		"psr/http-message": "^1.0"
 	},
+	"provide": {
+		"ixolit/dislo-sdk-http": "^1.0"
+	},
 	"autoload": {
 		"psr-4": {
 			"Ixolit\\CDE\\": "./src"
