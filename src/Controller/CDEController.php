@@ -177,11 +177,12 @@ class CDEController {
     /**
      * @param Form   $form
      * @param string $pagePath
+     * @param array  $parameters
      */
-    protected function cleanFormAndRedirectTo(Form $form, $pagePath) {
+    protected function cleanFormAndRedirectTo(Form $form, $pagePath, $parameters = []) {
         $this->getFormProcessor()->cleanupForm($form);
 
-        $this->redirectToPath($pagePath);
+        $this->redirectToPath($pagePath, $parameters);
         //exit
     }
 
