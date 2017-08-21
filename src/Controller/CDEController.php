@@ -156,22 +156,11 @@ class CDEController {
     protected function onFormError(Form $form) {
         $this->getFormProcessor()->storeForm($form);
 
-        $this->getResponseApi()->redirectToPage($this->createFormErrorRedirectPath($form), $this->getLanguage());
-        //exit
-    }
-
-    /**
-     * @param Form $form
-     *
-     * @return string
-     */
-    protected function createFormErrorRedirectPath(Form $form) {
         $redirectPath = empty($form->getErrorRedirectPath())
             ? $this->getRequestApi()->getPagePath() : $form->getErrorRedirectPath();
 
-        $redirectPath .= $this->getParametersString($form->getErrorRedirectParameters());
-
-        return $redirectPath;
+        $this->redirectToPath($redirectPath, $form->getErrorRedirectParameters());
+        //exit
     }
 
     /**
