@@ -23,7 +23,7 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
      * @param $formCollectionName
      */
     public function __construct($formCollectionName) {
-        $this->formCollectionName = $formCollectionName;
+        $this->formCollectionName = $formCollectionName . '-forms';
     }
 
     /**
