@@ -3,6 +3,7 @@
 namespace Ixolit\CDE\Form;
 
 
+use Ixolit\CDE\Form\FormFieldSet\ValidationStrategy;
 use Psr\Http\Message\ServerRequestInterface;
 
 
@@ -18,6 +19,14 @@ abstract class FormFieldSet {
 
     /** @var array */
     private $errors = [];
+
+    /**
+     * Enables deciding on whether to perform validation of the underlying fields or not
+     * This is especially useful when complete fieldsets shall be ignored when certain conditions are met
+     * Example: selecting a certain select option from a different FormField requires to skip validation on a FormFieldSet and it's entire fields
+     * @var ValidationStrategy
+     */
+    private $validationStrategy = null;
 
     /**
      * @return string
@@ -121,15 +130,29 @@ abstract class FormFieldSet {
     public function validate() {
         $errors = [];
 
-        foreach ($this->getFields() as $field) {
-            $field = $field->validate();
+        if (!$this->validationStrategy || $this->validationStrategy->shallValidate()) {
 
-            if (!empty($field->getErrors())) {
-                $errors[$field->getName()] = $field->getErrors();
+            foreach ($this->getFields() as $field) {
+                $field = $field->validate();
+
+                if (!empty($field->getErrors())) {
+                    $errors[$field->getName()] = $field->getErrors();
+                }
             }
+
         }
 
         $this->setErrors($errors);
+
+        return $this;
+    }
+
+    /**
+     * @param ValidationStrategy $strategy
+     * @return $this
+     */
+    public function setValidationStrategy(ValidationStrategy $strategy) {
+        $this->validationStrategy = $strategy;
 
         return $this;
     }
