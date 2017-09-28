@@ -790,14 +790,14 @@ class Page {
 	}
 
 	/**
-	 * @see getContent
+	 * @see doEnforceScheme
 	 * @param string $scheme
 	 */
 	public static function enforceScheme($scheme) {
 		self::get()->doEnforceScheme($scheme);
 	}
 
-	/** @see getContent */
+	/** @see doEnforceHttps */
 	public static function enforceHttps() {
 		self::get()->doEnforceHttps();
 	}
