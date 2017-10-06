@@ -125,16 +125,28 @@ class CDEController {
             return false;
         }
 
-        $validatedForm = $form
-            ->setFromRequest($this->getRequestApi()->getPSR7())
-            ->validate();
+        $form = $this->validateForm($form);
 
-        if (!empty($validatedForm->getValidationErrors())) {
-            $this->onFormError($validatedForm);
-            //exit
+        if (!empty($form->getValidationErrors())) {
+            $this->onFormError($form);
+            //redirect
+
+            //if overwritten onFormError doesn't redirect
+            return false;
         }
 
         return true;
+    }
+
+    /**
+     * @param Form $form
+     *
+     * @return Form
+     */
+    protected function validateForm(Form $form) {
+        return $form
+            ->setFromRequest($this->getRequestApi()->getPSR7())
+            ->validate();
     }
 
     /**
