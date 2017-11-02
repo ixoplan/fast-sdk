@@ -4,6 +4,7 @@ namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDE;
+use Ixolit\CDE\CDEInit;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
@@ -110,6 +111,24 @@ class Page {
 //	public static function __callStatic($name, $arguments) {
 //		return call_user_func_array([self::get(), 'get' . $name], $arguments);
 //	}
+
+	public static function run($instance) {
+		self::set($instance);
+		self::get()->doRun();
+	}
+
+	public function doRun() {
+		$this->doPrepare();
+		$this->doExecute();
+	}
+
+	protected function doPrepare() {
+	}
+
+	protected function doExecute() {
+		// call CDE controller logic
+		CDEInit::execute();
+	}
 
 	private $test;
 
