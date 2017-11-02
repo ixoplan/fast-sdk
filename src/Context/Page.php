@@ -306,7 +306,7 @@ class Page {
 	 *
 	 * @return string
 	 */
-	private static function buildQuery($query) {
+	private static function buildQueryString($query) {
 		if (\is_array($query)) {
 			$params = [];
 			foreach ($query as $key => $value) {
@@ -407,6 +407,10 @@ class Page {
 		return $this->path;
 	}
 
+	public function getFullPath() {
+		return '/' . $this->getLanguage() . $this->getPath();
+	}
+
 	/**
 	 * @return array
 	 */
@@ -415,6 +419,13 @@ class Page {
 			$this->query = $this->getRequestAPI()->getRequestParameters();
 		}
 		return $this->query;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getQueryString() {
+		return self::buildQueryString($this->getQuery());
 	}
 
 	/**
@@ -530,7 +541,7 @@ class Page {
 
 		$uri = $uri->withPath($this->getPagePath($page, $lang));
 
-		$uri = $uri->withQuery(self::buildQuery($query === null ? $this->getQuery() : $query));
+		$uri = $uri->withQuery(self::buildQueryString($query === null ? $this->getQuery() : $query));
 
 		if ($host !== null) {
 			$uri = $uri->withHost($host);
@@ -687,9 +698,19 @@ class Page {
 		return self::get()->getPath();
 	}
 
+	/** @see getFullPath */
+	public static function fullPath() {
+		return self::get()->getFullPath();
+	}
+
 	/** @see getQuery */
 	public static function query() {
 		return self::get()->getQuery();
+	}
+
+	/** @see getQueryString */
+	public static function queryString() {
+		return self::get()->getQueryString();
 	}
 
 	/** @see getLanguages */
