@@ -38,6 +38,15 @@ interface FormProcessorInterface {
 	 */
 	public function restore(Form $form, ServerRequestInterface $request);
 
+    /**
+     * Read all stored form data.
+     *
+     * @param string $formName
+     *
+     * @return array
+     */
+	public function readStoredFormData($formName);
+
 	/**
 	 * Cleanup the form from storage.
 	 *
