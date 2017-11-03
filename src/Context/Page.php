@@ -28,8 +28,13 @@ use Psr\Http\Message\UriInterface;
  */
 class Page {
 
+	const KVS_KEY_APP_CFG = 'app.cfg';
+
 	/** @var self */
 	private static $instance;
+
+	/** @var array */
+	private $config;
 
 	/** @var RequestAPI */
 	private $requestAPI;
@@ -375,6 +380,39 @@ class Page {
 			}
 		}
 		return $this->getLanguage();
+	}
+
+	/**
+	 * Get configuration (key value pairs)
+	 *
+	 * @return array
+	 */
+	protected function getConfig() {
+
+		// try to load from CDE's key value store (KVS)
+		if (!isset($this->config)) {
+			try {
+				$this->config = $this->getKvsAPI()->get(self::KVS_KEY_APP_CFG);
+			}
+			catch (KVSKeyNotFoundException $e) {
+				$this->config = [];
+			}
+		}
+
+		return $this->config;
+	}
+
+	/**
+	 * Get configuration value
+	 *
+	 * @param string $name
+	 * @param mixed $default
+	 *
+	 * @return mixed|null
+	 */
+	public function getConfigValue($name, $default = null) {
+		$config = $this->getConfig();
+		return isset($config[$name]) ? $config[$name] : $default;
 	}
 
 	/**
