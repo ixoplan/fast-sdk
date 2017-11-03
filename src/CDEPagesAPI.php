@@ -8,6 +8,7 @@ use Ixolit\CDE\Exceptions\PageNotFoundException;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\WorkingObjects\BreadcrumbEntry;
 use Ixolit\CDE\WorkingObjects\Page;
+use Ixolit\CDE\WorkingObjects\PreviewInfo;
 
 /**
  * This API implements the pages API using the CDE API calls.
@@ -114,5 +115,19 @@ class CDEPagesAPI implements PagesAPI {
 		}
 
 		return \getMeta(null, $lang, $pagePath, $layout);
+	}
+
+	public function getPreviewInfo() {
+		if (!\function_exists('previewInfo')) {
+			throw new CDEFeatureNotSupportedException('previewInfo');
+		}
+
+		$info = \previewInfo();
+
+		if ($info === null) {
+			return null;
+		}
+
+		return new PreviewInfo($info->type, $info->timestamp, $info->leave_preview_url);
 	}
 }
