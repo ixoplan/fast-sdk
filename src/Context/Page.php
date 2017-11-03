@@ -6,10 +6,12 @@ namespace Ixolit\CDE\Context;
 use Ixolit\CDE\CDE;
 use Ixolit\CDE\CDEInit;
 use Ixolit\CDE\Exceptions\InvalidValueException;
+use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
 use Ixolit\CDE\Interfaces\FilesystemAPI;
 use Ixolit\CDE\Interfaces\GeoLookupAPI;
+use Ixolit\CDE\Interfaces\KVSAPI;
 use Ixolit\CDE\Interfaces\MetaAPI;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
@@ -49,6 +51,9 @@ class Page {
 
 	/** @var GeoLookupAPI */
 	private $geoLookupApi;
+
+	/** @var KVSAPI */
+	private $kvsAPI;
 
 	/** @var string */
 	private $url;
@@ -191,12 +196,19 @@ class Page {
 		return CDE::getMetaAPI();
 	}
 
-    /**
-     * @return GeoLookupAPI
-     */
+	/**
+	 * @return GeoLookupAPI
+	 */
 	protected function newGeoLookupApi() {
-	    return CDE::getGeoAPI();
-    }
+		return CDE::getGeoAPI();
+	}
+
+	/**
+	 * @return KVSAPI
+	 */
+	protected function newKvsAPI() {
+		return CDE::getKVSAPI();
+	}
 
 	// endregion
 
@@ -272,16 +284,27 @@ class Page {
 		return $this->metaAPI;
 	}
 
-    /**
-     * @return GeoLookupAPI
-     */
+	/**
+	 * @return GeoLookupAPI
+	 */
 	public function getGeoLookupApi() {
-        if (!isset($this->geoLookupApi)) {
-            $this->geoLookupApi = $this->newGeoLookupApi();
-        }
+		if (!isset($this->geoLookupApi)) {
+			$this->geoLookupApi = $this->newGeoLookupApi();
+		}
 
-        return $this->geoLookupApi;
-    }
+		return $this->geoLookupApi;
+	}
+
+	/**
+	 * @return KVSAPI
+	 */
+	public function getKvsAPI() {
+		if (!isset($this->kvsAPI)) {
+			$this->kvsAPI = $this->newKvsAPI();
+		}
+
+		return $this->kvsAPI;
+	}
 
 	/**
 	 * Returns an URI instance for the given string
@@ -680,12 +703,15 @@ class Page {
 		return self::get()->getMetaAPI();
 	}
 
-    /**
-     * @return GeoLookupAPI
-     */
+	/** @see getGeoLookupApi */
 	public static function geoLookupApi() {
-	    return self::get()->getGeoLookupApi();
-    }
+		return self::get()->getGeoLookupApi();
+	}
+
+	/** @see getKvsAPI */
+	public static function kvsAPI() {
+		return self::get()->getKvsAPI();
+	}
 
 	/** @see getUrl */
 	public static function url() {
