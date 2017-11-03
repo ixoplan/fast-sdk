@@ -29,6 +29,10 @@ use Psr\Http\Message\UriInterface;
 class Page {
 
 	const KVS_KEY_APP_CFG = 'app.cfg';
+	const APP_CFG_KEY_ENV = 'env';
+	const APP_CFG_VAL_ENV_PROD = 'production';
+	const APP_CFG_VAL_ENV_DEVL = 'development';
+	const APP_CFG_KEY_HTTPS = 'https';
 
 	/** @var self */
 	private static $instance;
@@ -122,6 +126,9 @@ class Page {
 //		return call_user_func_array([self::get(), 'get' . $name], $arguments);
 //	}
 
+	/**
+	 * @param self $instance
+	 */
 	public static function run($instance) {
 		self::set($instance);
 		self::get()->doRun();
@@ -133,6 +140,9 @@ class Page {
 	}
 
 	protected function doPrepare() {
+		if ($this->getConfigEnforceHttps()) {
+			$this->doEnforceHttps();
+		}
 	}
 
 	protected function doExecute() {
@@ -413,6 +423,33 @@ class Page {
 	public function getConfigValue($name, $default = null) {
 		$config = $this->getConfig();
 		return isset($config[$name]) ? $config[$name] : $default;
+	}
+
+	/**
+	 * Returns true if HTTPS is enforced
+	 *
+	 * @return mixed|null
+	 */
+	public function getConfigEnforceHttps() {
+		return $this->getConfigValue(self::APP_CFG_KEY_HTTPS, true);
+	}
+
+	/**
+	 * Returns the application environment
+	 *
+	 * @return mixed
+	 */
+	public function getAppEnv() {
+		return $this->getConfigValue(self::APP_CFG_KEY_ENV, self::APP_CFG_VAL_ENV_PROD);
+	}
+
+	/**
+	 * Returns true in development environment
+	 *
+	 * @return bool
+	 */
+	public function getDevEnv() {
+		return ($this->getAppEnv() === self::APP_CFG_VAL_ENV_DEVL);
 	}
 
 	/**
@@ -749,6 +786,11 @@ class Page {
 	/** @see getKvsAPI */
 	public static function kvsAPI() {
 		return self::get()->getKvsAPI();
+	}
+
+	/** @see getDevEnv */
+	public static function isDevEnv() {
+		return self::get()->getDevEnv();
 	}
 
 	/** @see getUrl */
