@@ -453,6 +453,15 @@ class Page {
 	}
 
 	/**
+	 * Returns true in preview sessions
+	 *
+	 * @return bool
+	 */
+	public function getPreview() {
+		return ($this->getPagesAPI()->getPreviewInfo() != null);
+	}
+
+	/**
 	 * Returns the request's url
 	 *
 	 * @return string
@@ -791,6 +800,11 @@ class Page {
 	/** @see getDevEnv */
 	public static function isDevEnv() {
 		return self::get()->getDevEnv();
+	}
+
+	/** @see getPreview */
+	public static function isPreview() {
+		return self::get()->getPreview();
 	}
 
 	/** @see getUrl */
