@@ -25,6 +25,7 @@ abstract class Element implements Html {
 	const NAME_SELECT = 'select';
 	const NAME_OPTION = 'option';
 	const NAME_META = 'meta';
+	const NAME_SPAN = 'span';
 
 	const ATTRIBUTE_NAME_ID = 'id';
 	const ATTRIBUTE_NAME_CLASS = 'class';
