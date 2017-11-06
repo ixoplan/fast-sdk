@@ -83,11 +83,25 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
     }
 
     /**
+     * @param string $formName
+     *
+     * @return array
+     */
+    public function readStoredFormData($formName) {
+        $storedData = $this->getDataStorage()->read($this->getFormCollectionName());
+
+        if (isset($storedData[$formName])) {
+            return $storedData[$formName];
+        }
+
+        return [];
+    }
+
+    /**
      * @return $this
      */
     public function cleanFormCollection() {
-        CDETemporaryDataStorage::getInstance(self::TIMEOUT_SESSION_COOKIE)
-            ->delete($this->getFormCollectionName());
+        $this->getDataStorage()->delete($this->getFormCollectionName());
 
         return $this;
     }
@@ -99,8 +113,7 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
      * @return $this
      */
     protected function addFormDataToCollection($formName, array $data = []) {
-        $storedData = CDETemporaryDataStorage::getInstance(self::TIMEOUT_SESSION_COOKIE)
-            ->read($this->getFormCollectionName());
+        $storedData = $this->getDataStorage()->read($this->getFormCollectionName());
 
         if (!\is_array($storedData)) {
             $storedData = [];
@@ -108,8 +121,7 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
 
         $storedData[$formName] = $data;
 
-        CDETemporaryDataStorage::getInstance(self::TIMEOUT_SESSION_COOKIE)
-            ->write($this->getFormCollectionName(), $storedData);
+        $this->getDataStorage()->write($this->getFormCollectionName(), $storedData);
 
         return $this;
     }

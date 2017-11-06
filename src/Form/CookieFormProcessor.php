@@ -51,6 +51,23 @@ class CookieFormProcessor implements FormProcessorInterface {
 		return $this;
 	}
 
+    /**
+     * @param string $formName
+     *
+     * @return array
+     */
+	public function readStoredFormData($formName) {
+        $data = CDECookieCache::getInstance()->read($formName . self::COOKIE_NAME_POSTFIX_FORM);
+
+        if (!empty($data)) {
+            try {
+                return \json_decode(\base64_decode($data), true);
+            } catch (\Exception $e) {}
+        }
+
+        return [];
+    }
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -82,8 +99,7 @@ class CookieFormProcessor implements FormProcessorInterface {
                 $data = \json_decode(\base64_decode($data), true);
 
                 return $this->setRestoredFormData($form, $data);
-            } catch (\Exception $e) {
-            }
+            } catch (\Exception $e) {}
         }
 
         return false;
