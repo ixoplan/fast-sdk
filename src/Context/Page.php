@@ -737,6 +737,35 @@ class Page {
 	}
 
 	/**
+	 * Sends a redirect response to the URL for the given page, language, query, host and scheme, based on the current
+	 * request and exits
+	 *
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 * @param bool $permanent
+	 */
+	public function doRedirectToUri($page, $lang = null, $query = null, $host = null, $scheme = null, $port = null, $permanent = false) {
+		$this->doRedirectTo((string) $this->getPageUri($page, $lang, $query, $host, $scheme, $port), $permanent);
+	}
+
+	/**
+	 * Sends a redirect response to the URL for the given page, language and query, based on the current request and
+	 * exits
+	 *
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param bool $permanent
+	 */
+	public function doRedirectToPage($page, $lang = null, $query = null, $permanent = false) {
+		$this->doRedirectToUri($page, $lang, $query, null, null, null, $permanent);
+	}
+
+	/**
 	 * Compares the current scheme to the given, redirects if different
 	 *
 	 * @param string $scheme
@@ -947,6 +976,31 @@ class Page {
 	 */
 	public static function redirectTo($location, $permanent = false) {
 		self::get()->doRedirectTo($location, $permanent);
+	}
+
+	/**
+	 * @see doRedirectToUri
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 * @param bool $permanent
+	 */
+	public static function redirectToUri($page, $lang = null, $query = null, $host = null, $scheme = null, $port = null, $permanent = false) {
+		self::get()->doRedirectToUri($page, $lang, $query, $host, $scheme, $port, $permanent);
+	}
+
+	/**
+	 * @see doRedirectToPage
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param bool $permanent
+	 */
+	public static function redirectToPage($page, $lang = null, $query = null, $permanent = false) {
+		self::get()->doRedirectToPage($page, $lang, $query, $permanent);
 	}
 
 	/**
