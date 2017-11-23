@@ -3,6 +3,7 @@
 namespace Ixolit\CDE\Interfaces;
 
 use Ixolit\CDE\Exceptions\CookieSetFailedException;
+use Ixolit\CDE\Exceptions\HeaderSetFailedException;
 use Ixolit\CDE\Exceptions\InvalidStatusCodeException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -73,4 +74,12 @@ interface ResponseAPI {
 	 * @throws CookieSetFailedException
 	 */
 	public function setCookie($name, $value, $maxAge = 0, $path = null, $domain = null, $secure = false, $httponly = false);
+
+	/**
+	 * @param $name
+	 * @param $value
+	 *
+	 * @throws HeaderSetFailedException
+	 */
+	public function setHeader($name, $value);
 }
