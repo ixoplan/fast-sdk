@@ -5,6 +5,7 @@ namespace Ixolit\CDE\Context;
 
 use Ixolit\CDE\CDE;
 use Ixolit\CDE\CDEInit;
+use Ixolit\CDE\CDETemporaryStorage;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
@@ -322,6 +323,13 @@ class Page {
 	}
 
 	/**
+	 * @return PageTemporaryStorage
+	 */
+	public function getTemporaryStorage() {
+		return PageTemporaryStorage::getInstance();
+	}
+
+	/**
 	 * Returns an URI instance for the given string
 	 *
 	 * @param string $uri
@@ -390,6 +398,18 @@ class Page {
 			}
 		}
 		return $this->getLanguage();
+	}
+
+	/**
+	 * Load environment from CDE's key value store (KVS)
+	 */
+	protected function loadEnvironment() {
+		try {
+			$_ENV = array_merge($_ENV, $this->getKvsAPI()->get('cde.php.env'));
+		}
+		catch (KVSKeyNotFoundException $e) {
+			// ignore
+		}
 	}
 
 	/**
