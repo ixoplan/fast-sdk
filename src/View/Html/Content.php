@@ -38,7 +38,7 @@ class Content implements Html {
 	 *
 	 * @param mixed $content
 	 *
-	 * @return self
+	 * @return static
 	 */
 	public function add($content) {
 		if (is_array($content)) {
@@ -54,7 +54,7 @@ class Content implements Html {
 	/**
 	 * Clears the contents
 	 *
-	 * @return self
+	 * @return static
 	 */
 	public function clear() {
 		$this->content = [];
@@ -67,7 +67,7 @@ class Content implements Html {
 	 *
 	 * @param callable $callable
 	 *
-	 * @return self
+	 * @return static
 	 */
 	public function doForEach(callable $callable) {
 		if (is_callable($callable)) {

@@ -96,7 +96,7 @@ class Page {
 	}
 
 	/**
-	 * @return self
+	 * @return static
 	 *
 	 * @throws \Exception
 	 */
