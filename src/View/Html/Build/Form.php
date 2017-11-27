@@ -274,7 +274,18 @@ class Form {
 	public function getLabel($field, $prefix = '', $attributes = [], $text = null) {
 
 		$formField = $this->getField($field, $prefix);
-		$text = isset($text) ? $text : Page::translation($formField->getLabel());
+		$label = $formField->getLabel();
+		$text =
+			isset($text)
+			? $text
+			: (
+				$label
+				? Page::translation($label)
+				: Page::translations('label', [
+					$this->getFormKey(),
+					$this->getFieldName($field, $prefix)
+				])
+			);
 
 		$element = (new ElementContent(Element::NAME_LABEL))
 			->addContent($text)
@@ -302,7 +313,7 @@ class Form {
 				$attributes,
 				Page::translations('error', [
 					$this->getFormKey(),
-                    $this->getFieldName($field, $prefix),
+					$this->getFieldName($field, $prefix),
 					is_numeric($key) ? $value : $key
 				])
 			)));
