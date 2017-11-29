@@ -5,7 +5,6 @@ namespace Ixolit\CDE\Context;
 
 use Ixolit\CDE\CDE;
 use Ixolit\CDE\CDEInit;
-use Ixolit\CDE\CDETemporaryStorage;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
@@ -64,6 +63,9 @@ class Page {
 
 	/** @var KVSAPI */
 	private $kvsAPI;
+
+	/** @var PageTemporaryStorage */
+	private $temporaryStorage;
 
 	/** @var string */
 	private $url;
@@ -229,6 +231,18 @@ class Page {
 		return CDE::getKVSAPI();
 	}
 
+	/**
+	 * @return PageTemporaryStorage
+	 */
+	protected function newTemporaryStorage() {
+		return new PageTemporaryStorage(
+			$this->getTemporaryStorageName(),
+			$this->getTemporaryStorageTimeout(),
+			$this->getTemporaryStoragePath(),
+			$this->getTemporaryStorageDomain()
+		);
+	}
+
 	// endregion
 
 	/**
@@ -329,7 +343,26 @@ class Page {
 	 * @return PageTemporaryStorage
 	 */
 	public function getTemporaryStorage() {
-		return PageTemporaryStorage::getInstance();
+		if (!isset($this->temporaryStorage)) {
+			$this->temporaryStorage = $this->newTemporaryStorage();
+		}
+		return $this->temporaryStorage;
+	}
+
+	protected function getTemporaryStorageName() {
+		return PageTemporaryStorage::COOKIE_NAME;
+	}
+
+	protected function getTemporaryStorageTimeout() {
+		return PageTemporaryStorage::COOKIE_TIMEOUT;
+	}
+
+	protected function getTemporaryStoragePath() {
+		return null;
+	}
+
+	protected function getTemporaryStorageDomain() {
+		return null;
 	}
 
 	/**

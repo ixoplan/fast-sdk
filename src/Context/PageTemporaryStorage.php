@@ -12,20 +12,26 @@ use Ixolit\CDE\CDETemporaryStorage;
  */
 class PageTemporaryStorage extends CDETemporaryStorage {
 
-	const COOKIE_NAME_PAGE_STORE = 'temporary-page';
+	const COOKIE_NAME = 'temporary-page';
 
-	/** @var self */
-	private static $instance;
+	const COOKIE_TIMEOUT = CDECookieCache::COOKIE_TIMEOUT_SESSION;
 
-	/**
-	 * @return $this
-	 */
-	public static function getInstance() {
-		if (self::$instance === null) {
-			self::$instance = new self(self::COOKIE_NAME_PAGE_STORE, CDECookieCache::COOKIE_TIMEOUT_SESSION);
-		}
-		return self::$instance;
+	public function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null) {
+		parent::__construct($dataStorageName, $dataStorageTimeout, $dataStoragePath, $dataStorageDomain);
 	}
+
+//	/** @var self */
+//	private static $instance;
+//
+//	/**
+//	 * @return $this
+//	 */
+//	public static function getInstance() {
+//		if (self::$instance === null) {
+//			self::$instance = new self(self::COOKIE_NAME_PAGE_STORE, CDECookieCache::COOKIE_TIMEOUT_SESSION);
+//		}
+//		return self::$instance;
+//	}
 
 	/**
 	 * @return array
