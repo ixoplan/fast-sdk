@@ -86,6 +86,9 @@ class Page {
 	/** @var array */
 	private $query;
 
+	/** @var array */
+	private $request;
+
 	/** @var string[] */
 	private $languages;
 
@@ -561,6 +564,7 @@ class Page {
 	 * @return array
 	 */
 	public function getQuery() {
+		// TODO: refactor to return query parameters only as soon as CDE supports it ...
 		if (!isset($this->query)) {
 			$this->query = $this->getRequestAPI()->getRequestParameters();
 		}
@@ -575,6 +579,26 @@ class Page {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getRequestParameters() {
+		if (!isset($this->request)) {
+			$this->request = $this->getRequestAPI()->getRequestParameters();
+		}
+		return $this->request;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return mixed|null
+	 */
+	public function getRequestParameter($name) {
+		$request = $this->getRequestParameters();
+		return isset($request[$name]) ? $request[$name] : null;
+	}
+
+	/**
 	 * Returns the languages supported by the current host
 	 *
 	 * @return string[]
@@ -584,6 +608,26 @@ class Page {
 			$this->languages = $this->getPagesAPI()->getLanguages();
 		}
 		return $this->languages;
+	}
+
+	/**
+	 * @param $name
+	 *
+	 * @return mixed|null
+	 */
+	public function getTemporaryVariable($name) {
+		return $this->getTemporaryStorage()->getVariable($name);
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 *
+	 * @return static
+	 */
+	public function setTemporaryVariable($name, $value) {
+		$this->getTemporaryStorage()->setVariable($name, $value);
+		return $this;
 	}
 
 	/**
@@ -901,9 +945,32 @@ class Page {
 		return self::get()->getQueryString();
 	}
 
+	/** @see getRequestParameters */
+	public static function requestParameters() {
+		return self::get()->getRequestParameters();
+	}
+
+	/**
+	 * @see getRequestParameter
+	 * @param $name
+	 * @return null|string
+	 */
+	public static function requestParameter($name) {
+		return self::get()->getRequestParameter($name);
+	}
+
 	/** @see getLanguages */
 	public static function languages() {
 		return self::get()->getLanguages();
+	}
+
+	/**
+	 * @see getTemporaryVariable
+	 * @param $name
+	 * @return mixed|null
+	 */
+	public static function temporaryVariable($name) {
+		return self::get()->getTemporaryVariable($name);
 	}
 
 	/**
