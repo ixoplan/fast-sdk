@@ -21,13 +21,23 @@ class CDETemporaryStorage {
 	/** @var int */
 	private $dataStorageTimeout;
 
+	/** @var string */
+	private $dataStoragePath;
+
+	/** @var string */
+	private $dataStorageDomain;
+
 	/**
 	 * @param string $dataStorageName
 	 * @param int $dataStorageTimeout
+	 * @param string $dataStoragePath
+	 * @param string $dataStorageDomain
 	 */
-	protected function __construct($dataStorageName, $dataStorageTimeout) {
+	protected function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null) {
 		$this->dataStorageName = $dataStorageName;
 		$this->dataStorageTimeout = $dataStorageTimeout;
+		$this->dataStoragePath = $dataStoragePath;
+		$this->dataStorageDomain = $dataStorageDomain;
 		$this->dataStorage = $this->restoreDataStorage();
 	}
 
@@ -102,7 +112,9 @@ class CDETemporaryStorage {
 		CDECookieCache::getInstance()->write(
 			$this->dataStorageName,
 			$encodedDataStorage,
-			$this->dataStorageTimeout
+			$this->dataStorageTimeout,
+			$this->dataStoragePath,
+			$this->dataStorageDomain
 		);
 
 		return $this;
