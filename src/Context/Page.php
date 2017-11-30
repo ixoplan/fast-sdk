@@ -623,12 +623,13 @@ class Page {
 
 	/**
 	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return mixed|null
 	 */
-	public function getRequestParameter($name) {
+	public function getRequestParameter($name, $default = null) {
 		$request = $this->getRequestParameters();
-		return isset($request[$name]) ? $request[$name] : null;
+		return isset($request[$name]) ? $request[$name] : $default;
 	}
 
 	/**
@@ -644,12 +645,17 @@ class Page {
 	}
 
 	/**
-	 * @param $name
+	 * @param string $name
+	 * @param mixed $default
 	 *
 	 * @return mixed|null
 	 */
-	public function getTemporaryVariable($name) {
-		return $this->getTemporaryStorage()->getVariable($name);
+	public function getTemporaryVariable($name, $default = null) {
+		$value = $this->getTemporaryStorage()->getVariable($name);
+		if ($value === null){
+			return $default;
+		}
+		return $value;
 	}
 
 	/**
@@ -985,11 +991,12 @@ class Page {
 
 	/**
 	 * @see getRequestParameter
-	 * @param $name
+	 * @param string $name
+	 * @param mixed $default
 	 * @return null|string
 	 */
-	public static function requestParameter($name) {
-		return self::get()->getRequestParameter($name);
+	public static function requestParameter($name, $default = null) {
+		return self::get()->getRequestParameter($name, $default);
 	}
 
 	/** @see getLanguages */
@@ -999,11 +1006,12 @@ class Page {
 
 	/**
 	 * @see getTemporaryVariable
-	 * @param $name
+	 * @param string $name
+	 * @param mixed $default
 	 * @return mixed|null
 	 */
-	public static function temporaryVariable($name) {
-		return self::get()->getTemporaryVariable($name);
+	public static function temporaryVariable($name, $default = null) {
+		return self::get()->getTemporaryVariable($name, $default);
 	}
 
 	/**
