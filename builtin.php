@@ -584,3 +584,11 @@ function setCookieAdvanced($name, $value, $expire = null, $path = null, $domain 
  */
 function getPage($path, $language = null, $vhost = null, $layout = null, $scheme = null) {
 }
+
+/**
+ * Fill response body with arbitrary data passed base64 encoded
+ *
+ * @param string $base64
+ */
+function respondWithBinaryFromBase64($base64) {
+}
