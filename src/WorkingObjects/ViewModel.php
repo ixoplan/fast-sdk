@@ -80,4 +80,11 @@ class ViewModel {
 	public function raw($variable) {
 		return $this->data[$variable];
 	}
+
+    /**
+     * @return array
+     */
+	public function getData() {
+	    return $this->data;
+	}
 }
