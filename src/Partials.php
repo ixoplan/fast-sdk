@@ -10,6 +10,8 @@ use Ixolit\CDE\WorkingObjects\ViewModel;
  */
 class Partials {
 
+	private static $cache = [];
+
 	/**
 	 * Try to load a partial from the layout, or if it doesn't exist, from the vhost.
 	 *
@@ -20,28 +22,30 @@ class Partials {
 	 */
 	public static function load($name, $data = []) {
 
-	    static $cache;
+		$language = getCurrentLanguage();
+		$cacheKey = $name . $language;
 
-	    $language = getCurrentLanguage();
-	    $cacheKey = $name . $language;
-
+		// build list of possible paths
 		$tryFiles = [];
-		if (!empty($cache[$cacheKey])) {
-		    $tryFiles = [$cache[$cacheKey]];
+		if (!empty(self::$cache[$cacheKey])) {
+			// previously resolved and cached
+			$tryFiles = [self::$cache[$cacheKey]];
+		}
+		else {
+			// add possible combinations of layout & language
+			if (function_exists('getCurrentLayout') && \getCurrentLayout()) {
+				$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.' . $language . '.php';
+				$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.php';
+			}
+			$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.' . $language . '.php';
+			$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.php';
 		}
 
-		if (empty($tryFiles)) {
-            if (function_exists('getCurrentLayout') && \getCurrentLayout()) {
-                $tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.' . $language . '.php';
-                $tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.php';
-            }
-            $tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.' . $language . '.php';
-            $tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.php';
-        }
-
+		// resolve, use first possible, cache
 		foreach ($tryFiles as $tryFile) {
 			if (\file_exists($tryFile)) {
-			    \extract($data);
+				self::$cache[$cacheKey] = $tryFile;
+				\extract($data);
 				include($tryFile);
 				return;
 			}
