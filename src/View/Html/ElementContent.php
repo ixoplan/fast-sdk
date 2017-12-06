@@ -32,7 +32,7 @@ class ElementContent extends Element {
 	/**
 	 * @param $content
 	 *
-	 * @return self
+	 * @return static
 	 */
 	public function addContent($content) {
 		$this->content->add($content);

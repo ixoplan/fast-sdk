@@ -83,5 +83,10 @@ interface PagesAPI {
 	 */
 	public function getAllMetadata($lang = null, $pagePath = null, $layout = null);
 
-
+	/**
+	 * Returns info about an active preview session if available otherwise null.
+	 *
+	 * @return mixed
+	 */
+	public function	getPreviewInfo();
 }

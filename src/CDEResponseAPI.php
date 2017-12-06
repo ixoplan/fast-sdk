@@ -4,6 +4,7 @@ namespace Ixolit\CDE;
 
 use Ixolit\CDE\Exceptions\CDEFeatureNotSupportedException;
 use Ixolit\CDE\Exceptions\CookieSetFailedException;
+use Ixolit\CDE\Exceptions\HeaderSetFailedException;
 use Ixolit\CDE\Exceptions\InvalidStatusCodeException;
 use Ixolit\CDE\Interfaces\ResponseAPI;
 use Psr\Http\Message\ResponseInterface;
@@ -75,6 +76,18 @@ class CDEResponseAPI implements ResponseAPI {
 		}
 		if (!$this->setCookieInternal($name, $value, $maxAge, $path, $domain, $secure, $httponly)) {
 			throw new CookieSetFailedException($name, $value, $maxAge, $path, $domain, $secure, $httponly);
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function setHeader($name, $value) {
+		if (!\function_exists('setHeader')) {
+			throw new CDEFeatureNotSupportedException('setHeader');
+		}
+		if (!\setHeader($name, $value)) {
+			throw new HeaderSetFailedException($name, $value);
 		}
 	}
 

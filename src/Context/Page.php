@@ -4,11 +4,14 @@ namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDE;
+use Ixolit\CDE\CDEInit;
 use Ixolit\CDE\Exceptions\InvalidValueException;
+use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
 use Ixolit\CDE\Interfaces\FilesystemAPI;
 use Ixolit\CDE\Interfaces\GeoLookupAPI;
+use Ixolit\CDE\Interfaces\KVSAPI;
 use Ixolit\CDE\Interfaces\MetaAPI;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
@@ -25,8 +28,17 @@ use Psr\Http\Message\UriInterface;
  */
 class Page {
 
+	const KVS_KEY_APP_CFG = 'app.cfg';
+	const APP_CFG_KEY_ENV = 'env';
+	const APP_CFG_VAL_ENV_PROD = 'production';
+	const APP_CFG_VAL_ENV_DEVL = 'development';
+	const APP_CFG_KEY_HTTPS = 'https';
+
 	/** @var self */
 	private static $instance;
+
+	/** @var array */
+	private $config;
 
 	/** @var RequestAPI */
 	private $requestAPI;
@@ -49,6 +61,12 @@ class Page {
 	/** @var GeoLookupAPI */
 	private $geoLookupApi;
 
+	/** @var KVSAPI */
+	private $kvsAPI;
+
+	/** @var PageTemporaryStorage */
+	private $temporaryStorage;
+
 	/** @var string */
 	private $url;
 
@@ -70,6 +88,9 @@ class Page {
 	/** @var array */
 	private $query;
 
+	/** @var array */
+	private $request;
+
 	/** @var string[] */
 	private $languages;
 
@@ -80,7 +101,7 @@ class Page {
 	}
 
 	/**
-	 * @return self
+	 * @return static
 	 *
 	 * @throws \Exception
 	 */
@@ -110,6 +131,30 @@ class Page {
 //	public static function __callStatic($name, $arguments) {
 //		return call_user_func_array([self::get(), 'get' . $name], $arguments);
 //	}
+
+	/**
+	 * @param self $instance
+	 */
+	public static function run($instance) {
+		self::set($instance);
+		self::get()->doRun();
+	}
+
+	public function doRun() {
+		$this->doPrepare();
+		$this->doExecute();
+	}
+
+	protected function doPrepare() {
+		if ($this->getConfigEnforceHttps()) {
+			$this->doEnforceHttps();
+		}
+	}
+
+	protected function doExecute() {
+		// call CDE controller logic
+		CDEInit::execute();
+	}
 
 	private $test;
 
@@ -172,12 +217,31 @@ class Page {
 		return CDE::getMetaAPI();
 	}
 
-    /**
-     * @return GeoLookupAPI
-     */
+	/**
+	 * @return GeoLookupAPI
+	 */
 	protected function newGeoLookupApi() {
-	    return CDE::getGeoAPI();
-    }
+		return CDE::getGeoAPI();
+	}
+
+	/**
+	 * @return KVSAPI
+	 */
+	protected function newKvsAPI() {
+		return CDE::getKVSAPI();
+	}
+
+	/**
+	 * @return PageTemporaryStorage
+	 */
+	protected function newTemporaryStorage() {
+		return new PageTemporaryStorage(
+			$this->getTemporaryStorageName(),
+			$this->getTemporaryStorageTimeout(),
+			$this->getTemporaryStoragePath(),
+			$this->getTemporaryStorageDomain()
+		);
+	}
 
 	// endregion
 
@@ -253,16 +317,53 @@ class Page {
 		return $this->metaAPI;
 	}
 
-    /**
-     * @return GeoLookupAPI
-     */
+	/**
+	 * @return GeoLookupAPI
+	 */
 	public function getGeoLookupApi() {
-        if (!isset($this->geoLookupApi)) {
-            $this->geoLookupApi = $this->newGeoLookupApi();
-        }
+		if (!isset($this->geoLookupApi)) {
+			$this->geoLookupApi = $this->newGeoLookupApi();
+		}
 
-        return $this->geoLookupApi;
-    }
+		return $this->geoLookupApi;
+	}
+
+	/**
+	 * @return KVSAPI
+	 */
+	public function getKvsAPI() {
+		if (!isset($this->kvsAPI)) {
+			$this->kvsAPI = $this->newKvsAPI();
+		}
+
+		return $this->kvsAPI;
+	}
+
+	/**
+	 * @return PageTemporaryStorage
+	 */
+	public function getTemporaryStorage() {
+		if (!isset($this->temporaryStorage)) {
+			$this->temporaryStorage = $this->newTemporaryStorage();
+		}
+		return $this->temporaryStorage;
+	}
+
+	protected function getTemporaryStorageName() {
+		return PageTemporaryStorage::COOKIE_NAME;
+	}
+
+	protected function getTemporaryStorageTimeout() {
+		return PageTemporaryStorage::COOKIE_TIMEOUT;
+	}
+
+	protected function getTemporaryStoragePath() {
+		return null;
+	}
+
+	protected function getTemporaryStorageDomain() {
+		return null;
+	}
 
 	/**
 	 * Returns an URI instance for the given string
@@ -306,7 +407,7 @@ class Page {
 	 *
 	 * @return string
 	 */
-	private static function buildQuery($query) {
+	private static function buildQueryString($query) {
 		if (\is_array($query)) {
 			$params = [];
 			foreach ($query as $key => $value) {
@@ -333,6 +434,87 @@ class Page {
 			}
 		}
 		return $this->getLanguage();
+	}
+
+	/**
+	 * Load environment from CDE's key value store (KVS)
+	 */
+	protected function loadEnvironment() {
+		try {
+			$_ENV = array_merge($_ENV, $this->getKvsAPI()->get('cde.php.env'));
+		}
+		catch (KVSKeyNotFoundException $e) {
+			// ignore
+		}
+	}
+
+	/**
+	 * Get configuration (key value pairs)
+	 *
+	 * @return array
+	 */
+	protected function getConfig() {
+
+		// try to load from CDE's key value store (KVS)
+		if (!isset($this->config)) {
+			try {
+				$this->config = $this->getKvsAPI()->get(self::KVS_KEY_APP_CFG);
+			}
+			catch (KVSKeyNotFoundException $e) {
+				$this->config = [];
+			}
+		}
+
+		return $this->config;
+	}
+
+	/**
+	 * Get configuration value
+	 *
+	 * @param string $name
+	 * @param mixed $default
+	 *
+	 * @return mixed|null
+	 */
+	public function getConfigValue($name, $default = null) {
+		$config = $this->getConfig();
+		return isset($config[$name]) ? $config[$name] : $default;
+	}
+
+	/**
+	 * Returns true if HTTPS is enforced
+	 *
+	 * @return mixed|null
+	 */
+	public function getConfigEnforceHttps() {
+		return $this->getConfigValue(self::APP_CFG_KEY_HTTPS, true);
+	}
+
+	/**
+	 * Returns the application environment
+	 *
+	 * @return mixed
+	 */
+	public function getAppEnv() {
+		return $this->getConfigValue(self::APP_CFG_KEY_ENV, self::APP_CFG_VAL_ENV_PROD);
+	}
+
+	/**
+	 * Returns true in development environment
+	 *
+	 * @return bool
+	 */
+	public function getDevEnv() {
+		return ($this->getAppEnv() === self::APP_CFG_VAL_ENV_DEVL);
+	}
+
+	/**
+	 * Returns true in preview sessions
+	 *
+	 * @return bool
+	 */
+	public function getPreview() {
+		return ($this->getPagesAPI()->getPreviewInfo() != null);
 	}
 
 	/**
@@ -407,14 +589,47 @@ class Page {
 		return $this->path;
 	}
 
+	public function getFullPath() {
+		return '/' . $this->getLanguage() . $this->getPath();
+	}
+
 	/**
 	 * @return array
 	 */
 	public function getQuery() {
+		// TODO: refactor to return query parameters only as soon as CDE supports it ...
 		if (!isset($this->query)) {
 			$this->query = $this->getRequestAPI()->getRequestParameters();
 		}
 		return $this->query;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getQueryString() {
+		return self::buildQueryString($this->getQuery());
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getRequestParameters() {
+		if (!isset($this->request)) {
+			$this->request = $this->getRequestAPI()->getRequestParameters();
+		}
+		return $this->request;
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $default
+	 *
+	 * @return mixed|null
+	 */
+	public function getRequestParameter($name, $default = null) {
+		$request = $this->getRequestParameters();
+		return isset($request[$name]) ? $request[$name] : $default;
 	}
 
 	/**
@@ -427,6 +642,31 @@ class Page {
 			$this->languages = $this->getPagesAPI()->getLanguages();
 		}
 		return $this->languages;
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $default
+	 *
+	 * @return mixed|null
+	 */
+	public function getTemporaryVariable($name, $default = null) {
+		$value = $this->getTemporaryStorage()->getVariable($name);
+		if ($value === null){
+			return $default;
+		}
+		return $value;
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 *
+	 * @return static
+	 */
+	public function setTemporaryVariable($name, $value) {
+		$this->getTemporaryStorage()->setVariable($name, $value);
+		return $this;
 	}
 
 	/**
@@ -530,7 +770,7 @@ class Page {
 
 		$uri = $uri->withPath($this->getPagePath($page, $lang));
 
-		$uri = $uri->withQuery(self::buildQuery($query === null ? $this->getQuery() : $query));
+		$uri = $uri->withQuery(self::buildQueryString($query === null ? $this->getQuery() : $query));
 
 		if ($host !== null) {
 			$uri = $uri->withHost($host);
@@ -600,6 +840,35 @@ class Page {
 	}
 
 	/**
+	 * Sends a redirect response to the URL for the given page, language, query, host and scheme, based on the current
+	 * request and exits
+	 *
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 * @param bool $permanent
+	 */
+	public function doRedirectToUri($page, $lang = null, $query = null, $host = null, $scheme = null, $port = null, $permanent = false) {
+		$this->doRedirectTo((string) $this->getPageUri($page, $lang, $query, $host, $scheme, $port), $permanent);
+	}
+
+	/**
+	 * Sends a redirect response to the URL for the given page, language and query, based on the current request and
+	 * exits
+	 *
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param bool $permanent
+	 */
+	public function doRedirectToPage($page, $lang = null, $query = null, $permanent = false) {
+		$this->doRedirectToUri($page, $lang, $query, null, null, null, $permanent);
+	}
+
+	/**
 	 * Compares the current scheme to the given, redirects if different
 	 *
 	 * @param string $scheme
@@ -650,12 +919,25 @@ class Page {
 		return self::get()->getMetaAPI();
 	}
 
-    /**
-     * @return GeoLookupAPI
-     */
+	/** @see getGeoLookupApi */
 	public static function geoLookupApi() {
-	    return self::get()->getGeoLookupApi();
-    }
+		return self::get()->getGeoLookupApi();
+	}
+
+	/** @see getKvsAPI */
+	public static function kvsAPI() {
+		return self::get()->getKvsAPI();
+	}
+
+	/** @see getDevEnv */
+	public static function isDevEnv() {
+		return self::get()->getDevEnv();
+	}
+
+	/** @see getPreview */
+	public static function isPreview() {
+		return self::get()->getPreview();
+	}
 
 	/** @see getUrl */
 	public static function url() {
@@ -687,14 +969,49 @@ class Page {
 		return self::get()->getPath();
 	}
 
+	/** @see getFullPath */
+	public static function fullPath() {
+		return self::get()->getFullPath();
+	}
+
 	/** @see getQuery */
 	public static function query() {
 		return self::get()->getQuery();
 	}
 
+	/** @see getQueryString */
+	public static function queryString() {
+		return self::get()->getQueryString();
+	}
+
+	/** @see getRequestParameters */
+	public static function requestParameters() {
+		return self::get()->getRequestParameters();
+	}
+
+	/**
+	 * @see getRequestParameter
+	 * @param string $name
+	 * @param mixed $default
+	 * @return null|string
+	 */
+	public static function requestParameter($name, $default = null) {
+		return self::get()->getRequestParameter($name, $default);
+	}
+
 	/** @see getLanguages */
 	public static function languages() {
 		return self::get()->getLanguages();
+	}
+
+	/**
+	 * @see getTemporaryVariable
+	 * @param string $name
+	 * @param mixed $default
+	 * @return mixed|null
+	 */
+	public static function temporaryVariable($name, $default = null) {
+		return self::get()->getTemporaryVariable($name, $default);
 	}
 
 	/**
@@ -787,6 +1104,31 @@ class Page {
 	 */
 	public static function redirectTo($location, $permanent = false) {
 		self::get()->doRedirectTo($location, $permanent);
+	}
+
+	/**
+	 * @see doRedirectToUri
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 * @param bool $permanent
+	 */
+	public static function redirectToUri($page, $lang = null, $query = null, $host = null, $scheme = null, $port = null, $permanent = false) {
+		self::get()->doRedirectToUri($page, $lang, $query, $host, $scheme, $port, $permanent);
+	}
+
+	/**
+	 * @see doRedirectToPage
+	 * @param string|null $page
+	 * @param string|null $lang
+	 * @param mixed|null $query
+	 * @param bool $permanent
+	 */
+	public static function redirectToPage($page, $lang = null, $query = null, $permanent = false) {
+		self::get()->doRedirectToPage($page, $lang, $query, $permanent);
 	}
 
 	/**

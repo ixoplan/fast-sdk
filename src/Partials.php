@@ -3,11 +3,14 @@
 namespace Ixolit\CDE;
 
 use Ixolit\CDE\Exceptions\PartialNotFoundException;
+use Ixolit\CDE\WorkingObjects\ViewModel;
 
 /**
  * Helper class for accessing partials
  */
 class Partials {
+
+	private static $cache = [];
 
 	/**
 	 * Try to load a partial from the layout, or if it doesn't exist, from the vhost.
@@ -18,14 +21,30 @@ class Partials {
 	 * @throws PartialNotFoundException
 	 */
 	public static function load($name, $data = []) {
-		$tryFiles = [];
-		if (function_exists('getCurrentLayout') && \getCurrentLayout()) {
-			$tryFiles[] =  '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.php';
-		}
-		$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.php';
 
+		$language = getCurrentLanguage();
+		$cacheKey = $name . $language;
+
+		// build list of possible paths
+		$tryFiles = [];
+		if (!empty(self::$cache[$cacheKey])) {
+			// previously resolved and cached
+			$tryFiles = [self::$cache[$cacheKey]];
+		}
+		else {
+			// add possible combinations of layout & language
+			if (function_exists('getCurrentLayout') && \getCurrentLayout()) {
+				$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.' . $language . '.php';
+				$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.php';
+			}
+			$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.' . $language . '.php';
+			$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.php';
+		}
+
+		// resolve, use first possible, cache
 		foreach ($tryFiles as $tryFile) {
 			if (\file_exists($tryFile)) {
+				self::$cache[$cacheKey] = $tryFile;
 				\extract($data);
 				include($tryFile);
 				return;
