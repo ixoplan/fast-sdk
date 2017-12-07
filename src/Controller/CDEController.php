@@ -169,7 +169,7 @@ class CDEController {
         $this->getFormProcessor()->storeForm($form);
 
         $redirectPath = empty($form->getErrorRedirectPath())
-            ? $this->getRequestApi()->getPagePath() : $form->getErrorRedirectPath();
+            ? '/' . $this->getRequestApi()->getLanguage() . $this->getRequestApi()->getPagePath() : $form->getErrorRedirectPath();
 
         $this->redirectToPath($redirectPath, $form->getErrorRedirectParameters());
         //exit
