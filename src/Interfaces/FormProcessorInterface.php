@@ -48,6 +48,14 @@ interface FormProcessorInterface {
 	public function readStoredFormData($formName);
 
 	/**
+	 * @param Form  $form
+     * @param array $data
+	 *
+	 * @return bool
+	 */
+	public function setRestoredFormData(Form $form, $data);
+
+	/**
 	 * Cleanup the form from storage.
 	 *
 	 * @param Form              $form
