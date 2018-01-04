@@ -929,6 +929,11 @@ class Page {
 		return self::get()->getKvsAPI();
 	}
 
+	/** @see getAppEnv */
+	public static function appEnv() {
+		return self::get()->getAppEnv();
+	}
+
 	/** @see getDevEnv */
 	public static function isDevEnv() {
 		return self::get()->getDevEnv();
