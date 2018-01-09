@@ -25,20 +25,21 @@ class Partials {
 		$language = getCurrentLanguage();
 		$cacheKey = $name . $language;
 
+		$vhostsDir = defined('VHOSTS_DIR') ? VHOSTS_DIR : '/vhosts/';
+
 		// build list of possible paths
 		$tryFiles = [];
 		if (!empty(self::$cache[$cacheKey])) {
 			// previously resolved and cached
 			$tryFiles = [self::$cache[$cacheKey]];
-		}
-		else {
+		} else {
 			// add possible combinations of layout & language
 			if (function_exists('getCurrentLayout') && \getCurrentLayout()) {
-				$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.' . $language . '.php';
-				$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.php';
+				$tryFiles[] = $vhostsDir . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.' . $language . '.php';
+				$tryFiles[] = $vhostsDir . getEffectiveVhost() . '/layouts/' . getCurrentLayout() . '/partials/' . $name . '.php';
 			}
-			$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.' . $language . '.php';
-			$tryFiles[] = '/vhosts/' . getEffectiveVhost() . '/partials/' . $name . '.php';
+			$tryFiles[] = $vhostsDir . getEffectiveVhost() . '/partials/' . $name . '.' . $language . '.php';
+			$tryFiles[] = $vhostsDir . getEffectiveVhost() . '/partials/' . $name . '.php';
 		}
 
 		// resolve, use first possible, cache
