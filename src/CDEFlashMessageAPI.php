@@ -149,11 +149,11 @@ class CDEFlashMessageAPI extends CDETemporaryStorage {
 	 *
 	 * @param mixed $filter
 	 * @param string $partial
-	 * @param array|null $data
+	 * @param array $data
 	 *
 	 * @return int
 	 */
-	public function render($filter, $partial, $data = null) {
+	public function render($filter, $partial, $data = []) {
 		$messageData = $this->getMessageData($filter);
 		foreach ($messageData as $msg) {
 			Partials::load($partial, array_replace_recursive($data, $msg));
