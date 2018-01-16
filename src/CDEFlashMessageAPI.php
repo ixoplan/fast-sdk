@@ -161,4 +161,14 @@ class CDEFlashMessageAPI extends CDETemporaryStorage {
 
 		return count($messageData);
 	}
+
+    /**
+     * @param $filter
+     * @return int
+     */
+	public function hasMessages($filter) {
+	    $messageData = $this->getMessageData($filter);
+	    return count($messageData);
+	}
+
 }
