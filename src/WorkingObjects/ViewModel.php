@@ -77,7 +77,17 @@ class ViewModel {
 	 *
 	 * @return string
 	 */
-	public function raw($variable) {
-		return $this->data[$variable];
+	public function raw($variable, $default=null) {
+	    if (array_key_exists($variable, $this->data)) {
+	        return $this->data[$variable];
+	    }
+		return $default;
+	}
+
+    /**
+     * @return array
+     */
+	public function getData() {
+	    return $this->data;
 	}
 }

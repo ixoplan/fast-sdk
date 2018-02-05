@@ -33,7 +33,7 @@ class CookieCSRFTokenProvider implements CSRFTokenProvider {
 		$token = CDECookieCache::getInstance()->read(self::COOKIE_NAME_CSRF_TOKEN);
 
 		if ($token === null) {
-			$token = \md5(\mt_rand(PHP_INT_MIN, PHP_INT_MAX));
+			$token = \md5(\mt_rand(0, PHP_INT_MAX));
 		}
 
 		return $token;

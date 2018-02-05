@@ -3,14 +3,14 @@
 namespace Ixolit\CDE\Form;
 
 use Ixolit\CDE\CDECookieCache;
-use Ixolit\CDE\Interfaces\FormProcessorInterface;
+use Ixolit\CDE\Interfaces\FormProcessorExtendedInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * This class was ported from the Piccolo form library with permission.
  */
-class CookieFormProcessor implements FormProcessorInterface {
+class CookieFormProcessor implements FormProcessorExtendedInterface {
 
 	const COOKIE_NAME_POSTFIX_FORM = '-form';
 	const COOKIE_FORM_PARAMETER_ERRORS = '_errors';
@@ -175,7 +175,7 @@ class CookieFormProcessor implements FormProcessorInterface {
 	 *
 	 * @return bool
 	 */
-	protected function setRestoredFormData(Form $form, $data) {
+	public function setRestoredFormData(Form $form, $data) {
         if (\is_array($data)) {
             if (
                 !empty($data[self::COOKIE_FORM_PARAMETER_FIELDS])
