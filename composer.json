@@ -1,6 +1,6 @@
 {
 	"name": "ixolit/cde-sdk",
-	"license": "Dislo License",
+	"license": "MIT",
 	"type": "library",
 	"description": "Client library for CDE APIs.",
 	"require": {

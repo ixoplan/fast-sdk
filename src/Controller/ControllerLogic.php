@@ -38,7 +38,7 @@ class ControllerLogic {
 		global $view;
 
 		try {
-			$path = '/vhosts/';
+			$path = defined('VHOSTS_DIR') ? VHOSTS_DIR : '/vhosts/';
 			$path .= urlencode($this->requestApi->getEffectiveVhost());
 			$path .= '/layouts/';
 			$path .= $this->requestApi->getLayout()->getName();
@@ -57,9 +57,11 @@ class ControllerLogic {
 					$this->responseApi->sendPSR7($controllerData);
 					exit;
 				}
-				foreach ($controllerData as $key => $value) {
-					$viewData[$key] = $value;
-				}
+				if (!empty($controllerData) && is_array($controllerData)) {
+                    foreach ($controllerData as $key => $value) {
+                        $viewData[$key] = $value;
+                    }
+                }
 			}
 			$view = new ViewModel($viewData);
 		} catch (AuthenticationRequiredException $e) {
