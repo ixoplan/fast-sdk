@@ -9,6 +9,8 @@ use Ixolit\CDE\WorkingObjects\KVSKey;
 
 /**
  * This API implements the KVS API using the CDE API calls.
+ *
+ * @deprecated
  */
 class CDEKVSAPI implements Interfaces\KVSAPI {
 	/**

@@ -5,6 +5,8 @@ use Ixolit\CDE\WorkingObjects\CDEMailAPI;
 
 /**
  * This class gives static access to the default API implementations.
+ *
+ * @deprecated
  */
 class CDE {
 	private function __construct() {}

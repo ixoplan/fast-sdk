@@ -9,6 +9,8 @@ use Ixolit\CDE\Interfaces\MetaAPI;
 
 /**
  * This API implements the meta API using the CDE API calls.
+ *
+ * @deprecated
  */
 class CDEMetaAPI implements MetaAPI {
 

@@ -5,6 +5,7 @@ namespace Ixolit\CDE\Controller;
 use Ixolit\CDE\Auth\AuthenticationRequiredException;
 use Ixolit\CDE\Exceptions\ControllerSkipViewException;
 use Ixolit\CDE\Exceptions\InformationNotAvailableInContextException;
+use Ixolit\CDE\Interfaces\ControllerLogicInterface;
 use Ixolit\CDE\Interfaces\FilesystemAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResponseAPI;
@@ -12,29 +13,87 @@ use Ixolit\CDE\PSR7\Response;
 use Ixolit\CDE\WorkingObjects\ViewModel;
 use Psr\Http\Message\ResponseInterface;
 
-class ControllerLogic {
+/**
+ * Class ControllerLogic
+ *
+ * @package Ixolit\CDE\Controller
+ */
+class ControllerLogic implements ControllerLogicInterface {
 	/**
-	 * @var RequestAPI
+	 * @var RequestAPI|null
 	 */
 	private $requestApi;
 
 	/**
-	 * @var ResponseAPI
+	 * @var ResponseAPI|null
 	 */
 	private $responseApi;
 
 	/**
-	 * @var FilesystemAPI
+	 * @var FilesystemAPI|null
 	 */
 	private $fsApi;
 
-	public function __construct(RequestAPI $requestApi, ResponseAPI $responseApi, FilesystemAPI $fsApi) {
+    /**
+     * ControllerLogic constructor.
+     *
+     * @param RequestAPI|null    $requestApi
+     * @param ResponseAPI|null   $responseApi
+     * @param FilesystemAPI|null $fsApi
+     */
+	public function __construct(
+	    RequestAPI $requestApi = null,
+        ResponseAPI $responseApi = null,
+        FilesystemAPI $fsApi = null
+    ) {
 		$this->requestApi  = $requestApi;
 		$this->responseApi = $responseApi;
 		$this->fsApi = $fsApi;
 	}
 
+    /**
+     * @param RequestAPI $requestApi
+     *
+     * @return $this
+     */
+    public function setRequestApi(RequestAPI $requestApi) {
+        $this->requestApi = $requestApi;
+
+        return $this;
+    }
+
+    /**
+     * @param ResponseAPI $responseApi
+     *
+     * @return $this
+     */
+    public function setResponseApi(ResponseAPI $responseApi) {
+        $this->responseApi = $responseApi;
+
+        return $this;
+    }
+
+    /**
+     * @param FilesystemAPI $filesystemApi
+     *
+     * @return $this
+     */
+    public function setFileSystemApi(FilesystemAPI $filesystemApi) {
+        $this->fsApi = $filesystemApi;
+
+        return $this;
+    }
+
+    /**
+     * @return void
+     *
+     * @throws \Exception
+     */
 	public function execute() {
+	    if (empty($this->requestApi) || empty($this->responseApi) || empty($this->fsApi)) {
+	        throw new \Exception('Required APIs are missing.');
+        }
+
 		global $view;
 
 		try {
@@ -88,4 +147,5 @@ class ControllerLogic {
 			}
 		}
 	}
+
 }

@@ -3,12 +3,15 @@
 namespace Ixolit\CDE\Context;
 
 
-use Ixolit\CDE\CDE;
 use Ixolit\CDE\CDEInit;
+use Ixolit\CDE\Exceptions\InvalidCustomObjectException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
+use Ixolit\CDE\Exceptions\PageContextAlreadySetException;
+use Ixolit\CDE\Exceptions\PageContextNotFoundException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
+use Ixolit\CDE\Interfaces\ControllerLogicInterface;
 use Ixolit\CDE\Interfaces\FilesystemAPI;
 use Ixolit\CDE\Interfaces\GeoLookupAPI;
 use Ixolit\CDE\Interfaces\KVSAPI;
@@ -34,64 +37,109 @@ class Page {
 	const APP_CFG_VAL_ENV_DEVL = 'development';
 	const APP_CFG_KEY_HTTPS = 'https';
 
-	/** @var self */
+    /**
+     * @var self
+     */
 	private static $instance;
 
-	/** @var array */
+    /**
+     * @var PageCustomInterface|null
+     */
+    private $customPage;
+
+    /**
+     * @var array
+     */
 	private $config;
 
-	/** @var RequestAPI */
+    /**
+     * @var RequestAPI
+     */
 	private $requestAPI;
 
-	/** @var ResponseAPI */
+    /**
+     * @var ResponseAPI
+     */
 	private $responseAPI;
 
-	/** @var ResourceAPI */
+    /**
+     * @var ResourceAPI
+     */
 	private $resourceAPI;
 
-	/** @var FilesystemAPI */
+    /**
+     * @var FilesystemAPI
+     */
 	private $filesystemAPI;
 
-	/** @var PagesAPI */
+    /**
+     * @var PagesAPI
+     */
 	private $pagesAPI;
 
-	/** @var MetaAPI */
+    /**
+     * @var MetaAPI
+     */
 	private $metaAPI;
 
-	/** @var GeoLookupAPI */
+    /**
+     * @var GeoLookupAPI
+     */
 	private $geoLookupApi;
 
-	/** @var KVSAPI */
+    /**
+     * @var KVSAPI
+     */
 	private $kvsAPI;
 
-	/** @var PageTemporaryStorage */
+    /**
+     * @var PageTemporaryStorage
+     */
 	private $temporaryStorage;
 
-	/** @var string */
+    /**
+     * @var string
+     */
 	private $url;
 
-	/** @var string */
+    /**
+     * @var string
+     */
 	private $scheme;
 
-	/** @var string */
+    /**
+     * @var string
+     */
 	private $vhost;
 
-	/** @var string */
+    /**
+     * @var string
+     */
 	private $language;
 
-	/** @var Layout */
+    /**
+     * @var Layout
+     */
 	private $layout;
 
-	/** @var string */
+    /**
+     * @var string
+     */
 	private $path;
 
-	/** @var array */
+    /**
+     * @var array
+     */
 	private $query;
 
-	/** @var array */
+    /**
+     * @var array
+     */
 	private $request;
 
-	/** @var string[] */
+    /**
+     * @var string[]
+     */
 	private $languages;
 
 	protected function __construct() {
@@ -108,7 +156,7 @@ class Page {
 	public static function get() {
 
 		if (!isset(self::$instance)) {
-			throw new \Exception('not set'); // TODO: specific exception
+			throw new PageContextNotFoundException('Page context not set');
 		}
 
 		return self::$instance;
@@ -122,7 +170,7 @@ class Page {
 	protected static function set($instance) {
 
 		if (isset(self::$instance)) {
-			throw new \Exception('already set'); // TODO: specific exception
+			throw new PageContextAlreadySetException('Page context already set');
 		}
 
 		self::$instance = $instance;
@@ -132,8 +180,44 @@ class Page {
 //		return call_user_func_array([self::get(), 'get' . $name], $arguments);
 //	}
 
+    /**
+     * @return void
+     */
+    public static function start() {
+	    self::set(new self());
+	    self::get()
+            ->prepare()
+            ->execute();
+    }
+
+    /**
+     * @return $this
+     */
+    protected function prepare() {
+        if ($this->getConfigEnforceHttps()) {
+            $this->doEnforceHttps();
+        }
+
+        //call custom prepare steps
+        $customPage = $this->getCustomPage();
+        if (!empty($customPage)) {
+            $customPage->doPrepare();
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return void
+     */
+    protected function execute() {
+        $this->getControllerLogic()->execute();
+    }
+
 	/**
 	 * @param self $instance
+     *
+     * @deprecated
 	 */
 	public static function run($instance) {
 		self::set($instance);
@@ -145,90 +229,134 @@ class Page {
 		$this->doExecute();
 	}
 
-	protected function doPrepare() {
+    /**
+     * @return void
+     *
+     * @deprecated
+     */
+    protected function doPrepare() {
 		if ($this->getConfigEnforceHttps()) {
 			$this->doEnforceHttps();
 		}
 	}
 
-	protected function doExecute() {
+    /**
+     * @return void
+     *
+     * @deprecated
+     */
+    protected function doExecute() {
 		// call CDE controller logic
 		CDEInit::execute();
 	}
 
-	private $test;
-
-	protected function newTest() {
-		return \date('r');
-	}
-
-	public function getTest() {
-		if (!isset($this->test)) {
-			$this->test = $this->newTest();
-		}
-		return $this->test;
-	}
-
-	public static function test() {
-		return self::get()->getTest();
-	}
-
 	// region factory methods
+
+    /**
+     * @param string $class
+     * @param string $interface
+     *
+     * @return mixed
+     *
+     * @throws InvalidCustomObjectException
+     */
+    protected function getCustomObject($class, $interface) {
+        if (! \class_exists($class)) {
+            throw new InvalidCustomObjectException($class . ' doesn\'t exist.');
+        }
+
+        $object = new $class();
+
+        if (! ($object instanceof $interface)) {
+            throw new InvalidCustomObjectException($class . ' is no instance of ' . $interface);
+        }
+
+        return $object;
+    }
+
+    /**
+     * @return ControllerLogicInterface
+     */
+    protected function getControllerLogic() {
+        $controllerLogic = $this->getCustomObject(
+            'Ixolit\\CDE\\Controller\\ControllerLogic',
+            ControllerLogicInterface::class
+        );
+
+        $controllerLogic
+            ->setRequestApi($this->getRequestAPI())
+            ->setResponseApi($this->getResponseAPI())
+            ->setFileSystemApi($this->getFilesystemAPI());
+
+        return $controllerLogic;
+    }
+
+    /**
+     * @param string $className
+     * @param string $interface
+     *
+     * @return mixed
+     */
+    protected function newApiObject($className, $interface) {
+        $class = 'Ixolit\\CDE\\Api\\' . $className;
+
+        return $this->getCustomObject($class, $interface);
+    }
 
 	/**
 	 * @return RequestAPI
 	 */
 	protected function newRequestAPI() {
-		return CDE::getRequestAPI();
+        return $this->newApiObject('CDERequestAPI', RequestAPI::class);
 	}
 
 	/**
 	 * @return ResponseAPI
 	 */
 	protected function newResponseAPI() {
-		return CDE::getResponseAPI();
+        return $this->newApiObject('CDEResponseAPI', ResponseAPI::class);
 	}
 
 	/**
 	 * @return ResourceAPI
 	 */
 	protected function newResourceAPI() {
-		return CDE::getResourceAPI();
+        return $this->newApiObject('CDEResourceAPI', ResourceAPI::class);
 	}
 
 	/**
 	 * @return FilesystemAPI
 	 */
 	protected function newFilesystemAPI() {
-		return CDE::getFilesystemAPI();
+	    return $this->newApiObject('CDEFilesystemAPI', FilesystemAPI::class);
 	}
 
 	/**
 	 * @return PagesAPI
 	 */
 	protected function newPagesAPI() {
-		return CDE::getPagesAPI();
+        return $this->newApiObject('CDEPagesAPI', PagesAPI::class);
 	}
 
 	/**
 	 * @return MetaAPI
 	 */
 	protected function newMetaAPI() {
-		return CDE::getMetaAPI();
+        return $this->newApiObject('CDEMetaAPI', MetaAPI::class);
 	}
 
 	/**
 	 * @return GeoLookupAPI
 	 */
 	protected function newGeoLookupApi() {
-		return CDE::getGeoAPI();
+        return $this->newApiObject('CDEGeoLookupAPI', GeoLookupAPI::class);
 	}
 
 	/**
 	 * @return KVSAPI
 	 */
 	protected function newKvsAPI() {
-		return CDE::getKVSAPI();
+	    return $this->newApiObject('CDEKVSAPI', KVSAPI::class);
 	}
 
 	/**
@@ -245,6 +373,56 @@ class Page {
 
 	// endregion
 
+    /**
+     * @return PageCustomInterface|null
+     */
+    protected function newCustomPage() {
+        try {
+            /** @var PageCustomInterface $customPage */
+            $customPage = $this->getCustomObject(
+                'Ixolit\\CDE\\Context\\PageCustom',
+                PageCustomInterface::class
+            );
+
+            return $customPage->setPage($this);
+        } catch (InvalidCustomObjectException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * @param PageCustomInterface $customPage
+     *
+     * @return $this
+     */
+    public function setCustomPage(PageCustomInterface $customPage) {
+        $this->customPage = $customPage;
+
+        return $this;
+    }
+
+    /**
+     * @return PageCustomInterface|null
+     */
+    public function getCustomPage() {
+	    if (!isset($this->customPage)) {
+	        $this->customPage = $this->newCustomPage();
+        }
+
+        return $this->customPage;
+    }
+
+    /**
+     * @param RequestAPI $requestAPI
+     *
+     * @return $this
+     */
+    public function setRequestAPI(RequestAPI $requestAPI) {
+        $this->requestAPI = $requestAPI;
+
+        return $this;
+    }
+
 	/**
 	 * @return RequestAPI
 	 */
@@ -256,6 +434,12 @@ class Page {
 
 		return $this->requestAPI;
 	}
+
+	public function setResponseAPI(ResponseAPI $responseAPI) {
+	    $this->responseAPI = $responseAPI;
+
+	    return $this;
+    }
 
 	/**
 	 * @return ResponseAPI
@@ -269,6 +453,17 @@ class Page {
 		return $this->responseAPI;
 	}
 
+    /**
+     * @param ResourceAPI $resourceAPI
+     *
+     * @return $this
+     */
+	public function setResourceAPI(ResourceAPI $resourceAPI) {
+	    $this->resourceAPI = $resourceAPI;
+
+	    return $this;
+    }
+
 	/**
 	 * @return ResourceAPI
 	 */
@@ -280,6 +475,17 @@ class Page {
 
 		return $this->resourceAPI;
 	}
+
+    /**
+     * @param FilesystemAPI $filesystemAPI
+     *
+     * @return FilesystemAPI
+     */
+	public function setFilesystemAPI(FilesystemAPI $filesystemAPI) {
+	    $this->filesystemAPI = $filesystemAPI;
+
+	    return $this->filesystemAPI;
+    }
 
 	/**
 	 * @return FilesystemAPI
@@ -293,6 +499,17 @@ class Page {
 		return $this->filesystemAPI;
 	}
 
+    /**
+     * @param PagesAPI $pagesAPI
+     *
+     * @return $this
+     */
+	public function setPagesAPI(PagesAPI $pagesAPI) {
+	    $this->pagesAPI = $pagesAPI;
+
+	    return $this;
+    }
+
 	/**
 	 * @return PagesAPI
 	 */
@@ -304,6 +521,17 @@ class Page {
 
 		return $this->pagesAPI;
 	}
+
+    /**
+     * @param MetaAPI $metaAPI
+     *
+     * @return $this
+     */
+	public function setMetaAPI(MetaAPI $metaAPI) {
+	    $this->metaAPI = $metaAPI;
+
+	    return $this;
+    }
 
 	/**
 	 * @return MetaAPI
@@ -317,6 +545,17 @@ class Page {
 		return $this->metaAPI;
 	}
 
+    /**
+     * @param GeoLookupAPI $geoLookupAPI
+     *
+     * @return $this
+     */
+	public function setGeoLookupAPI(GeoLookupAPI $geoLookupAPI) {
+	    $this->geoLookupApi = $geoLookupAPI;
+
+	    return $this;
+    }
+
 	/**
 	 * @return GeoLookupAPI
 	 */
@@ -327,6 +566,17 @@ class Page {
 
 		return $this->geoLookupApi;
 	}
+
+    /**
+     * @param KVSAPI $kvsAPI
+     *
+     * @return $this
+     */
+	public function setKvsAPI(KVSAPI $kvsAPI) {
+	    $this->kvsAPI = $kvsAPI;
+
+	    return $this;
+    }
 
 	/**
 	 * @return KVSAPI
@@ -888,6 +1138,13 @@ class Page {
 	}
 
 	// region static shortcuts
+
+    /**
+     * @return PageCustomInterface|null
+     */
+    public static function customPage() {
+	    return self::get()->getCustomPage();
+    }
 
 	/** @see getRequestAPI */
 	public static function requestAPI() {

@@ -18,6 +18,8 @@ use Psr\Http\Message\UriInterface;
  * Class CDEController
  *
  * @package Ixolit\CDE\Controller
+ *
+ * @deprecated
  */
 class CDEController {
 
