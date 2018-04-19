@@ -12,12 +12,16 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  * @package Ixolit\CDE\Form
  */
-abstract class FormFieldSet {
+class FormFieldSet {
 
-    /** @var FormField[] */
+    /**
+     * @var FormField[]
+     */
     private $fields = [];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $errors = [];
 
     /**
@@ -29,9 +33,38 @@ abstract class FormFieldSet {
     private $validationStrategy = null;
 
     /**
+     * @var FormFieldSetCustomInterface
+     */
+    private $customFormFieldSet;
+
+    /**
+     * @param FormFieldSetCustomInterface $customFormFieldSet
+     *
+     * @return $this
+     */
+    public function setCustomFormFieldSet(FormFieldSetCustomInterface $customFormFieldSet) {
+        $this->customFormFieldSet = $customFormFieldSet;
+
+        return $this;
+    }
+
+    /**
+     * @return FormFieldSetCustomInterface
+     */
+    public function getCustomFormFieldSet() {
+        return $this->customFormFieldSet;
+    }
+
+    /**
      * @return string
      */
-    public abstract function getKey();
+    public function getKey() {
+        if ($this->getCustomFormFieldSet()) {
+            return $this->getCustomFormFieldSet()->getKey();
+        }
+
+        return 'fieldSet';
+    }
 
     /**
      * @param FormField[] $fields
@@ -86,7 +119,7 @@ abstract class FormFieldSet {
      *
      * @return $this
      */
-    protected function addField(FormField $field) {
+    public function addField(FormField $field) {
         $this->fields[$field->getName()] = $field;
 
         return $this;

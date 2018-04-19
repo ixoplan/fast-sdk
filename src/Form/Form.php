@@ -8,7 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * This class was ported from the Piccolo form library with permission.
  */
-abstract class Form {
+class Form {
 
 	const FORM_METHOD_GET = 'GET';
 	const FORM_METHOD_POST = 'POST';
@@ -55,6 +55,11 @@ abstract class Form {
      */
 	private $validationErrors = [];
 
+    /**
+     * @var FormCustomInterface
+     */
+	private $customForm;
+
 	/**
 	 * @param string            $action
 	 * @param string            $method
@@ -88,12 +93,37 @@ abstract class Form {
 		$this->addField($formField);
 	}
 
+    /**
+     * @param FormCustomInterface $customForm
+     *
+     * @return $this
+     */
+	public function setCustomForm(FormCustomInterface $customForm) {
+	    $this->customForm = $customForm;
+
+	    return $this;
+    }
+
+    /**
+     * @return FormCustomInterface
+     */
+    protected function getCustomForm() {
+	    return $this->customForm;
+    }
+
 	/**
 	 * Return a unique key for this form.
 	 *
 	 * @return string
 	 */
-	abstract public function getKey();
+	public function getKey() {
+	    if ($this->getCustomForm()) {
+	        return $this->getCustomForm()->getKey();
+        }
+
+        //fallback
+	    return 'form';
+    }
 
 	/**
 	 * Return the form-specific errors. Does not return the field errors.
@@ -205,7 +235,7 @@ abstract class Form {
 	 *
 	 * @return $this
 	 */
-	protected function addField(FormField $field) {
+	public function addField(FormField $field) {
 		$this->fields[$field->getName()] = $field;
 
 		return $this;
@@ -234,7 +264,7 @@ abstract class Form {
      *
      * @return $this
      */
-    protected function addFieldSet(FormFieldSet $fieldSet) {
+    public function addFieldSet(FormFieldSet $fieldSet) {
 	    $this->fieldSets[$fieldSet->getKey()] = $fieldSet;
 
 	    return $this;

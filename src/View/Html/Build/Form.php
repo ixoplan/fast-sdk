@@ -75,6 +75,16 @@ class Form {
 		return ($field instanceof FormField) ? $field : $this->form->getFirstFieldByName($field);
 	}
 
+    /**
+     * @param FormField|string $field
+     * @param string           $prefix
+     *
+     * @return bool
+     */
+	public function fieldHasErrors($field, $prefix = '') {
+	    return (\count($this->getField($field, $prefix)->getErrors()) > 0);
+    }
+
 	/**
 	 * @param FormField|string $field
 	 * @param string $prefix
@@ -94,6 +104,13 @@ class Form {
 			->setAttribute(Element::ATTRIBUTE_NAME_METHOD, $this->form->getMethod());
 	}
 
+    /**
+     * @param FormField $field
+     * @param           $type
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementInput(FormField $field, $type, $prefix = '') {
 		// TODO: extract generic code
 		return (new ElementEmpty(Element::NAME_INPUT))
@@ -103,22 +120,52 @@ class Form {
 			->setAttribute(Element::ATTRIBUTE_NAME_VALUE, $field->getValue());
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementHidden(FormField $field, $prefix = '') {
 		return $this->getElementInput($field, Element::ATTRIBUTE_VALUE_TYPE_HIDDEN, $prefix);
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementText(FormField $field, $prefix = '') {
 		return $this->getElementInput($field, Element::ATTRIBUTE_VALUE_TYPE_TEXT, $prefix);
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementEmail(FormField $field, $prefix = '') {
 		return $this->getElementInput($field, Element::ATTRIBUTE_VALUE_TYPE_EMAIL, $prefix);
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementPassword(FormField $field, $prefix = '') {
 		return $this->getElementInput($field, Element::ATTRIBUTE_VALUE_TYPE_PASSWORD, $prefix);
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementCheckbox(FormField $field, $prefix = '') {
 		// TODO: extract generic code
 		return (new ElementEmpty(Element::NAME_INPUT))
@@ -129,6 +176,12 @@ class Form {
 			->booleanAttribute(Element::ATTRIBUTE_NAME_CHECKED, $field->getValue());
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementDropdown(FormField $field, $prefix = '') {
 		// TODO: extract generic code
 		$select = (new ElementContent(Element::NAME_SELECT))
@@ -150,6 +203,12 @@ class Form {
 		return $select;
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return ElementContent
+     */
 	protected function getElementRadioGroup(FormField $field, $prefix = '') {
 		$group = new ElementContent(Element::NAME_DIV);
 
@@ -178,6 +237,12 @@ class Form {
 		return $group;
 	}
 
+    /**
+     * @param FormField $field
+     * @param string    $prefix
+     *
+     * @return Element
+     */
 	protected function getElementDefault(FormField $field, $prefix = '') {
 		return $this->getElementHidden($field, $prefix);
 	}

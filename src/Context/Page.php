@@ -4,6 +4,7 @@ namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDEInit;
+use Ixolit\CDE\Context\Custom\PageCustom;
 use Ixolit\CDE\Exceptions\InvalidCustomObjectException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
@@ -43,7 +44,7 @@ class Page {
 	private static $instance;
 
     /**
-     * @var PageCustomInterface|null
+     * @var PageCustom|null
      */
     private $customPage;
 
@@ -175,10 +176,6 @@ class Page {
 
 		self::$instance = $instance;
 	}
-
-//	public static function __callStatic($name, $arguments) {
-//		return call_user_func_array([self::get(), 'get' . $name], $arguments);
-//	}
 
     /**
      * @return void
@@ -374,7 +371,7 @@ class Page {
 	// endregion
 
     /**
-     * @return PageCustomInterface|null
+     * @return PageCustom|null
      */
     protected function newCustomPage() {
         try {
@@ -384,6 +381,7 @@ class Page {
                 PageCustomInterface::class
             );
 
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
             return $customPage->setPage($this);
         } catch (InvalidCustomObjectException $e) {
             return null;
@@ -391,18 +389,7 @@ class Page {
     }
 
     /**
-     * @param PageCustomInterface $customPage
-     *
-     * @return $this
-     */
-    public function setCustomPage(PageCustomInterface $customPage) {
-        $this->customPage = $customPage;
-
-        return $this;
-    }
-
-    /**
-     * @return PageCustomInterface|null
+     * @return PageCustom|null
      */
     public function getCustomPage() {
 	    if (!isset($this->customPage)) {
@@ -1140,7 +1127,7 @@ class Page {
 	// region static shortcuts
 
     /**
-     * @return PageCustomInterface|null
+     * @return PageCustom|null
      */
     public static function customPage() {
 	    return self::get()->getCustomPage();
