@@ -101,13 +101,16 @@ class Form {
 	public function setCustomForm(FormCustomInterface $customForm) {
 	    $this->customForm = $customForm;
 
+	    $formField = $this->getFirstFieldByName(self::FORM_FIELD_FORM);
+	    $formField->setValue($this->getKey());
+
 	    return $this;
     }
 
     /**
      * @return FormCustomInterface
      */
-    protected function getCustomForm() {
+    public function getCustomForm() {
 	    return $this->customForm;
     }
 
