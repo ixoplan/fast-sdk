@@ -381,7 +381,7 @@ class Form {
 	 *
 	 * @return bool
 	 */
-	public function isFormPost(array $requestParameters) {;
+	public function isFormPost(array $requestParameters) {
         return !(
 			empty($requestParameters[Form::FORM_FIELD_FORM])
 			|| $this->getKey() != $requestParameters[Form::FORM_FIELD_FORM]
