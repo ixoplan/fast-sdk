@@ -4,7 +4,6 @@ namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDEInit;
-use Ixolit\CDE\Context\Custom\PageCustom;
 use Ixolit\CDE\Exceptions\InvalidCustomObjectException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
@@ -377,7 +376,7 @@ class Page {
         try {
             /** @var PageCustomInterface $customPage */
             $customPage = $this->getCustomObject(
-                'Ixolit\\CDE\\Context\\PageCustom',
+                'Ixolit\\CDE\\Context\\Custom\\PageCustom',
                 PageCustomInterface::class
             );
 
