@@ -60,24 +60,30 @@ class Form {
      */
 	private $customForm;
 
-	/**
-	 * @param string            $action
-	 * @param string            $method
-	 * @param CSRFTokenProvider $csrfTokenProvider
-	 * @param string            $errorRedirectPath
-	 * @param array             $errorRedirectParameters
-	 */
+    /**
+     * @param string $action
+     * @param string $method
+     * @param CSRFTokenProvider $csrfTokenProvider
+     * @param string $errorRedirectPath
+     * @param array $errorRedirectParameters
+     * @param FormCustomInterface|null $customForm
+     */
 	public function __construct($action = '',
 								$method = self::FORM_METHOD_POST,
 								CSRFTokenProvider $csrfTokenProvider,
 								$errorRedirectPath = '',
-								array $errorRedirectParameters = []
+								array $errorRedirectParameters = [],
+                                FormCustomInterface $customForm = null
 	) {
 		$this->csrfTokenProvider = $csrfTokenProvider;
 		$this->action = $action;
 		$this->method = $method;
 		$this->errorRedirectPath = $errorRedirectPath;
 		$this->errorRedirectParameters = $errorRedirectParameters;
+
+        if ($customForm) {
+            $this->setCustomForm($customForm);
+        }
 
 		if ($this->method == self::FORM_METHOD_POST) {
 			$csrfField = new HiddenField(self::FORM_FIELD_CSRF_TOKEN);
@@ -100,9 +106,6 @@ class Form {
      */
 	public function setCustomForm(FormCustomInterface $customForm) {
 	    $this->customForm = $customForm;
-
-	    $formField = $this->getFirstFieldByName(self::FORM_FIELD_FORM);
-	    $formField->setValue($this->getKey());
 
 	    return $this;
     }
