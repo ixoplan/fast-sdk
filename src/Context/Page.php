@@ -276,7 +276,7 @@ class Page {
     protected function getControllerLogic() {
         $controllerLogic = $this->getCustomObject(
             'Ixolit\\CDE\\Controller\\ControllerLogic',
-            ControllerLogicInterface::class
+            'Ixolit\\CDE\\Interfaces\\ControllerLogicInterface'
         );
 
         $controllerLogic
@@ -303,56 +303,56 @@ class Page {
 	 * @return RequestAPI
 	 */
 	protected function newRequestAPI() {
-        return $this->newApiObject('CDERequestAPI', RequestAPI::class);
+        return $this->newApiObject('CDERequestAPI', 'Ixolit\\CDE\\Interfaces\\RequestAPI');
 	}
 
 	/**
 	 * @return ResponseAPI
 	 */
 	protected function newResponseAPI() {
-        return $this->newApiObject('CDEResponseAPI', ResponseAPI::class);
+        return $this->newApiObject('CDEResponseAPI', 'Ixolit\\CDE\\Interfaces\\ResponseAPI');
 	}
 
 	/**
 	 * @return ResourceAPI
 	 */
 	protected function newResourceAPI() {
-        return $this->newApiObject('CDEResourceAPI', ResourceAPI::class);
+        return $this->newApiObject('CDEResourceAPI', 'Ixolit\\CDE\\Interfaces\\ResourceAPI');
 	}
 
 	/**
 	 * @return FilesystemAPI
 	 */
 	protected function newFilesystemAPI() {
-	    return $this->newApiObject('CDEFilesystemAPI', FilesystemAPI::class);
+	    return $this->newApiObject('CDEFilesystemAPI', 'Ixolit\\CDE\\Interfaces\\FilesystemAPI');
 	}
 
 	/**
 	 * @return PagesAPI
 	 */
 	protected function newPagesAPI() {
-        return $this->newApiObject('CDEPagesAPI', PagesAPI::class);
+        return $this->newApiObject('CDEPagesAPI', 'Ixolit\\CDE\\Interfaces\\PagesAPI');
 	}
 
 	/**
 	 * @return MetaAPI
 	 */
 	protected function newMetaAPI() {
-        return $this->newApiObject('CDEMetaAPI', MetaAPI::class);
+        return $this->newApiObject('CDEMetaAPI', 'Ixolit\\CDE\\Interfaces\\MetaAPI');
 	}
 
 	/**
 	 * @return GeoLookupAPI
 	 */
 	protected function newGeoLookupApi() {
-        return $this->newApiObject('CDEGeoLookupAPI', GeoLookupAPI::class);
+        return $this->newApiObject('CDEGeoLookupAPI', 'Ixolit\\CDE\\Interfaces\\GeoLookupAPI');
 	}
 
 	/**
 	 * @return KVSAPI
 	 */
 	protected function newKvsAPI() {
-	    return $this->newApiObject('CDEKVSAPI', KVSAPI::class);
+	    return $this->newApiObject('CDEKVSAPI', 'Ixolit\\CDE\\Interfaces\\KVSAPI');
 	}
 
 	/**
@@ -377,7 +377,7 @@ class Page {
             /** @var PageCustomInterface $customPage */
             $customPage = $this->getCustomObject(
                 'Ixolit\\CDE\\Context\\Custom\\PageCustom',
-                PageCustomInterface::class
+                'Ixolit\CDE\Context\PageCustomInterface'
             );
 
             /** @noinspection PhpIncompatibleReturnTypeInspection */
