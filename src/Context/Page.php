@@ -4,6 +4,7 @@ namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDEInit;
+use Ixolit\CDE\Context\Custom\PageCustom;
 use Ixolit\CDE\Exceptions\InvalidCustomObjectException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
