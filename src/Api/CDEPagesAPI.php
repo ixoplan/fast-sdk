@@ -7,6 +7,7 @@ use Ixolit\CDE\Exceptions\CDEFeatureNotSupportedException;
 use Ixolit\CDE\Exceptions\PageNotFoundException;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\WorkingObjects\Page;
+use Ixolit\CDE\WorkingObjects\PreviewInfo;
 
 
 /**
