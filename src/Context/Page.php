@@ -19,6 +19,7 @@ use Ixolit\CDE\Interfaces\ResourceAPI;
 use Ixolit\CDE\Interfaces\ResponseAPI;
 use Ixolit\CDE\PSR7\Uri;
 use Ixolit\CDE\WorkingObjects\Layout;
+use Ixolit\CDE\WorkingObjects\VersionInfo;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -66,6 +67,9 @@ class Page {
 
 	/** @var PageTemporaryStorage */
 	private $temporaryStorage;
+
+	/** @var VersionInfo */
+	private $versionInfo;
 
 	/** @var string */
 	private $url;
@@ -244,6 +248,28 @@ class Page {
 	}
 
 	// endregion
+
+	/**
+	 * Returns CDE version info
+	 *
+	 * @return VersionInfo
+	 */
+	public function getCdeVersionInfo() {
+		if (!isset($this->versionInfo)) {
+			if (\function_exists('getVersion') && $versionInfo = getVersion()) {
+				$this->versionInfo = new VersionInfo(
+					$versionInfo->major,
+					$versionInfo->minor,
+					$versionInfo->tag,
+					$versionInfo->version
+				);
+			}
+			else {
+				$this->versionInfo = new VersionInfo(0, 0, 'unknown', '0.0-unknown');
+			}
+		}
+		return $this->versionInfo;
+	}
 
 	/**
 	 * @return RequestAPI
@@ -514,7 +540,10 @@ class Page {
 	 * @return bool
 	 */
 	public function getPreview() {
-		return ($this->getPagesAPI()->getPreviewInfo() != null);
+		if ($this->getCdeVersionInfo()->getMajor() < 4) {
+			return ($this->getPagesAPI()->getPreviewInfo() != null);
+		}
+		return $this->getPagesAPI()->isPreview();
 	}
 
 	/**
@@ -888,6 +917,10 @@ class Page {
 	}
 
 	// region static shortcuts
+
+	public static function cdeVersionInfo() {
+		return self::get()->getCdeVersionInfo();
+	}
 
 	/** @see getRequestAPI */
 	public static function requestAPI() {

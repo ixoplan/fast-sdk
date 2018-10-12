@@ -87,6 +87,14 @@ interface PagesAPI {
 	 * Returns info about an active preview session if available otherwise null.
 	 *
 	 * @return mixed
+	 * @deprecated use getPreview instead
 	 */
 	public function	getPreviewInfo();
+
+	/**
+	 * Returns true if running in an active preview session.
+	 *
+	 * @return bool
+	 */
+	public function	isPreview();
 }

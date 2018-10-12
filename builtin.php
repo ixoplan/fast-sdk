@@ -4,6 +4,27 @@
  */
 
 /**
+ * Returns version info for CDE
+ *
+ * ```
+ * object(stdClass) (4) {
+ *   ["major"]=>
+ *   int(4)
+ *   ["minor"]=>
+ *   int(3)
+ *   ["tag"]=>
+ *   unicode(3) "dev"
+ *   ["version"]=>
+ *   unicode(7) "4.3-dev"
+ * }
+ * ```
+ *
+ * @return object|null
+ */
+function getVersion() {
+}
+
+/**
  * Returns geo information data based on an ip address
  *
  * Example Output:
@@ -490,6 +511,14 @@ function kvsGet($key) {
  * @return object|null
  */
 function previewInfo() {
+}
+
+/**
+ * Returns true when running in preview mode
+ *
+ * @return bool
+ */
+function isPreview() {
 }
 
 /**

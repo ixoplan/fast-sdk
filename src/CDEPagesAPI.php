@@ -94,7 +94,7 @@ class CDEPagesAPI implements PagesAPI {
 	 */
 	public function getMetadata($meta, $lang = null, $pagePath = null, $layout = null) {
 		if (!\function_exists('getMeta')) {
-			throw new CDEFeatureNotSupportedException('getBreadcrumb');
+			throw new CDEFeatureNotSupportedException('getMeta');
 		}
 
 		$data = \getMeta($meta, $lang, $pagePath, $layout);
@@ -111,7 +111,7 @@ class CDEPagesAPI implements PagesAPI {
 	 */
 	public function getAllMetadata($lang = null, $pagePath = null, $layout = null) {
 		if (!\function_exists('getMeta')) {
-			throw new CDEFeatureNotSupportedException('getBreadcrumb');
+			throw new CDEFeatureNotSupportedException('getMeta');
 		}
 
 		return \getMeta(null, $lang, $pagePath, $layout);
@@ -129,5 +129,13 @@ class CDEPagesAPI implements PagesAPI {
 		}
 
 		return new PreviewInfo($info->type, $info->timestamp, $info->leave_preview_url);
+	}
+
+	public function isPreview() {
+		if (!\function_exists('isPreview')) {
+			throw new CDEFeatureNotSupportedException('isPreview');
+		}
+
+		return \isPreview();
 	}
 }
