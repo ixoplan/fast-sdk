@@ -3,12 +3,14 @@ PHP SDK for the CDE APIs
 
 ## Installation
 
-Simply add ixolit/cde-sdk to your composer.json, e.g:
+Simply add `ixolit/cde-sdk` to your composer.json, e.g:
 
-    {
-        "name": "myvendor/myproject",
-        "description": "Using cde-sdk",
-        "require": {
-            "ixolit/cde-sdk": "*"
-        }
+```json
+{
+    "name": "myvendor/myproject",
+    "description": "Using cde-sdk",
+    "require": {
+        "ixolit/cde-sdk": "*"
     }
+}
+```

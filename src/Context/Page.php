@@ -23,6 +23,7 @@ use Ixolit\CDE\Interfaces\ResourceAPI;
 use Ixolit\CDE\Interfaces\ResponseAPI;
 use Ixolit\CDE\PSR7\Uri;
 use Ixolit\CDE\WorkingObjects\Layout;
+use Ixolit\CDE\WorkingObjects\VersionInfo;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -38,109 +39,70 @@ class Page {
 	const APP_CFG_VAL_ENV_DEVL = 'development';
 	const APP_CFG_KEY_HTTPS = 'https';
 
-    /**
-     * @var self
-     */
+	/** @var self */
 	private static $instance;
 
-    /**
-     * @var PageCustom|null
-     */
+    /** @var PageCustom|null */
     private $customPage;
 
-    /**
-     * @var array
-     */
+    /** @var array */
 	private $config;
 
-    /**
-     * @var RequestAPI
-     */
+	/** @var RequestAPI */
 	private $requestAPI;
 
-    /**
-     * @var ResponseAPI
-     */
+	/** @var ResponseAPI */
 	private $responseAPI;
 
-    /**
-     * @var ResourceAPI
-     */
+	/** @var ResourceAPI */
 	private $resourceAPI;
 
-    /**
-     * @var FilesystemAPI
-     */
+	/** @var FilesystemAPI */
 	private $filesystemAPI;
 
-    /**
-     * @var PagesAPI
-     */
+	/** @var PagesAPI */
 	private $pagesAPI;
 
-    /**
-     * @var MetaAPI
-     */
+	/** @var MetaAPI */
 	private $metaAPI;
 
-    /**
-     * @var GeoLookupAPI
-     */
+	/** @var GeoLookupAPI */
 	private $geoLookupApi;
 
-    /**
-     * @var KVSAPI
-     */
+	/** @var KVSAPI */
 	private $kvsAPI;
 
-    /**
-     * @var PageTemporaryStorage
-     */
+	/** @var PageTemporaryStorage */
 	private $temporaryStorage;
 
-    /**
-     * @var string
-     */
+	/** @var VersionInfo */
+	private $versionInfo;
+
+	/** @var string */
 	private $url;
 
-    /**
-     * @var string
-     */
+	/** @var string */
 	private $scheme;
 
-    /**
-     * @var string
-     */
+	/** @var string */
 	private $vhost;
 
-    /**
-     * @var string
-     */
+	/** @var string */
 	private $language;
 
-    /**
-     * @var Layout
-     */
+	/** @var Layout */
 	private $layout;
 
-    /**
-     * @var string
-     */
+	/** @var string */
 	private $path;
 
-    /**
-     * @var array
-     */
+	/** @var array */
 	private $query;
 
-    /**
-     * @var array
-     */
+	/** @var array */
 	private $request;
 
-    /**
-     * @var string[]
-     */
+	/** @var string[] */
 	private $languages;
 
 	protected function __construct() {
@@ -369,6 +331,28 @@ class Page {
 	}
 
 	// endregion
+
+	/**
+	 * Returns CDE version info
+	 *
+	 * @return VersionInfo
+	 */
+	public function getCdeVersionInfo() {
+		if (!isset($this->versionInfo)) {
+			if (\function_exists('getVersion') && $versionInfo = getVersion()) {
+				$this->versionInfo = new VersionInfo(
+					$versionInfo->major,
+					$versionInfo->minor,
+					$versionInfo->tag,
+					$versionInfo->version
+				);
+			}
+			else {
+				$this->versionInfo = new VersionInfo(0, 0, 'unknown', '0.0-unknown');
+			}
+		}
+		return $this->versionInfo;
+	}
 
     /**
      * @return PageCustom|null
@@ -751,7 +735,10 @@ class Page {
 	 * @return bool
 	 */
 	public function getPreview() {
-		return ($this->getPagesAPI()->getPreviewInfo() != null);
+		if ($this->getCdeVersionInfo()->getMajor() < 4) {
+			return ($this->getPagesAPI()->getPreviewInfo() != null);
+		}
+		return $this->getPagesAPI()->isPreview();
 	}
 
 	/**
@@ -1132,6 +1119,10 @@ class Page {
     public static function customPage() {
 	    return self::get()->getCustomPage();
     }
+
+	public static function cdeVersionInfo() {
+		return self::get()->getCdeVersionInfo();
+	}
 
 	/** @see getRequestAPI */
 	public static function requestAPI() {

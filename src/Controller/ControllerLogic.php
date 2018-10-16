@@ -3,6 +3,7 @@
 namespace Ixolit\CDE\Controller;
 
 use Ixolit\CDE\Auth\AuthenticationRequiredException;
+use Ixolit\CDE\Context\Page;
 use Ixolit\CDE\Exceptions\ControllerSkipViewException;
 use Ixolit\CDE\Exceptions\InformationNotAvailableInContextException;
 use Ixolit\CDE\Interfaces\ControllerLogicInterface;
@@ -139,7 +140,7 @@ class ControllerLogic implements ControllerLogicInterface {
 			// We are not in a page, no controller logic.
 			return;
 		} catch (\Exception $e) {
-			if (\function_exists('previewInfo') && previewInfo()) {
+			if (Page::isPreview()) {
 				include(__DIR__ . '/errorpage.php');
 				exit;
 			} else {
