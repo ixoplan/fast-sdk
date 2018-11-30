@@ -57,7 +57,7 @@ class CDEResponseAPI implements ResponseAPI {
 
 	private function setCookieInternal($name, $value, $maxAge = 0, $path = null, $domain = null, $secure = false, $httponly = false) {
         if ($domain === null) {
-            $domain = '.' . getVhost();
+            $domain = '.' . str_replace('www.', '', getVhost());
         }
         return \setCookieAdvanced($name, $value, $maxAge, $path, $domain, $secure, $httponly);
 	}
