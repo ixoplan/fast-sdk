@@ -15,10 +15,9 @@ use Ixolit\CDE\WorkingObjects\FilesystemEntry;
  * Class CDEFilesystemAPI
  *
  * @package Ixolit\CDE
- *
- * @deprecated
  */
 class CDEFilesystemAPI implements FilesystemAPI {
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -35,6 +34,7 @@ class CDEFilesystemAPI implements FilesystemAPI {
 	 * @param \stdClass $entry
 	 *
 	 * @return DirectoryFilesystemEntry|FileFilesystemEntry
+	 *
 	 * @throws UnexpectedFilesystemEntryException
 	 */
 	private function entryToObject($name, $entry) {

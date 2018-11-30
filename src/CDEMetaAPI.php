@@ -10,10 +10,21 @@ use Ixolit\CDE\Interfaces\MetaAPI;
 /**
  * This API implements the meta API using the CDE API calls.
  *
- * @deprecated
+ * @package Ixolit\CDE
  */
 class CDEMetaAPI implements MetaAPI {
 
+	/**
+	 * @param string $name
+	 * @param string|null $language
+	 * @param string|null $pagePath
+	 * @param string|null $layout
+	 *
+	 * @return array|string
+	 *
+	 * @throws CDEFeatureNotSupportedException
+	 * @throws MetadataNotAvailableException
+	 */
 	private function getMetaInternal($name, $language = null, $pagePath = null, $layout = null) {
 		if (!\function_exists('getMeta')) {
 			throw new CDEFeatureNotSupportedException('getMeta');

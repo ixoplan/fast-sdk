@@ -12,9 +12,10 @@ use Ixolit\CDE\WorkingObjects\GeoObject;
 /**
  * This API implements the GeoIP API using the CDE API calls.
  *
- * @deprecated
+ * @package Ixolit\CDE
  */
 class CDEGeoLookupAPI implements GeoLookupAPI {
+
 	/**
 	 * {@inheritdoc}
 	 */

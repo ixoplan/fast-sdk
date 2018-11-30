@@ -4,15 +4,17 @@ namespace Ixolit\CDE;
 
 use Ixolit\CDE\Exceptions\CDEFeatureNotSupportedException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
+use Ixolit\CDE\Interfaces\KVSAPI;
 use Ixolit\CDE\WorkingObjects\KVSEntry;
 use Ixolit\CDE\WorkingObjects\KVSKey;
 
 /**
  * This API implements the KVS API using the CDE API calls.
  *
- * @deprecated
+ * @package Ixolit\CDE
  */
-class CDEKVSAPI implements Interfaces\KVSAPI {
+class CDEKVSAPI implements KVSAPI {
+
 	/**
 	 * {@inheritdoc}
 	 */

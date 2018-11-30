@@ -257,7 +257,8 @@ class Page {
      * @return mixed
      */
     protected function newApiObject($className, $interface) {
-        $class = 'Ixolit\\CDE\\Api\\' . $className;
+        // TODO: move API classes to separate namespace?
+        $class = 'Ixolit\\CDE\\' . $className;
 
         return $this->getCustomObject($class, $interface);
     }

@@ -14,8 +14,11 @@ use Ixolit\CDE\WorkingObjects\Layout;
 
 /**
  * This API implements the request API using the CDE API calls.
+ *
+ * @package Ixolit\CDE
  */
-class CDERequestAPI implements RequestAPI  {
+class CDERequestAPI implements RequestAPI {
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -54,6 +57,9 @@ class CDERequestAPI implements RequestAPI  {
 		return $vhost;
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getFQDN() {
 		if (!\function_exists('getFQDN')) {
 			throw new CDEFeatureNotSupportedException('getFQDN');

@@ -9,7 +9,13 @@ use Ixolit\CDE\Exceptions\InvalidStatusCodeException;
 use Ixolit\CDE\Interfaces\ResponseAPI;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * This API implements the response API using the CDE API calls.
+ *
+ * @package Ixolit\CDE
+ */
 class CDEResponseAPI implements ResponseAPI {
+
 	/**
 	 * {@inheritdoc}
 	 */

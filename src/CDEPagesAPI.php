@@ -12,6 +12,8 @@ use Ixolit\CDE\WorkingObjects\PreviewInfo;
 
 /**
  * This API implements the pages API using the CDE API calls.
+ *
+ * @package Ixolit\CDE
  */
 class CDEPagesAPI implements PagesAPI {
 
@@ -117,6 +119,9 @@ class CDEPagesAPI implements PagesAPI {
 		return \getMeta(null, $lang, $pagePath, $layout);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function getPreviewInfo() {
 		if (!\function_exists('previewInfo')) {
 			throw new CDEFeatureNotSupportedException('previewInfo');
@@ -131,6 +136,9 @@ class CDEPagesAPI implements PagesAPI {
 		return new PreviewInfo($info->type, $info->timestamp, $info->leave_preview_url);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function isPreview() {
 		if (!\function_exists('isPreview')) {
 			throw new CDEFeatureNotSupportedException('isPreview');

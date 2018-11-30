@@ -10,8 +10,6 @@ use Ixolit\CDE\Interfaces\ResourceAPI;
  * Class CDEResourceAPI
  *
  * @package Ixolit\CDE
- *
- * @deprecated
  */
 class CDEResourceAPI implements ResourceAPI {
 
