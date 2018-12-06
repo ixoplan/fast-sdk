@@ -4,7 +4,6 @@ namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDEInit;
-use Ixolit\CDE\Context\Custom\PageCustom;
 use Ixolit\CDE\Exceptions\InvalidCustomObjectException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
@@ -41,9 +40,6 @@ class Page {
 
 	/** @var self */
 	private static $instance;
-
-    /** @var PageCustom|null */
-    private $customPage;
 
     /** @var array */
 	private $config;
@@ -354,35 +350,6 @@ class Page {
 		}
 		return $this->versionInfo;
 	}
-
-    /**
-     * @return PageCustom|null
-     */
-    protected function newCustomPage() {
-        try {
-            /** @var PageCustomInterface $customPage */
-            $customPage = $this->getCustomObject(
-                'Ixolit\\CDE\\Context\\Custom\\PageCustom',
-                'Ixolit\CDE\Context\PageCustomInterface'
-            );
-
-            /** @noinspection PhpIncompatibleReturnTypeInspection */
-            return $customPage->setPage($this);
-        } catch (InvalidCustomObjectException $e) {
-            return null;
-        }
-    }
-
-    /**
-     * @return PageCustom|null
-     */
-    public function getCustomPage() {
-	    if (!isset($this->customPage)) {
-	        $this->customPage = $this->newCustomPage();
-        }
-
-        return $this->customPage;
-    }
 
     /**
      * @param RequestAPI $requestAPI
