@@ -9,7 +9,6 @@ use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Exceptions\PageContextAlreadySetException;
-use Ixolit\CDE\Exceptions\PageContextNotFoundException;
 use Ixolit\CDE\Exceptions\ResourceNotFoundException;
 use Ixolit\CDE\Interfaces\ControllerLogicInterface;
 use Ixolit\CDE\Interfaces\FilesystemAPI;
@@ -38,7 +37,7 @@ class Page {
 	const APP_CFG_VAL_ENV_DEVL = 'development';
 	const APP_CFG_KEY_HTTPS = 'https';
 
-	/** @var self */
+	/** @var static */
 	private static $instance;
 
     /** @var array */
@@ -110,21 +109,21 @@ class Page {
 	/**
 	 * @return static
 	 *
-	 * @throws \Exception
+	 * @throws PageContextAlreadySetException
 	 */
 	public static function get() {
 
 		if (!isset(self::$instance)) {
-			throw new PageContextNotFoundException('Page context not set');
+			self::set(new static());
 		}
 
 		return self::$instance;
 	}
 
 	/**
-	 * @param self $instance
+	 * @param static $instance
 	 *
-	 * @throws \Exception
+	 * @throws PageContextAlreadySetException
 	 */
 	protected static function set($instance) {
 
@@ -137,6 +136,7 @@ class Page {
 
     /**
      * @return void
+     * @deprecated call various methods as needed in project specific context
      */
     public static function start() {
 	    self::set(new self());
@@ -147,6 +147,7 @@ class Page {
 
     /**
      * @return $this
+     * @deprecated call various methods as needed in project specific context
      */
     protected function prepare() {
         if ($this->getConfigEnforceHttps()) {
@@ -164,6 +165,7 @@ class Page {
 
     /**
      * @return void
+     * @deprecated call various methods as needed in project specific context
      */
     protected function execute() {
         $this->getControllerLogic()->execute();
@@ -172,13 +174,16 @@ class Page {
 	/**
 	 * @param self $instance
      *
-     * @deprecated
+     * @deprecated call various methods as needed in project specific context
 	 */
 	public static function run($instance) {
 		self::set($instance);
 		self::get()->doRun();
 	}
 
+	/**
+	 * @deprecated call various methods as needed in project specific context
+	 */
 	public function doRun() {
 		$this->doPrepare();
 		$this->doExecute();
@@ -187,7 +192,7 @@ class Page {
     /**
      * @return void
      *
-     * @deprecated
+     * @deprecated call various methods as needed in project specific context
      */
     protected function doPrepare() {
 		if ($this->getConfigEnforceHttps()) {
@@ -198,7 +203,7 @@ class Page {
     /**
      * @return void
      *
-     * @deprecated
+     * @deprecated call various methods as needed in project specific context
      */
     protected function doExecute() {
 		// call CDE controller logic
@@ -1350,6 +1355,16 @@ class Page {
 	/** @see doEnforceHttps */
 	public static function enforceHttps() {
 		self::get()->doEnforceHttps();
+	}
+
+	public static function processEnforceHttps() {
+		if (self::get()->getConfigEnforceHttps()) {
+			self::get()->doEnforceHttps();
+		}
+	}
+
+	public static function runController() {
+		self::get()->getControllerLogic()->execute();
 	}
 
 	// endregion
