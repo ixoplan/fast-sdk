@@ -5,6 +5,7 @@ namespace Ixolit\CDE\Context;
 
 use Ixolit\CDE\CDE;
 use Ixolit\CDE\CDEInit;
+use Ixolit\CDE\Exceptions\InvalidOperationException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
 use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
@@ -69,6 +70,9 @@ class Page {
 
 	/** @var PageTemporaryStorage */
 	private $temporaryStorage;
+
+	/** @var string */
+	private $temporaryStorageDomain = null;
 
 	/** @var VersionInfo */
 	private $versionInfo;
@@ -390,8 +394,26 @@ class Page {
 		return null;
 	}
 
-	protected function getTemporaryStorageDomain() {
-		return null;
+	/**
+	 * @return string
+	 */
+	public function getTemporaryStorageDomain() {
+		return $this->temporaryStorageDomain;
+	}
+
+	/**
+	 * @param string $temporaryStorageDomain
+	 * @return Page
+	 * @throws InvalidOperationException
+	 */
+	public function setTemporaryStorageDomain($temporaryStorageDomain) {
+
+		if (isset($this->temporaryStorage)) {
+			throw new InvalidOperationException('PageTemporaryStorage already set');
+		}
+
+		$this->temporaryStorageDomain = $temporaryStorageDomain;
+		return $this;
 	}
 
 	public function getTemporaryStorageSecret() {
