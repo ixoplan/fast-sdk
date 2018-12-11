@@ -20,70 +20,46 @@ use Psr\Http\Message\ResponseInterface;
  * @package Ixolit\CDE\Controller
  */
 class ControllerLogic implements ControllerLogicInterface {
+
 	/**
-	 * @var RequestAPI|null
+	 * @var RequestAPI
 	 */
 	private $requestApi;
 
 	/**
-	 * @var ResponseAPI|null
+	 * @var ResponseAPI
 	 */
 	private $responseApi;
 
 	/**
-	 * @var FilesystemAPI|null
+	 * @var FilesystemAPI
 	 */
 	private $fsApi;
+
+	/**
+	 * @var Page|null
+	 */
+	private $page;
 
     /**
      * ControllerLogic constructor.
      *
-     * @param RequestAPI|null    $requestApi
-     * @param ResponseAPI|null   $responseApi
-     * @param FilesystemAPI|null $fsApi
+     * @param RequestAPI $requestApi
+     * @param ResponseAPI $responseApi
+     * @param FilesystemAPI $fsApi
+     * @param Page|null $page
      */
 	public function __construct(
-	    RequestAPI $requestApi = null,
-        ResponseAPI $responseApi = null,
-        FilesystemAPI $fsApi = null
+        RequestAPI $requestApi,
+        ResponseAPI $responseApi,
+        FilesystemAPI $fsApi,
+        Page $page = null
     ) {
 		$this->requestApi  = $requestApi;
 		$this->responseApi = $responseApi;
 		$this->fsApi = $fsApi;
+		$this->page = $page;
 	}
-
-    /**
-     * @param RequestAPI $requestApi
-     *
-     * @return $this
-     */
-    public function setRequestApi(RequestAPI $requestApi) {
-        $this->requestApi = $requestApi;
-
-        return $this;
-    }
-
-    /**
-     * @param ResponseAPI $responseApi
-     *
-     * @return $this
-     */
-    public function setResponseApi(ResponseAPI $responseApi) {
-        $this->responseApi = $responseApi;
-
-        return $this;
-    }
-
-    /**
-     * @param FilesystemAPI $filesystemApi
-     *
-     * @return $this
-     */
-    public function setFileSystemApi(FilesystemAPI $filesystemApi) {
-        $this->fsApi = $filesystemApi;
-
-        return $this;
-    }
 
     /**
      * @return void
@@ -140,7 +116,7 @@ class ControllerLogic implements ControllerLogicInterface {
 			// We are not in a page, no controller logic.
 			return;
 		} catch (\Exception $e) {
-			if (Page::isPreview()) {
+			if (isset($this->page) && $this->page->getPreview()) {
 				include(__DIR__ . '/errorpage.php');
 				exit;
 			} else {

@@ -4,6 +4,7 @@ namespace Ixolit\CDE\Context;
 
 
 use Ixolit\CDE\CDEInit;
+use Ixolit\CDE\Controller\ControllerLogic;
 use Ixolit\CDE\Exceptions\InvalidCustomObjectException;
 use Ixolit\CDE\Exceptions\InvalidOperationException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
@@ -67,6 +68,9 @@ class Page {
 
 	/** @var KVSAPI */
 	private $kvsAPI;
+
+	/** @var ControllerLogicInterface */
+	private $controllerLogic;
 
 	/** @var PageTemporaryStorage */
 	private $temporaryStorage;
@@ -233,23 +237,6 @@ class Page {
     }
 
     /**
-     * @return ControllerLogicInterface
-     */
-    protected function getControllerLogic() {
-        $controllerLogic = $this->getCustomObject(
-            'Ixolit\\CDE\\Controller\\ControllerLogic',
-            'Ixolit\\CDE\\Interfaces\\ControllerLogicInterface'
-        );
-
-        $controllerLogic
-            ->setRequestApi($this->getRequestAPI())
-            ->setResponseApi($this->getResponseAPI())
-            ->setFileSystemApi($this->getFilesystemAPI());
-
-        return $controllerLogic;
-    }
-
-    /**
      * @param string $className
      * @param string $interface
      *
@@ -317,6 +304,18 @@ class Page {
 	protected function newKvsAPI() {
 	    return $this->newApiObject('CDEKVSAPI', 'Ixolit\\CDE\\Interfaces\\KVSAPI');
 	}
+
+	/**
+	 * @return ControllerLogic
+	 */
+	protected function newControllerLogic() {
+    	return new ControllerLogic(
+    		$this->getRequestAPI(),
+			$this->getResponseAPI(),
+			$this->getFilesystemAPI()
+		);
+	}
+
 
 	/**
 	 * @return PageTemporaryStorage
@@ -529,6 +528,17 @@ class Page {
 		}
 
 		return $this->kvsAPI;
+	}
+
+	/**
+	 * @return ControllerLogicInterface
+	 */
+	public function getControllerLogic() {
+		if (!isset($this->controllerLogic)) {
+			$this->controllerLogic = $this->newControllerLogic();
+		}
+
+		return $this->controllerLogic;
 	}
 
 	/**
