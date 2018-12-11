@@ -21,7 +21,9 @@ use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResourceAPI;
 use Ixolit\CDE\Interfaces\ResponseAPI;
+use Ixolit\CDE\Interfaces\SitemapRenderer as SitemapRendererInterface;
 use Ixolit\CDE\PSR7\Uri;
+use Ixolit\CDE\SitemapRenderer;
 use Ixolit\CDE\WorkingObjects\Layout;
 use Ixolit\CDE\WorkingObjects\VersionInfo;
 use Psr\Http\Message\UriInterface;
@@ -71,6 +73,9 @@ class Page {
 
 	/** @var ControllerLogicInterface */
 	private $controllerLogic;
+
+	/** @var SitemapRendererInterface */
+	private $sitemapRenderer;
 
 	/** @var PageTemporaryStorage */
 	private $temporaryStorage;
@@ -318,6 +323,16 @@ class Page {
 
 
 	/**
+	 * @return SitemapRendererInterface
+	 */
+	protected function newSitemapRenderer() {
+		return new SitemapRenderer(
+			$this->getPagesAPI(),
+			$this->getRequestAPI()
+		);
+	}
+
+	/**
 	 * @return PageTemporaryStorage
 	 */
 	protected function newTemporaryStorage() {
@@ -539,6 +554,17 @@ class Page {
 		}
 
 		return $this->controllerLogic;
+	}
+
+	/**
+	 * @return SitemapRendererInterface
+	 */
+	protected function getSitemapRenderer() {
+		if (!isset($this->sitemapRenderer)) {
+			$this->sitemapRenderer = $this->newSitemapRenderer();
+		}
+
+		return $this->sitemapRenderer;
 	}
 
 	/**
@@ -1154,6 +1180,11 @@ class Page {
 	/** @see getKvsAPI */
 	public static function kvsAPI() {
 		return self::get()->getKvsAPI();
+	}
+
+	/** @see getSitemapRenderer */
+	public static function sitemapRenderer() {
+		return self::get()->getSitemapRenderer();
 	}
 
 	/** @see getAppEnv */
