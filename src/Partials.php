@@ -3,7 +3,6 @@
 namespace Ixolit\CDE;
 
 use Ixolit\CDE\Exceptions\PartialNotFoundException;
-use Ixolit\CDE\WorkingObjects\ViewModel;
 
 /**
  * Helper class for accessing partials

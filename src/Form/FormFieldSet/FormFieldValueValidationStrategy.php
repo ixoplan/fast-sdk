@@ -3,7 +3,6 @@
 
 namespace Ixolit\CDE\Form\FormFieldSet;
 
-use Ixolit\CDE\Form\Form;
 use Ixolit\CDE\Form\FormField;
 
 /**
