@@ -158,12 +158,6 @@ class Page {
             $this->doEnforceHttps();
         }
 
-        //call custom prepare steps
-        $customPage = $this->getCustomPage();
-        if (!empty($customPage)) {
-            $customPage->doPrepare();
-        }
-
         return $this;
     }
 
@@ -1107,13 +1101,6 @@ class Page {
 	}
 
 	// region static shortcuts
-
-    /**
-     * @return PageCustom|null
-     */
-    public static function customPage() {
-	    return self::get()->getCustomPage();
-    }
 
 	public static function cdeVersionInfo() {
 		return self::get()->getCdeVersionInfo();
