@@ -5,7 +5,7 @@ namespace Ixolit\CDE\Context;
 
 use Ixolit\CDE\CDEInit;
 use Ixolit\CDE\Controller\ControllerLogic;
-use Ixolit\CDE\Exceptions\InvalidCustomObjectException;
+use Ixolit\CDE\Exceptions\InvalidInterfacedObjectException;
 use Ixolit\CDE\Exceptions\InvalidOperationException;
 use Ixolit\CDE\Exceptions\InvalidValueException;
 use Ixolit\CDE\Exceptions\KVSKeyNotFoundException;
@@ -220,17 +220,17 @@ class Page {
      *
      * @return mixed
      *
-     * @throws InvalidCustomObjectException
+     * @throws InvalidInterfacedObjectException
      */
-    protected function getCustomObject($class, $interface) {
+    protected function getInterfacedObject($class, $interface) {
         if (! \class_exists($class)) {
-            throw new InvalidCustomObjectException($class . ' doesn\'t exist.');
+            throw new InvalidInterfacedObjectException($class . ' doesn\'t exist.');
         }
 
         $object = new $class();
 
         if (! ($object instanceof $interface)) {
-            throw new InvalidCustomObjectException($class . ' is no instance of ' . $interface);
+            throw new InvalidInterfacedObjectException($class . ' is no instance of ' . $interface);
         }
 
         return $object;
@@ -246,7 +246,7 @@ class Page {
         // TODO: move API classes to separate namespace?
         $class = 'Ixolit\\CDE\\' . $className;
 
-        return $this->getCustomObject($class, $interface);
+        return $this->getInterfacedObject($class, $interface);
     }
 
 	/**
