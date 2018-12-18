@@ -41,7 +41,7 @@ class Form {
 	/**
 	 * @return string
 	 */
-	protected function getFormKey() {
+	public function getFormKey() {
 		return $this->form->getKey();
 	}
 
@@ -51,7 +51,7 @@ class Form {
      *
      * @return string
      */
-	protected function getFieldName($field, $prefix = '') {
+	public function getFieldName($field, $prefix = '') {
 	    return (!empty($prefix) ? $prefix . '_' : '') . $this->getField($field, $prefix)->getName();
     }
 
@@ -61,7 +61,7 @@ class Form {
      *
      * @return FormField
      */
-	protected function getField($field, $prefix = '') {
+	public function getField($field, $prefix = '') {
 	    if ($field instanceof  FormField) {
 	        return $field;
         }
@@ -91,14 +91,14 @@ class Form {
 	 *
 	 * @return string
 	 */
-	protected function getFieldId($field, $prefix = '') {
+	public function getFieldId($field, $prefix = '') {
 		return 'form_' . $this->getFormKey() . '_' . $this->getFieldName($field, $prefix);
 	}
 
 	/**
 	 * @return ElementContent
 	 */
-	protected function getElementForm() {
+	public function getElementForm() {
 		return (new ElementContent(Element::NAME_FORM))
 			->setAttribute(Element::ATTRIBUTE_NAME_ACTION, $this->form->getAction())
 			->setAttribute(Element::ATTRIBUTE_NAME_METHOD, $this->form->getMethod());
