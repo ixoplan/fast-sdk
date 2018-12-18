@@ -2,6 +2,7 @@
 
 namespace Ixolit\CDE;
 
+use Ixolit\CDE\Exceptions\MetadataNotAvailableException;
 use Ixolit\CDE\Interfaces\PagesAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\WorkingObjects\Page;
@@ -38,9 +39,17 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 		if (empty($languages)) {
 			$languages = $this->pagesApi->getLanguages();
 		}
+
+		$layout = 'default';
+
 		foreach ($languages as $lang) {
 			// TODO: ksort ?
-			$output .= $this->renderSitemapFragment($this->pagesApi->getAll($vhost, $lang, 'default'), $excludePatterns);
+			$output .= $this->renderSitemapFragment(
+				$this->pagesApi->getAll($vhost, $lang, $layout),
+				$lang,
+				$layout,
+				$excludePatterns
+			);
 		}
 
 		$output .= '</urlset>';
@@ -52,13 +61,15 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 	 * Renders an XML sitemap fragment.
 	 *
 	 * @param Page[] $pages
+	 * @param $lang
+	 * @param $layout
 	 * @param array $excludePatterns
 	 *
 	 * @return string
 	 *
 	 * @internal
 	 */
-	private function renderSitemapFragment($pages, $excludePatterns) {
+	private function renderSitemapFragment($pages, $lang, $layout, $excludePatterns) {
 		$output = '';
 		foreach ($pages as $id => $page) {
 
@@ -66,6 +77,15 @@ class SitemapRenderer implements Interfaces\SitemapRenderer {
 				if (preg_match($pattern, $id)) {
 					continue 2;
 				}
+			}
+
+			try {
+				$noindex = $this->pagesApi->getMetadata('noindex', $lang, $id, $layout);
+				if ($noindex && ($noindex !== 'false') && ($noindex !== 'FALSE')) {
+					continue;
+				}
+			}
+			catch (MetadataNotAvailableException $e) {
 			}
 
 			$output  .= '<url>';
