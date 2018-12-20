@@ -7,6 +7,7 @@ use Ixolit\CDE\Context\Page;
 use Ixolit\CDE\Exceptions\ControllerSkipViewException;
 use Ixolit\CDE\Exceptions\InformationNotAvailableInContextException;
 use Ixolit\CDE\Interfaces\ControllerLogicInterface;
+use Ixolit\CDE\Interfaces\ControllerViewInterface;
 use Ixolit\CDE\Interfaces\FilesystemAPI;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResponseAPI;
@@ -93,6 +94,11 @@ class ControllerLogic implements ControllerLogicInterface {
 					$this->responseApi->sendPSR7($controllerData);
 					exit;
 				}
+				if ($controllerData instanceof ControllerViewInterface) {
+					$view = $controllerData;
+					return;
+				}
+				// TODO: add (is_object($controllerData) && ($controllerData instanceof \Traversable)) ?
 				if (!empty($controllerData) && is_array($controllerData)) {
                     foreach ($controllerData as $key => $value) {
                         $viewData[$key] = $value;
