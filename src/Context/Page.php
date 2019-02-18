@@ -997,7 +997,7 @@ class Page {
 	public function getPagePath($page = null, $lang = null) {
 		return '/' . self::buildPath(
 			$this->getValidLanguage($lang),
-			$page === null ? self::getPath() : $page
+			$page === null ? $this->getPath() : $page
 		);
 	}
 
