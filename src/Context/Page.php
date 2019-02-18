@@ -1014,11 +1014,26 @@ class Page {
 	 * @return UriInterface
 	 */
 	public function getPageUri($page = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
+		return $this->getPathUri($this->getPagePath($page, $lang), $query, $host, $scheme, $port);
+	}
+
+	/**
+	 * Returns the URL for the given path, query, host and scheme, based on the current request
+	 *
+	 * @param string|null $path
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 *
+	 * @return UriInterface
+	 */
+	public function getPathUri($path = null, $query = null, $host = null, $scheme = null, $port = null) {
 
 		/** @var UriInterface $uri */
 		$uri = self::parseUri($this->getUrl());
 
-		$uri = $uri->withPath($this->getPagePath($page, $lang));
+		$uri = $uri->withPath($path === null ? $this->getFullPath() : $path);
 
 		$uri = $uri->withQuery(self::buildQueryString($query === null ? $this->getQuery() : $query));
 
@@ -1336,6 +1351,19 @@ class Page {
 	 */
 	public static function pageUri($page = null, $lang = null, $query = null, $host = null, $scheme = null, $port = null) {
 		return self::get()->getPageUri($page, $lang, $query, $host, $scheme, $port);
+	}
+
+	/**
+	 * @see getPathUri
+	 * @param string|null $path
+	 * @param mixed|null $query
+	 * @param string|null $host
+	 * @param string|null $scheme
+	 * @param int|null $port
+	 * @return UriInterface
+	 */
+	public static function pathUri($path = null, $query = null, $host = null, $scheme = null, $port = null) {
+		return self::get()->getPathUri($path, $query, $host, $scheme, $port);
 	}
 
 	/**
