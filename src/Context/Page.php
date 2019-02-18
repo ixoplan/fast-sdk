@@ -317,7 +317,8 @@ class Page {
     	return new ControllerLogic(
     		$this->getRequestAPI(),
 			$this->getResponseAPI(),
-			$this->getFilesystemAPI()
+			$this->getFilesystemAPI(),
+			$this
 		);
 	}
 
