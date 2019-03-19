@@ -2,6 +2,8 @@
 
 namespace Ixolit\CDE;
 
+use Ixolit\CDE\Context\Page;
+
 /**
  * Class CDETemporaryDataStorage
  *
@@ -22,7 +24,7 @@ class CDETemporaryDataStorage extends CDETemporaryStorage {
 	 */
 	public static function getInstance($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS) {
 		if (self::$instance === null) {
-			self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout);
+			self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout, null, null, Page::configValue(Page::APP_CFG_KEY_DATA_SECRET));
 		}
 
 		return self::$instance;
