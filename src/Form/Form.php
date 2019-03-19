@@ -87,7 +87,8 @@ class Form {
 
 		if ($this->method == self::FORM_METHOD_POST) {
 			$csrfField = new HiddenField(self::FORM_FIELD_CSRF_TOKEN);
-			$csrfField->addValidator(new CSRFTokenValidator($csrfTokenProvider->getCSRFToken()));
+			$csrfField->addValidator(new CSRFTokenValidator($csrfTokenProvider->getStoredCSRFToken()));
+			//the sent value will be overwritten through setFromRequest
 			$csrfField->setValue($csrfTokenProvider->getCSRFToken());
 			//Don't transfer the value back to the form.
 			$csrfField->setMasked(true);
