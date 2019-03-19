@@ -9,9 +9,6 @@ namespace Ixolit\CDE;
  */
 class CDETemporaryStorage {
 
-	/** @var CDETemporaryStorage[] */
-//    private static $instances = [];
-
 	/** @var array */
 	private $dataStorage;
 
@@ -27,38 +24,26 @@ class CDETemporaryStorage {
 	/** @var string */
 	private $dataStorageDomain;
 
+	/** @var string */
+	private $dataStorageSecret;
+
 	/**
 	 * @param string $dataStorageName
 	 * @param int $dataStorageTimeout
 	 * @param string $dataStoragePath
 	 * @param string $dataStorageDomain
+	 * @param string $dataStorageSecret leave empty to omit cookie signing
 	 */
-	protected function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null) {
+	protected function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null, $dataStorageSecret = null) {
 		$this->dataStorageName = $dataStorageName;
 		$this->dataStorageTimeout = $dataStorageTimeout;
 		$this->dataStoragePath = $dataStoragePath;
 		$this->dataStorageDomain = $dataStorageDomain;
+		$this->dataStorageSecret = $dataStorageSecret;
 		$this->dataStorage = $this->restoreDataStorage();
 	}
 
 	protected function __clone() {}
-
-	/**
-	 * @param string $dataStorageName
-	 * @param int $dataStorageTimeout
-	 *
-	 * @return $this
-	 */
-	/*
-	protected static function getInstanceInternal($dataStorageName, $dataStorageTimeout) {
-		if (self::$instances[$dataStorageName] === null) {
-			$class = \get_called_class();
-			self::$instances[$dataStorageName] = new $class($dataStorageName, $dataStorageTimeout);
-		}
-
-		return self::$instances[$dataStorageName];
-	}
-	*/
 
 	/**
 	 * @return array
@@ -104,10 +89,23 @@ class CDETemporaryStorage {
 	}
 
 	/**
+	 * @param $data
+	 * @param $secret
+	 * @return string
+	 */
+	protected function getSignature($data, $secret) {
+		return \base64_encode(\hash_hmac('sha256', $data, $secret, true));
+	}
+
+	/**
 	 * @return $this
 	 */
 	protected function storeDataStorage() {
 		$encodedDataStorage = \base64_encode(\json_encode($this->dataStorage));
+
+		if (!empty($this->dataStorageSecret)) {
+			$encodedDataStorage .= '.' . $this->getSignature($encodedDataStorage, $this->dataStorageSecret);
+		}
 
 		CDECookieCache::getInstance()->write(
 			$this->dataStorageName,
@@ -128,6 +126,13 @@ class CDETemporaryStorage {
 
 		if (empty($dataStorage)) {
 			return [];
+		}
+
+		if (!empty($this->dataStorageSecret)) {
+			list($dataStorage, $signature) = explode('.', $dataStorage);
+			if ($this->getSignature($dataStorage, $this->dataStorageSecret) !== $signature) {
+				return [];
+			}
 		}
 
 		$dataStorage = \json_decode(\base64_decode($dataStorage), true);

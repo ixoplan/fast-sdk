@@ -34,6 +34,8 @@ class Page {
 	const APP_CFG_VAL_ENV_PROD = 'production';
 	const APP_CFG_VAL_ENV_DEVL = 'development';
 	const APP_CFG_KEY_HTTPS = 'https';
+	const APP_CFG_KEY_PAGE_SECRET = 'temporary-page-secret';
+	const APP_CFG_KEY_DATA_SECRET = 'temporary-data-secret';
 
 	/** @var self */
 	private static $instance;
@@ -243,7 +245,8 @@ class Page {
 			$this->getTemporaryStorageName(),
 			$this->getTemporaryStorageTimeout(),
 			$this->getTemporaryStoragePath(),
-			$this->getTemporaryStorageDomain()
+			$this->getTemporaryStorageDomain(),
+			$this->getTemporaryStorageSecret()
 		);
 	}
 
@@ -389,6 +392,10 @@ class Page {
 
 	protected function getTemporaryStorageDomain() {
 		return null;
+	}
+
+	public function getTemporaryStorageSecret() {
+		return $this->getConfigValue(self::APP_CFG_KEY_PAGE_SECRET);
 	}
 
 	/**
@@ -960,6 +967,16 @@ class Page {
 	/** @see getKvsAPI */
 	public static function kvsAPI() {
 		return self::get()->getKvsAPI();
+	}
+
+	/**
+	 * @see getConfigValue
+	 * @param string $name
+	 * @param mixed $default
+	 * @return mixed|null
+	 */
+	public static function configValue($name, $default = null) {
+		return self::get()->getConfigValue($name, $default);
 	}
 
 	/** @see getAppEnv */
