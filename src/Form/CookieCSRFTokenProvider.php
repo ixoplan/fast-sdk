@@ -42,7 +42,7 @@ class CookieCSRFTokenProvider implements CSRFTokenProvider {
 		$this->responseAPI = $responseAPI;
 
 		$this->storedToken = $this->readCookieToken();
-		$this->nextToken = $this->generateToken();
+		$this->nextToken = (($this->requestAPI->getHeader('X-Requested-With') == 'XMLHttpRequest') && $this->storedToken) ? $this->storedToken : $this->generateToken();
 
 		CDECookieCache::getInstance()->write(self::COOKIE_NAME_CSRF_TOKEN, $this->getCSRFToken(), CDECookieCache::COOKIE_TIMEOUT_SESSION, null, null, false, true);
 	}
