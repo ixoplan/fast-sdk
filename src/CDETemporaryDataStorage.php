@@ -17,14 +17,16 @@ class CDETemporaryDataStorage extends CDETemporaryStorage {
 	/** @var CDETemporaryDataStorage */
 	private static $instance;
 
-	/**
-	 * @param int $dataStorageTimeout
-	 *
-	 * @return $this
-	 */
-	public static function getInstance($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS) {
+    /**
+     * @param int $dataStorageTimeout
+     * @param null $dataStoragePath
+     * @param null $dataStorageDomain
+     *
+     * @return CDETemporaryDataStorage
+     */
+	public static function getInstance($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS, $dataStoragePath = null, $dataStorageDomain = null) {
 		if (self::$instance === null) {
-			self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout, null, null, Page::configValue(Page::APP_CFG_KEY_DATA_SECRET));
+			self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout, $dataStoragePath, $dataStorageDomain, Page::configValue(Page::APP_CFG_KEY_DATA_SECRET));
 		}
 
 		return self::$instance;

@@ -20,10 +20,16 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
     private $formCollectionName;
 
     /**
+     * @var CDETemporaryDataStorage
+     */
+    private $dataStorage;
+
+    /**
      * @param $formCollectionName
      */
-    public function __construct($formCollectionName) {
+    public function __construct($formCollectionName, CDETemporaryDataStorage $dataStorage = null) {
         $this->formCollectionName = $formCollectionName . '-forms';
+        $this->dataStorage = $dataStorage;
     }
 
     /**
@@ -165,7 +171,13 @@ class CollectionCookieFormProcessor extends CookieFormProcessor {
      * @return CDETemporaryDataStorage
      */
     protected function getDataStorage() {
-        return CDETemporaryDataStorage::getInstance(self::TIMEOUT_SESSION_COOKIE);
+
+        if (!$this->dataStorage) {
+            $this->dataStorage = CDETemporaryDataStorage::getInstance(self::TIMEOUT_SESSION_COOKIE);
+        }
+
+        return $this->dataStorage;
+
     }
 
 }
