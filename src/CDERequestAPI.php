@@ -231,12 +231,13 @@ class CDERequestAPI implements RequestAPI {
 	 * {@inheritdoc}
 	 */
 	public function getHeader($header) {
-		$headers = $this->getHeaders();
-		if (isset($headers[$header])) {
-			return $headers[$header];
-		} else {
-			return null;
+		if (!\function_exists('getHeader')) {
+			throw new CDEFeatureNotSupportedException('getHeader');
 		}
+
+		$value = getHeader($header);
+
+		return $value;
 	}
 
 	/**
