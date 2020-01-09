@@ -364,24 +364,30 @@ class Form {
 	 * @param FormField|string $field
 	 * @param string $prefix
 	 * @param array $attributes
+	 * @param callable|null $callable
 	 *
 	 * @return Content
 	 */
-	public function getErrors($field, $prefix = '', $attributes = []) {
+	public function getErrors($field, $prefix = '', $attributes = [], callable $callable = null) {
 
 		$formField = $this->getField($field, $prefix);
 
 		$content = new Content();
 		foreach ($formField->getErrors() as $key => $value) {
-			$content->add((new ElementContent(
+			$code = is_numeric($key) ? $value : $key;
+			$element = new ElementContent(
 				Element::NAME_DIV,
 				$attributes,
 				Page::translations('error', [
 					$this->getFormKey(),
 					$this->getFieldName($field, $prefix),
-					is_numeric($key) ? $value : $key
+					$code
 				])
-			)));
+			);
+			if (is_callable($callable)) {
+				$element = $callable($element, $code);
+			}
+			$content->add($element);
 		}
 
 		return $content;
