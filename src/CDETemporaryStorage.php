@@ -27,19 +27,29 @@ class CDETemporaryStorage {
 	/** @var string */
 	private $dataStorageSecret;
 
+	/** @var bool */
+	private $dataStorageSecure = false;
+
+	/** @var bool */
+	private $dataStorageHttpOnly = false;
+
 	/**
 	 * @param string $dataStorageName
 	 * @param int $dataStorageTimeout
 	 * @param string $dataStoragePath
 	 * @param string $dataStorageDomain
 	 * @param string $dataStorageSecret leave empty to omit cookie signing
+	 * @param bool $dataStorageSecure
+	 * @param bool $dataStorageHttpOnly
 	 */
-	protected function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null, $dataStorageSecret = null) {
+	protected function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null, $dataStorageSecret = null, $dataStorageSecure = false, $dataStorageHttpOnly = false) {
 		$this->dataStorageName = $dataStorageName;
 		$this->dataStorageTimeout = $dataStorageTimeout;
 		$this->dataStoragePath = $dataStoragePath;
 		$this->dataStorageDomain = $dataStorageDomain;
 		$this->dataStorageSecret = $dataStorageSecret;
+		$this->dataStorageSecure = $dataStorageSecure;
+		$this->dataStorageHttpOnly = $dataStorageHttpOnly;
 		$this->dataStorage = $this->restoreDataStorage();
 	}
 
@@ -112,7 +122,9 @@ class CDETemporaryStorage {
 			$encodedDataStorage,
 			$this->dataStorageTimeout,
 			$this->dataStoragePath,
-			$this->dataStorageDomain
+			$this->dataStorageDomain,
+			$this->dataStorageSecure,
+			$this->dataStorageHttpOnly
 		);
 
 		return $this;

@@ -16,8 +16,8 @@ class PageTemporaryStorage extends CDETemporaryStorage {
 
 	const COOKIE_TIMEOUT = CDECookieCache::COOKIE_TIMEOUT_SESSION;
 
-	public function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null, $dataStorageSecret = null) {
-		parent::__construct($dataStorageName, $dataStorageTimeout, $dataStoragePath, $dataStorageDomain, $dataStorageSecret);
+	public function __construct($dataStorageName, $dataStorageTimeout, $dataStoragePath = null, $dataStorageDomain = null, $dataStorageSecret = null, $dataStorageSecure = false, $dataStorageHttpOnly = false) {
+		parent::__construct($dataStorageName, $dataStorageTimeout, $dataStoragePath, $dataStorageDomain, $dataStorageSecret, $dataStorageSecure, $dataStorageHttpOnly);
 	}
 
 //	/** @var self */

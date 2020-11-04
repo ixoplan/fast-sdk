@@ -85,6 +85,12 @@ class Page {
 	/** @var string */
 	private $temporaryStorageDomain = null;
 
+	/** @var bool */
+	private $temporaryStorageSecure = false;
+
+	/** @var bool */
+	private $temporaryStorageHttpOnly = false;
+
 	/** @var VersionInfo */
 	private $versionInfo;
 
@@ -344,7 +350,9 @@ class Page {
 			$this->getTemporaryStorageTimeout(),
 			$this->getTemporaryStoragePath(),
 			$this->getTemporaryStorageDomain(),
-			$this->getTemporaryStorageSecret()
+			$this->getTemporaryStorageSecret(),
+			$this->getTemporaryStorageSecure(),
+			$this->getTemporaryStorageHttpOnly()
 		);
 	}
 
@@ -594,6 +602,15 @@ class Page {
 	}
 
 	/**
+	 * @throws InvalidOperationException
+	 */
+	private function checkTemporaryStorageSet($context = null) {
+		if (isset($this->temporaryStorage)) {
+			throw new InvalidOperationException('PageTemporaryStorage already set' . (!empty($context) ? ' (when trying to set "' . $context . '")' : ''));
+		}
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getTemporaryStorageDomain() {
@@ -606,12 +623,28 @@ class Page {
 	 * @throws InvalidOperationException
 	 */
 	public function setTemporaryStorageDomain($temporaryStorageDomain) {
-
-		if (isset($this->temporaryStorage)) {
-			throw new InvalidOperationException('PageTemporaryStorage already set');
-		}
-
+		$this->checkTemporaryStorageSet('domain');
 		$this->temporaryStorageDomain = $temporaryStorageDomain;
+		return $this;
+	}
+
+	public function getTemporaryStorageSecure() {
+		return $this->temporaryStorageSecure;
+	}
+
+	public function setTemporaryStorageSecure($temporaryStorageSecure) {
+		$this->checkTemporaryStorageSet('secure');
+		$this->temporaryStorageSecure = $temporaryStorageSecure;
+		return $this;
+	}
+
+	public function getTemporaryStorageHttpOnly() {
+		return $this->temporaryStorageHttpOnly;
+	}
+
+	public function setTemporaryStorageHttpOnly($temporaryStorageHttpOnly) {
+		$this->checkTemporaryStorageSet('httpOnly');
+		$this->temporaryStorageHttpOnly = $temporaryStorageHttpOnly;
 		return $this;
 	}
 
