@@ -24,7 +24,7 @@ class CDETemporaryDataStorage extends CDETemporaryStorage {
 	 */
 	public static function getInstance($dataStorageTimeout = self::DATA_STORAGE_TIMEOUT_THIRTY_DAYS) {
 		if (self::$instance === null) {
-			self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout, null, null, Page::configValue(Page::APP_CFG_KEY_DATA_SECRET));
+			self::$instance = new self(self::COOKIE_NAME_TEMPORARY_DATA, $dataStorageTimeout, null, null, Page::configValue(Page::APP_CFG_KEY_DATA_SECRET), Page::get()->getTemporaryStorageSecure(), Page::get()->getTemporaryStorageHttpOnly());
 		}
 
 		return self::$instance;
