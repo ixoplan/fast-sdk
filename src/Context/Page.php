@@ -46,7 +46,7 @@ class Page {
 	/** @var static */
 	private static $instance;
 
-    /** @var array */
+	/** @var array */
 	private $config;
 
 	/** @var RequestAPI */
