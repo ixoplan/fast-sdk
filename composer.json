@@ -1,13 +1,13 @@
 {
-	"name": "ixolit/cde-sdk",
+	"name": "ixoplan/fast-sdk",
 	"license": "MIT",
 	"type": "library",
-	"description": "Client library for CDE APIs.",
+	"description": "Client library for FAST APIs.",
 	"require": {
 		"psr/http-message": "^1.0"
 	},
 	"provide": {
-		"ixolit/dislo-sdk-http": "dev-beta"
+		"ixoplan/ixoplan-sdk-http": "dev-beta"
 	},
 	"autoload": {
 		"psr-4": {

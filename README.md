@@ -1,16 +1,16 @@
-# cde-sdk
-PHP SDK for the CDE APIs
+# fast-sdk
+PHP SDK for the FAST - Frontend Application Server Technology(formerly CDE) APIs
 
 ## Installation
 
-Simply add `ixolit/cde-sdk` to your composer.json, e.g:
+Simply add `ixoplan/fast-sdk` to your composer.json, e.g:
 
 ```json
 {
     "name": "myvendor/myproject",
-    "description": "Using cde-sdk",
+    "description": "Using fast-sdk",
     "require": {
-        "ixolit/cde-sdk": "*"
+        "ixoplan/fast-sdk": "*"
     }
 }
 ```

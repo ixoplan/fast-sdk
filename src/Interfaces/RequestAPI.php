@@ -40,7 +40,7 @@ interface RequestAPI {
 	public function getEffectiveVhost();
 
 	/**
-	 * Returns the fully qualified domain name for the current request, e.g. www.dislo.com
+	 * Returns the fully qualified domain name for the current request, e.g. docs.ixoplan.com
 	 *
 	 * @return string
 	 *
@@ -96,7 +96,6 @@ interface RequestAPI {
 
 	/**
 	 * Returns the path of the current page. E.g. this function would return "/resources" for the url
-	 * "http://www.dislo.com/en/resources
 	 *
 	 * @return string
 	 *

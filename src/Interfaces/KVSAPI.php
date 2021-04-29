@@ -7,8 +7,8 @@ use Ixolit\CDE\WorkingObjects\KVSEntry;
 use Ixolit\CDE\WorkingObjects\KVSKey;
 
 /**
- * The KVS API gives you read-access to the CDE key-value store. Please note, the KVS cannot be directly written from
- * the CDE API because the CDE is a geo-distributed setup. Instead, you must use the Dislo API internal mechanisms to
+ * The KVS API gives you read-access to the FAST key-value store. Please note, the KVS cannot be directly written from
+ * the FAST API because the FAST is a geo-distributed setup. Instead, you must use the Ixoplan API internal mechanisms to
  * update the KVS, which will happen asynchronously.
  */
 interface KVSAPI {
