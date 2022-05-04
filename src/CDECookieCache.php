@@ -3,6 +3,7 @@
 namespace Ixolit\CDE;
 
 
+use Ixolit\CDE\Context\Page;
 use Ixolit\CDE\Exceptions\CookieNotSetException;
 use Ixolit\CDE\Interfaces\RequestAPI;
 use Ixolit\CDE\Interfaces\ResponseAPI;
@@ -30,8 +31,8 @@ class CDECookieCache {
 	private $cookieCache;
 
 	protected function __construct() {
-		$this->requestApi = CDE::getRequestAPI();
-		$this->responseApi = CDE::getResponseAPI();
+		$this->requestApi = Page::get()->getRequestAPI();
+		$this->responseApi = Page::get()->getResponseAPI();
 		$this->cookieCache = [];
 	}
 
