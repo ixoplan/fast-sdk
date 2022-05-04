@@ -16,6 +16,68 @@ use Psr\Http\Message\ResponseInterface;
  */
 class CDEResponseAPI implements ResponseAPI {
 
+    /**
+     * When setting a cookie on $domain, the cookie will be deleted on all domains that are mapped for the specific $domain
+     * In that example, domainA and domainB. This can be used, to ensure only one cookie with the same name exists, knowing all possibly used (sub-)domains eg. .domain, .abc.domain, more.abc.domain
+     * @var array
+     *      $domain => [ domainA, domainB, ..... ]
+     *
+     */
+    private $cookieDeletionDomainMap = array();
+
+    /**
+     * @var ?string
+     */
+    private $defaultCookieDomain = null;
+
+    public function __construct()
+    {
+        //backwards compatibility handling
+        $this->setDefaultCookieDomain($this->getLegacyDefaultCookieDomain());
+
+        //for storing cookies on the current domain per default, set the defaultCookieDomain to null.
+        //e.g. within the doStart of the custom PageContext call Page::get()->getResponseApi()->setDefaultCookieDomain(null);
+        //this also removes the legacy cookie(s), when storing a new cookie value
+    }
+
+    public function getLegacyDefaultCookieDomain() {
+        return '.' . str_replace('www.', '', getVhost());
+    }
+
+    public function setDefaultCookieDomain($domain) {
+        $this->defaultCookieDomain = $domain;
+
+        if ($domain === null && !array_key_exists($domain, $this->cookieDeletionDomainMap)) {
+            $this->cookieDeletionDomainMap[null] = [$this->getLegacyDefaultCookieDomain()];
+            unset($this->cookieDeletionDomainMap[$this->getLegacyDefaultCookieDomain()]);
+        }
+
+        if ($domain === $this->getLegacyDefaultCookieDomain() && !array_key_exists($domain, $this->cookieDeletionDomainMap)) {
+            $this->cookieDeletionDomainMap[$domain] = [null];
+            unset($this->cookieDeletionDomainMap[null]);
+        }
+
+        return $this;
+    }
+
+    public function getDefaultCookieDomain() {
+        return $this->defaultCookieDomain;
+    }
+
+    /**
+     * When setting a cookie for $domain, and a key with the $domain exists, the cookie will also be deleted on all domains that are mapped for the specific $domain
+     * In that example, domainA and domainB. This can be used, to ensure only one cookie with the same name exists, knowing all possibly used (sub-)domains eg. .domain, .abc.domain, more.abc.domain
+     * @var array
+     *      $domain => [ domainA, domainB, ..... ]
+     *
+     * @param array $map
+     * @return $this
+     */
+    public function setCookieDeletionDomainMap(array $domainMap) {
+        $this->cookieDeletionDomainMap = $domainMap;
+        return $this;
+    }
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -62,14 +124,34 @@ class CDEResponseAPI implements ResponseAPI {
 	}
 
 	private function setCookieInternal($name, $value, $maxAge = 0, $path = null, $domain = null, $secure = false, $httponly = false) {
-        if ($domain === null) {
-            $domain = '.' . str_replace('www.', '', getVhost());
+	    if ($domain === null){
+	        $domain = $this->getDefaultCookieDomain();
+	    }
+        $result = \setCookieAdvanced($name, $value, $maxAge, $path, $domain, $secure, $httponly);
+        if (!empty($this->cookieDeletionDomainMap[$domain])) {
+            foreach($this->cookieDeletionDomainMap[$domain] as $_domain) {
+                if ($_domain !== $domain) {
+                    //delete cookie
+                    \setCookieAdvanced($name, null, -1, $path, $_domain, $secure, $httponly);
+                }
+            }
         }
-        return \setCookieAdvanced($name, $value, $maxAge, $path, $domain, $secure, $httponly);
+        return $result;
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Sets a HTTP cookie in the response.
+	 *
+	 * @param string $name
+	 * @param string $value
+	 * @param int    $maxAge in seconds. 0 means session cookie.
+	 * @param string $path
+	 * @param string $domain When null the $defaultCookieDomain will be used as domain.
+     *                       Set the $defaultCookieDomain to null, to explicitly set the cookie on the currently used domain
+	 * @param bool   $secure
+	 * @param bool   $httponly
+	 *
+	 * @throws CookieSetFailedException
 	 */
 	public function setCookie($name, $value, $maxAge = 0, $path = null, $domain = null, $secure = false, $httponly = false) {
 		if (!\function_exists('setCookie')) {

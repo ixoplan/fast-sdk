@@ -1,6 +1,7 @@
 <?php
 
 namespace Ixolit\CDE;
+use Ixolit\CDE\Interfaces\ResponseAPI;
 use Ixolit\CDE\WorkingObjects\CDEMailAPI;
 
 /**
@@ -9,6 +10,10 @@ use Ixolit\CDE\WorkingObjects\CDEMailAPI;
  * @deprecated use \Ixolit\CDE\Context\Page
  */
 class CDE {
+
+    /** @var ResponseAPI */
+    private static $responseAPI = null;
+
 	private function __construct() {}
 
 	/**
@@ -50,7 +55,10 @@ class CDE {
 	 * @return Interfaces\ResponseAPI
 	 */
 	public static function getResponseAPI() {
-		return new CDEResponseAPI();
+	    if (self::$responseAPI === null) {
+            self::$responseAPI = new CDEResponseAPI();
+        }
+        return self::$responseAPI;
 	}
 
 	/**
