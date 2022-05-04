@@ -1,12 +1,17 @@
 <?php
 
 namespace Ixolit\CDE;
+use Ixolit\CDE\Interfaces\ResponseAPI;
 use Ixolit\CDE\WorkingObjects\CDEMailAPI;
 
 /**
  * This class gives static access to the default API implementations.
  */
 class CDE {
+
+    /** @var ResponseAPI */
+    private static $responseAPI = null;
+
 	private function __construct() {}
 
 	/**
@@ -48,7 +53,10 @@ class CDE {
 	 * @return Interfaces\ResponseAPI
 	 */
 	public static function getResponseAPI() {
-		return new CDEResponseAPI();
+	    if (self::$responseAPI === null) {
+            self::$responseAPI = new CDEResponseAPI();
+        }
+        return self::$responseAPI;
 	}
 
 	/**
